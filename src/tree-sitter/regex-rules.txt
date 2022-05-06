@@ -1,0 +1,62 @@
+-{40}
+  For
+
+#{40}
+g
+  End and start of a new chapter.
+
+^\t{2} \w+
+g
+  For conversation mark.
+
+^\t{2} \(\w+\)
+gm
+  For (pause), (beat), in conversations.
+\t\t (pause)
+
+^\t{6} \[.+\]
+gm
+  For songs and name.
+\t\t\t\t\t\t[Name of The Song]
+\t\t\t\t\t\t[Artist]
+
+^\.\.\.
+gm
+  Represents cuts of scene.
+...
+
+^\[\.\]
+gm
+  For camera control and view-point centering.
+[Camera follows Lisa]
+[View-point from Rachel]
+
+------------------------------
+^*\w
+gm
+  For sketch parts, to be edited later.
+*
+  - Hates              : *qh.
+------------------------------
+
+\/\d\. [A-Z]\w+
+gm
+  Shows a part that is only applied for a certain part.
+/5. Book/3. Part
+
+---------------------------------------
+
+^      (pause)
+gm
+  A part of dialogue to inclinate short pause.
+
+------------------------------------------
+
+^@ 
+gm
+  A reference of literature, or art.
+@ La lettre - Renan Luce
+
+------------------------------------------------------
+
+'css-1dbjc4n r-1wbh5a2 r-dnmrzs r-1ny4l3l'

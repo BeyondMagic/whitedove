@@ -1,0 +1,2 @@
+TODO: Name of characters pass through a text-to-hex converter to make names.
+  It'll make easier to identify characters while writing.

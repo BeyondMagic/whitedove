@@ -1,0 +1,12 @@
+{
+  "name": "nwrite",
+  "version": "0.0.1",
+  "description": "Write a story in the best way possible.",
+  "main": "main.js",
+  "author": "BeyondMagic © 2022",
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  }
+}

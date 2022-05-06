@@ -1,0 +1,11 @@
+{
+  "level": {
+    0        : [ "Authoress", "Author" ]
+    10000    : [ "Writer" ],
+    100000   : [ "Scriptwriter" ],
+    250000   : [ "Novelist", "Dramatist", "Playwright" ],
+    500000   : [ "Poet", "Essayist" ],
+    1000000  : [ "Wordsmith", "Librettist" ],
+    10000000 : [ "Maker of Letters" ]
+  }
+}

@@ -1,0 +1,43 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 0.5fr 2fr 0.4fr;
+  grid-template-rows: 1fr 0.05fr;
+  gap: 0px 0px;
+  grid-template-areas: "left-side-bar text-body right-side-bar" "bottom-bar bottom-bar bottom-bar";
+}
+
+.left-side-bar {
+  grid-area: left-side-bar;
+}
+
+.right-side-bar {
+  grid-area: right-side-bar;
+}
+
+.bottom-bar {
+  grid-area: bottom-bar;
+}
+
+.text {
+  grid-area: text-body;
+}
+
+.left-side-bar {
+  background-color: red;
+}
+
+.right-side-bar {
+  background-color: green;
+}
+
+.bottom-bar {
+  background-color: blue;
+}
+
+.text {
+  background-color: pink;
+}
