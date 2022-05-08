@@ -83,7 +83,7 @@ class EngineScreen {
 
       // 5. Create edible content.
       main.insertAdjacentHTML( 'beforeend',
-                              `<section spellcheck="false" class="text-container"><div></div></section>` )
+                              `<section spellcheck="false" class="text-container"><div>First character.</div></section>` )
 
       // 6. Get edible content element.
       const text_container = main.querySelector('.text-container')
@@ -118,7 +118,7 @@ class EngineScreen {
               case 'deleteContentBackward':
               case 'insertText':
 
-                //var sel = window.getSelection()
+                //console.log(window.getSelection())
                 //var selected_node = sel.anchorNode
                 //// selected_node is the text node
                 //// that is inside the div
@@ -129,6 +129,45 @@ class EngineScreen {
               // Add a new character with the rainbowish effect :)
 
                 //break
+
+            }
+
+          }
+
+        })
+
+        // Create new special binds such as (CTRL+>)
+        text_container.addEventListener( 'keydown' , async event => {
+
+          if (event.target instanceof HTMLElement) {
+
+            console.log(event.key, event.shiftKey, event.ctrlKey)
+
+            switch (event.key) {
+
+              case 'b':
+
+                if (event.ctrlKey) {
+
+                  //document.execCommand( 'insertHTML', false,
+                  //                     '<customtag>' + window.getSelection() + '</customtag>')
+
+                }
+
+                break;
+
+              case 'Tab':
+
+                // Press tab at the start of a line will make it a paragraph.
+                if (window.getSelection()?.anchorOffset === 0) {
+
+                  window.getSelection()?.anchorNode?.parentElement?.classList.toggle('paragraph')
+
+                  event.preventDefault()
+
+                }
+
+                break;
 
             }
 
