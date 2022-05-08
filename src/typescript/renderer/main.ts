@@ -26,6 +26,14 @@ class EngineScreen {
     const sentences   : Element = information_container.querySelector('.sentences')!.firstElementChild!
     const paragraphs  : Element = information_container.querySelector('.paragraphs')!.firstElementChild!
 
+    if (content.textContent?.length === 0) {
+
+      paragraphs.textContent = sentences.textContent = word.textContent = characters.textContent = '0'
+
+      return
+
+    }
+
     const words     : Array<string> = text.split(' ')
     const lines     : Array<string> = text.match(/.$/gm)!
     const strophes  : Array<string> = text.match(/\.|,|.$|\)|\]/gm)!
@@ -98,12 +106,13 @@ class EngineScreen {
           if (event.target instanceof HTMLElement) {
 
             // If press tab at the start of a line, insert a paragraph.
-            //console.log(event)
+            console.log(event)
 
             switch (event.inputType) {
 
               case 'historyRedo':
               case 'historyUndo':
+              case 'insertFromDrop':
               case 'insertFromPaste':
               case 'deleteByCut':
               case 'deleteContentBackward':
@@ -128,7 +137,7 @@ class EngineScreen {
         })
 
         // Read after input.
-        text_container.addEventListener( 'keyup' , async event => {
+        text_container.addEventListener( 'input' , async event => {
 
           if (event.target instanceof HTMLElement) {
 
