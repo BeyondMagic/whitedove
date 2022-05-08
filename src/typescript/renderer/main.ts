@@ -1,3 +1,9 @@
+interface EventInput {
+  count:boolean
+  target:HTMLElement
+}
+
+
 //import { EngineScreen } from "./modules/writing"
 class EngineScreen {
 
@@ -10,19 +16,42 @@ class EngineScreen {
   }
 
   // Count the amount of words given a screen content.
-  count ( content : HTMLElement ) {
+  count ( content : HTMLElement ) : void {
 
-    if (content.textContent) {
+    const text : string = content.innerText!
+    const information_container : Element = content!.parentElement!.querySelector('.information')!
 
-      const length = content.textContent.split(' ').length;
+    const word        : Element = information_container.querySelector('.word')!.firstElementChild!
+    const characters  : Element = information_container.querySelector('.characters')!.firstElementChild!
+    const sentences   : Element = information_container.querySelector('.sentences')!.firstElementChild!
+    const paragraphs  : Element = information_container.querySelector('.paragraphs')!.firstElementChild!
 
-      content!.parentElement!.firstElementChild!.firstElementChild!.textContent = length.toString();
+    const words     : Array<string> = text.split(' ')
+    const lines     : Array<string> = text.match(/.$/gm)!
+    const strophes  : Array<string> = text.match(/\.|,|.$|\)|\]/gm)!
 
-    }
+    if (lines) paragraphs.textContent   = String(lines.length)
+    if (strophes) sentences.textContent = String(strophes.length)
+
+    word.textContent       = String(words.length)
+    characters.textContent = String(text.length)
 
   }
 
-  async create ( file : string ) : Promise<void> {
+  run ( input : EventInput ) : EventInput {
+
+    if (input.count === true) {
+
+      input.count = false;
+      this.count(input.target);
+
+    }
+
+    return input
+
+  }
+
+  create ( file : string ) : void {
 
     // 1. Load file content (HTML) into string.
     console.log(file) // ...
@@ -36,26 +65,76 @@ class EngineScreen {
     if (main instanceof HTMLElement) {
 
       // 4. Add the word counter element.
-      main.insertAdjacentHTML( 'beforeend', '<section class="word-counter"><span>0</span><span>ワード</section>' )
+      main.insertAdjacentHTML( 'beforeend',
+                              `<main class="information">
+                                 <section class="word counter"><span>0</span>ワード</section>
+                                 <section class="characters counter"><span>0</span>Characters</section>
+                                 <section class="sentences counter"><span>0</span>Sentences</section>
+                                 <section class="paragraphs counter"><span>0</span>Paragraphs</section>
+                               </main>` )
 
       // 5. Create edible content.
-      main.insertAdjacentHTML( 'beforeend', `<section class="text-container"><div>${file}</div></section>` )
+      main.insertAdjacentHTML( 'beforeend',
+                              `<section spellcheck="false" class="text-container"><div></div></section>` )
 
       // 6. Get edible content element.
       const text_container = main.querySelector('.text-container')
 
       if (text_container instanceof HTMLElement) {
 
+        // Where we'll verify some post-events.
+        let input = {} as EventInput
+        input.target = text_container
+
         // 7. Be able to focus on it.
         text_container.tabIndex = 0;
 
         // 8. Make it edible
-        text_container.contentEditable = "true"
+        text_container.contentEditable = String(true)
 
         // Read all control.
-        text_container.addEventListener( 'beforeinput' , event => {
+        text_container.addEventListener( 'beforeinput' , async event => {
 
-          console.log(event)
+          if (event.target instanceof HTMLElement) {
+
+            // If press tab at the start of a line, insert a paragraph.
+            //console.log(event)
+
+            switch (event.inputType) {
+
+              case 'historyRedo':
+              case 'historyUndo':
+              case 'insertFromPaste':
+              case 'deleteByCut':
+              case 'deleteContentBackward':
+              case 'insertText':
+
+                //var sel = window.getSelection()
+                //var selected_node = sel.anchorNode
+                //// selected_node is the text node
+                //// that is inside the div
+                //sel.collapse(selected_node, 3)
+                input.count = true
+
+              // case 'insertText'
+              // Add a new character with the rainbowish effect :)
+
+                //break
+
+            }
+
+          }
+
+        })
+
+        // Read after input.
+        text_container.addEventListener( 'keyup' , async event => {
+
+          if (event.target instanceof HTMLElement) {
+
+            input = this.run(input)
+
+          }
 
         })
 
@@ -89,58 +168,6 @@ class EngineScreen {
 
             event.target.classList.add('inactive')
             event.target.classList.remove('active')
-
-          }
-
-        })
-
-        // In case the element lose focus, add a class to recognise it.
-        text_container.addEventListener( 'keydown' , event => {
-
-          if (event.target instanceof HTMLElement) {
-
-            const text = event.target.textContent;
-
-            if (!text) {
-              console.log('dawdawd')
-              return this.count(event.target);
-            }
-
-            if (event.target instanceof HTMLElement) {
-
-              switch (event.key) {
-
-                case 'a':
-
-                  // CTRL+A : Select all content.
-                  if (event.ctrlKey) {
-
-                    console.log('ahahha')
-                    event.target.setAttribute( 'data-selected-all', 'true' )
-
-                  }
-
-                // In case of adding a space see if the target is a space to reload the word count.
-                case ' ':
-
-                  this.count(event.target)
-
-                  break;
-
-                // Delete a character, see if the target is a space to reload the word count.
-                case 'Backspace':
-
-                    if (text.charAt(text.length - 1) === ' ') {
-
-                      this.count(event.target)
-
-                    }
-
-                  break;
-
-              }
-
-            }
 
           }
 
@@ -180,6 +207,7 @@ window.addEventListener( 'DOMContentLoaded', () => {
 
     // @ts-expect-error
     engine.create(api.threads)
+    engine.create('lol')
 
     //notification.new( Notifications[colour_pick_joke] )
 
