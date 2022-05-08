@@ -1,1 +1,3 @@
 .private
+src/distribution
+src/node_modules
