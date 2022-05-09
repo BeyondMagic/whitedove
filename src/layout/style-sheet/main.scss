@@ -30,10 +30,10 @@ body {
 
 }
 
-.left-side-bar  { grid-area: left-side-bar;  }
-.right-side-bar { grid-area: right-side-bar; }
-.bottom-bar     { grid-area: bottom-bar;     }
-.text           { grid-area: text-body;      }
+.left-side-bar  { grid-area: left-side-bar;  position: relative; }
+.right-side-bar { grid-area: right-side-bar; position: relative; }
+.bottom-bar     { grid-area: bottom-bar;     position: relative; }
+.main           { grid-area: text-body;      position: relative; }
 
 .left-side-bar {
 
@@ -57,7 +57,6 @@ body {
 
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
   align-content: space-between;
 
   padding: 0.4rem 0.9rem;
@@ -66,6 +65,11 @@ body {
 
     background-color: $bg-ligher;
     box-shadow: 1px 1px 4px rgba($bg-shadow, 0.3);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
 
     position: relative;
 
@@ -77,33 +81,13 @@ body {
       //border: 1px solid;
       //border-radius: 0.25rem;
 
-      transition: all 300ms ease-in-out;
+        transition: all 300ms ease-in-out;
+
+      padding-top: 0.75rem;
 
       line-height: 1.25rem;
-      font-family: 'Josefi Sans';
-      font-weight: 600;
       font-size: 1.125rem;
       //letter-spacing: 2px;
-
-      &:empty {
-
-        content: attr(placeholder);
-
-        &:not(:focus)::before {
-
-          color: grey;
-          font-style: italic;
-
-        }
-
-        &:focus::before {
-
-          color: grey;
-          font-style: bolder;
-
-        }
-
-      }
 
       &.inactive {
 
@@ -116,7 +100,7 @@ body {
 
       &.active {
 
-        color: rgba($fg, 0.75);
+        color: rgba($fg, 0.85);
         background-color: rgba($fg, 0.02);
 
         caret-color: red; // Color of the chracter's name.
@@ -132,8 +116,7 @@ body {
       // Paragraph.
       div {
 
-        padding: 0.1rem 1.2rem;
-        margin: 0.5rem 0;
+        padding: 0.6rem 1.2rem;
         border-left: 3px solid $writing-new;
 
         &.paragraph {
@@ -143,6 +126,13 @@ body {
         }
 
       }
+
+    }
+
+    .label {
+
+      font-weight: bolder;
+      text-align: center;
 
     }
 
@@ -156,15 +146,11 @@ body {
 
       padding: 0.25rem 0.5rem;
 
-
       .counter {
 
         padding: 0.1rem 0.4rem;
 
         border-radius: 0.25rem;
-
-        box-shadow: 1px 1px 4px rgba($bg-shadow, 0.3);
-        background-color: rgba($bg, 0.85);
 
         font-weight: 400;
         font-size: 0.8rem;

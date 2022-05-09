@@ -94,18 +94,21 @@ class EngineScreen {
 
     if (main instanceof HTMLElement) {
 
+      // 5. Create edible content.
+      main.insertAdjacentHTML( 'beforeend',
+                              `<section spellcheck="false" class="text-container"><div><br></div></section>` )
+
+      // 4. Add the label element.
+      main.insertAdjacentHTML( 'beforeend',`<section class="label">${file}</section>` )
+
       // 4. Add the word counter element.
       main.insertAdjacentHTML( 'beforeend',
-                              `<main class="information">
+                              `<section class="information">
                                  <section class="word counter"><span>0</span>ワード</section>
                                  <section class="characters counter"><span>0</span>Characters</section>
                                  <section class="sentences counter"><span>0</span>Sentences</section>
                                  <section class="paragraphs counter"><span>0</span>Paragraphs</section>
-                               </main>` )
-
-      // 5. Create edible content.
-      main.insertAdjacentHTML( 'beforeend',
-                              `<section spellcheck="false" class="text-container"><div>${file}</div></section>` )
+                               </section>` )
 
       // 6. Get edible content element.
       const text_container = main.querySelector('.text-container')
@@ -128,6 +131,8 @@ class EngineScreen {
 
           if (event.target instanceof HTMLElement) {
 
+            console.log(event)
+
             switch (event.inputType) {
 
               case 'historyRedo':
@@ -136,22 +141,14 @@ class EngineScreen {
               case 'insertFromPaste':
               case 'deleteByCut':
               case 'deleteContentBackward':
-              case 'insertText':
               case 'deleteWordBackward':
+              case 'insertText':
 
                 input.count = true
 
                 switch (event.inputType) {
 
                   // Add a new character with the rainbowish effect :)
-
-                  case 'insertFromDrop':
-                  case 'insertFromPaste':
-
-                    input.eventType = 'insertFromAny'
-
-                    break;
-
                   case 'deleteWordBackward':
                   case 'deleteContentBackward':
 
@@ -218,6 +215,7 @@ class EngineScreen {
 
             switch (event.inputType) {
 
+              case 'insertCompositionText':
               case 'historyUndo':
               case 'deleteByCut':
               case 'deleteContentBackward':
@@ -316,8 +314,8 @@ window.addEventListener( 'DOMContentLoaded', () => {
 
     const engine = new EngineScreen( main );
 
-    engine.create(String(api.threads))
-    engine.create('lol')
+    //engine.create(String(api.threads))
+    engine.create('3. Book - 2. Chapter - 4. Episode')
 
     //notification.new( Notifications[colour_pick_joke] )
 
