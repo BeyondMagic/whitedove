@@ -1,6 +1,14 @@
+declare const api : {
+  threads : number
+}
+
+
 interface EventInput {
-  count:boolean
-  target:HTMLElement
+  target    : HTMLElement
+  count     : boolean
+  reset     : boolean
+  event     : string
+  eventType : string
 }
 
 
@@ -48,10 +56,24 @@ class EngineScreen {
 
   run ( input : EventInput ) : EventInput {
 
-    if (input.count === true) {
+    if (input.count) {
 
-      input.count = false;
-      this.count(input.target);
+      input.count = false
+      this.count(input.target)
+
+    }
+
+    if (input.reset) {
+
+      input.reset = false
+
+      const selected = window.getSelection()?.anchorNode
+
+      if (selected instanceof HTMLElement && selected.className.includes('text-container')) {
+
+        document.execCommand( 'insertHTML', false, `<div><br></div>` )
+
+      }
 
     }
 
@@ -62,7 +84,7 @@ class EngineScreen {
   create ( file : string ) : void {
 
     // 1. Load file content (HTML) into string.
-    console.log(file) // ...
+    //console.log(file) // ...
 
     // 2. Create new element to write.
     this.container.insertAdjacentHTML( 'beforeend', '<main class="writing"></main>' )
@@ -83,7 +105,7 @@ class EngineScreen {
 
       // 5. Create edible content.
       main.insertAdjacentHTML( 'beforeend',
-                              `<section spellcheck="false" class="text-container"><div>First character.</div></section>` )
+                              `<section spellcheck="false" class="text-container"><div>${file}</div></section>` )
 
       // 6. Get edible content element.
       const text_container = main.querySelector('.text-container')
@@ -93,6 +115,7 @@ class EngineScreen {
         // Where we'll verify some post-events.
         let input = {} as EventInput
         input.target = text_container
+        input.count  = true
 
         // 7. Be able to focus on it.
         text_container.tabIndex = 0;
@@ -105,9 +128,6 @@ class EngineScreen {
 
           if (event.target instanceof HTMLElement) {
 
-            // If press tab at the start of a line, insert a paragraph.
-            console.log(event)
-
             switch (event.inputType) {
 
               case 'historyRedo':
@@ -117,18 +137,36 @@ class EngineScreen {
               case 'deleteByCut':
               case 'deleteContentBackward':
               case 'insertText':
+              case 'deleteWordBackward':
 
-                //console.log(window.getSelection())
-                //var selected_node = sel.anchorNode
-                //// selected_node is the text node
-                //// that is inside the div
-                //sel.collapse(selected_node, 3)
                 input.count = true
 
-              // case 'insertText'
-              // Add a new character with the rainbowish effect :)
+                switch (event.inputType) {
 
-                //break
+                  // Add a new character with the rainbowish effect :)
+
+                  case 'insertFromDrop':
+                  case 'insertFromPaste':
+
+                    input.eventType = 'insertFromAny'
+
+                    break;
+
+                  case 'deleteWordBackward':
+                  case 'deleteContentBackward':
+
+                    if (event.target.children.length < 2 &&
+                        event.target.firstElementChild?.textContent?.length === 0) {
+
+                        input.reset = true
+
+                    }
+
+                    break
+
+                }
+
+              break
 
             }
 
@@ -140,8 +178,6 @@ class EngineScreen {
         text_container.addEventListener( 'keydown' , async event => {
 
           if (event.target instanceof HTMLElement) {
-
-            console.log(event.key, event.shiftKey, event.ctrlKey)
 
             switch (event.key) {
 
@@ -178,7 +214,23 @@ class EngineScreen {
         // Read after input.
         text_container.addEventListener( 'input' , async event => {
 
-          if (event.target instanceof HTMLElement) {
+          if (event.target instanceof HTMLElement && event instanceof InputEvent) {
+
+            switch (event.inputType) {
+
+              case 'historyUndo':
+              case 'deleteByCut':
+              case 'deleteContentBackward':
+              case 'deleteWordBackward':
+
+                if (event.target.children.length < 2 &&
+                    !event.target.firstElementChild?.textContent) {
+
+                  input.reset = true
+
+                }
+
+            }
 
             input = this.run(input)
 
@@ -224,6 +276,17 @@ class EngineScreen {
         // 7. Focus on creation.
         text_container.focus();
 
+        // TODO: Restore position of cursor.
+        // ... Currently just go to the last character.
+        {
+          const selected = window.getSelection()!
+          const selected_node = selected.anchorNode!
+          selected.collapse(selected_node, selected_node.textContent!.length)
+        }
+
+        // Just run with the default settings (to count words, etc).
+        input = this.run(input)
+
       }
 
     }
@@ -253,8 +316,7 @@ window.addEventListener( 'DOMContentLoaded', () => {
 
     const engine = new EngineScreen( main );
 
-    // @ts-expect-error
-    engine.create(api.threads)
+    engine.create(String(api.threads))
     engine.create('lol')
 
     //notification.new( Notifications[colour_pick_joke] )
@@ -262,10 +324,3 @@ window.addEventListener( 'DOMContentLoaded', () => {
   }
 
 });
-
-
-// here we request our message and the event listener we added before,
-//const config = JSON.parse(Electron.ipcRenderer.sendSync('synchronous-message', ''))
-//
-//// process our data however we want, in this example we print it on the browser console
-//console.log(config)

@@ -9,9 +9,13 @@ const createWindow = () => {
     webPreferences: {
       preload: __dirname + '/system/preload.js'
     },
+    autoHideMenuBar: true,
+    show: false,
   })
 
   win.loadFile(__dirname + '/index.html')
+
+  win.on( 'ready-to-show', win.show )
 
 
 }
