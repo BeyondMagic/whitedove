@@ -6,6 +6,25 @@ $bg-shadow: $fg;
 
 $writing-new: #608B4E;
 
+@keyframes slide-background {
+
+  from {
+
+    color: red;
+    background-position-x: 0%;
+
+  }
+
+  to {
+
+    color: black;
+    background-position-x: 4rem;
+
+  }
+
+
+}
+
 body {
 
   width: 100vw;
@@ -63,9 +82,6 @@ body {
 
   .writing {
 
-    background-color: $bg-ligher;
-    box-shadow: 1px 1px 4px rgba($bg-shadow, 0.3);
-
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -75,53 +91,38 @@ body {
 
     .text-container {
 
-      width: 100%;
-      height: 100%;
+      padding: 3rem 2rem;
 
-      //border: 1px solid;
-      //border-radius: 0.25rem;
+      transition: all 300ms ease-in-out;
 
-        transition: all 300ms ease-in-out;
+      background-color: $bg-ligher;
+      border-radius: 0.25rem;
+      box-shadow: 4px 4px 2rem rgba($bg-shadow, 0.4);
 
-      padding-top: 0.75rem;
+      overflow-wrap: break-all;
+      hyphens: auto;
 
       line-height: 1.25rem;
       font-size: 1.125rem;
-      //letter-spacing: 2px;
-
-      &.inactive {
-
-        //border-color: rgba($fg, 0.1);
-
-        background-color: rgba($fg, 0.01);
-        color: rgba($fg, 0.7);
-
-      }
 
       &.active {
 
-        color: rgba($fg, 0.85);
         background-color: rgba($fg, 0.02);
-
-        caret-color: red; // Color of the chracter's name.
-
-        //border-color: rgba($fg, 0.2);
-
         outline: none;
 
       }
 
-      // Elements formatting.
+      color: rgba($fg, 0.85);
 
-      // Paragraph.
-      div {
+      .character {
 
-        padding: 0.6rem 1.2rem;
-        border-left: 3px solid $writing-new;
+        &.new {
 
-        &.paragraph {
-
-          text-indent: 3rem;
+          animation-name: slide-background;
+          animation-duration: 2s;
+          animation-iteration-count: 1;
+          animation-direction: forwards;
+          animation-timing-function: linear;
 
         }
 

@@ -1,30 +1,39 @@
-declare const api : {
-  threads : number
+const sleep = (ms : number) => new Promise(r => setTimeout(r, ms));
+
+interface EditorEventInput {
+  id         : number
+  persons    : number
+  paragraphs : number
+  sentences  : number
+  characters : number
+  words      : number
+
+  file       : string
+  name       : string
+  event      : string
+  event_type : string
+
+  count      : boolean
+
+  target     : HTMLElement
+  container  : HTMLElement
 }
-
-
-interface EventInput {
-  target    : HTMLElement
-  count     : boolean
-  reset     : boolean
-  event     : string
-  eventType : string
-}
-
 
 //import { EngineScreen } from "./modules/writing"
 class EngineScreen {
 
-  container : HTMLElement
+  #container : HTMLElement
+  editors    : Array<EditorEventInput>
 
-  constructor ( element : HTMLElement ) {
+  public constructor ( element : HTMLElement ) {
 
-    this.container = element
+    this.#container = element
+    this.editors     = []
 
   }
 
   // Count the amount of words given a screen content.
-  count ( content : HTMLElement ) : void {
+  public count ( content : HTMLElement, input : EditorEventInput ) : EditorEventInput {
 
     const text : string = content.innerText!
     const information_container : Element = content!.parentElement!.querySelector('.information')!
@@ -33,47 +42,30 @@ class EngineScreen {
     const characters  : Element = information_container.querySelector('.characters')!.firstElementChild!
     const sentences   : Element = information_container.querySelector('.sentences')!.firstElementChild!
     const paragraphs  : Element = information_container.querySelector('.paragraphs')!.firstElementChild!
+    const persons     : Element = information_container.querySelector('.persons')!.firstElementChild!
 
     if (content.textContent?.length === 0) {
 
-      paragraphs.textContent = sentences.textContent = word.textContent = characters.textContent = '0'
+      paragraphs.textContent = sentences.textContent = word.textContent = characters.textContent = persons.textContent = '0'
+      input.paragraphs = input.sentences = input.words = input.characters = input.persons = 0
 
-      return
+    } else {
 
-    }
+      const words     : Array<string> = text.split(/\w /gm)
+      const lines     : Array<string> = text.match(/.$/gm)!
+      const strophes  : Array<string> = text.match(/\.|,|.$|\)|\]/gm)!
 
-    const words     : Array<string> = text.split(' ')
-    const lines     : Array<string> = text.match(/.$/gm)!
-    const strophes  : Array<string> = text.match(/\.|,|.$|\)|\]/gm)!
+      if (lines) paragraphs.textContent   = String(lines.length)
+      if (strophes) sentences.textContent = String(strophes.length)
 
-    if (lines) paragraphs.textContent   = String(lines.length)
-    if (strophes) sentences.textContent = String(strophes.length)
+      word.textContent       = String(words.length)
+      characters.textContent = String(text.length)
 
-    word.textContent       = String(words.length)
-    characters.textContent = String(text.length)
-
-  }
-
-  run ( input : EventInput ) : EventInput {
-
-    if (input.count) {
-
-      input.count = false
-      this.count(input.target)
-
-    }
-
-    if (input.reset) {
-
-      input.reset = false
-
-      const selected = window.getSelection()?.anchorNode
-
-      if (selected instanceof HTMLElement && selected.className.includes('text-container')) {
-
-        document.execCommand( 'insertHTML', false, `<div><br></div>` )
-
-      }
+      input.paragraphs = lines.length
+      input.sentences  = strophes.length
+      input.words      = words.length
+      input.characters = text.length
+      input.persons    = 0
 
     }
 
@@ -81,225 +73,78 @@ class EngineScreen {
 
   }
 
-  create ( file : string ) : void {
+  public create ( file : string , input = {} as EditorEventInput ) : void {
 
     // 1. Load file content (HTML) into string.
-    //console.log(file) // ...
-
-    // 2. Create new element to write.
-    this.container.insertAdjacentHTML( 'beforeend', '<main class="writing"></main>' )
-
-    // 3. Get the element.
-    const main = this.container.lastElementChild
-
-    if (main instanceof HTMLElement) {
-
-      // 5. Create edible content.
-      main.insertAdjacentHTML( 'beforeend',
-                              `<section spellcheck="false" class="text-container"><div><br></div></section>` )
-
-      // 4. Add the label element.
-      main.insertAdjacentHTML( 'beforeend',`<section class="label">${file}</section>` )
-
-      // 4. Add the word counter element.
-      main.insertAdjacentHTML( 'beforeend',
-                              `<section class="information">
-                                 <section class="word counter"><span>0</span>ワード</section>
-                                 <section class="characters counter"><span>0</span>Characters</section>
-                                 <section class="sentences counter"><span>0</span>Sentences</section>
-                                 <section class="paragraphs counter"><span>0</span>Paragraphs</section>
-                               </section>` )
-
-      // 6. Get edible content element.
-      const text_container = main.querySelector('.text-container')
-
-      if (text_container instanceof HTMLElement) {
-
-        // Where we'll verify some post-events.
-        let input = {} as EventInput
-        input.target = text_container
-        input.count  = true
-
-        // 7. Be able to focus on it.
-        text_container.tabIndex = 0;
-
-        // 8. Make it edible
-        text_container.contentEditable = String(true)
-
-        // Read all control.
-        text_container.addEventListener( 'beforeinput' , async event => {
-
-          if (event.target instanceof HTMLElement) {
-
-            console.log(event)
-
-            switch (event.inputType) {
-
-              case 'historyRedo':
-              case 'historyUndo':
-              case 'insertFromDrop':
-              case 'insertFromPaste':
-              case 'deleteByCut':
-              case 'deleteContentBackward':
-              case 'deleteWordBackward':
-              case 'insertText':
-
-                input.count = true
-
-                switch (event.inputType) {
-
-                  // Add a new character with the rainbowish effect :)
-                  case 'deleteWordBackward':
-                  case 'deleteContentBackward':
-
-                    if (event.target.children.length < 2 &&
-                        event.target.firstElementChild?.textContent?.length === 0) {
-
-                        input.reset = true
-
-                    }
-
-                    break
-
-                }
-
-              break
-
-            }
-
-          }
-
-        })
-
-        // Create new special binds such as (CTRL+>)
-        text_container.addEventListener( 'keydown' , async event => {
-
-          if (event.target instanceof HTMLElement) {
-
-            switch (event.key) {
-
-              case 'b':
-
-                if (event.ctrlKey) {
-
-                  //document.execCommand( 'insertHTML', false,
-                  //                     '<customtag>' + window.getSelection() + '</customtag>')
-
-                }
-
-                break;
-
-              case 'Tab':
-
-                // Press tab at the start of a line will make it a paragraph.
-                if (window.getSelection()?.anchorOffset === 0) {
-
-                  window.getSelection()?.anchorNode?.parentElement?.classList.toggle('paragraph')
-
-                  event.preventDefault()
-
-                }
-
-                break;
-
-            }
-
-          }
-
-        })
-
-        // Read after input.
-        text_container.addEventListener( 'input' , async event => {
-
-          if (event.target instanceof HTMLElement && event instanceof InputEvent) {
-
-            switch (event.inputType) {
-
-              case 'insertCompositionText':
-              case 'historyUndo':
-              case 'deleteByCut':
-              case 'deleteContentBackward':
-              case 'deleteWordBackward':
-
-                if (event.target.children.length < 2 &&
-                    !event.target.firstElementChild?.textContent) {
-
-                  input.reset = true
-
-                }
-
-            }
-
-            input = this.run(input)
-
-          }
-
-        })
-
-        // In case the user clicks on the element.
-        text_container.addEventListener( 'mousedown' , event => {
-
-          if (event.target instanceof HTMLElement) {
-
-            event.target.focus();
-
-          }
-
-        })
-
-        // In case the element get focus, add a class to recognise it.
-        text_container.addEventListener( 'focusin' , event => {
-
-          if (event.target instanceof HTMLElement) {
-
-            event.target.classList.add('active')
-            event.target.classList.remove('inactive')
-
-          }
-
-        })
-
-        // In case the element lose focus, add a class to recognise it.
-        text_container.addEventListener( 'focusout' , event => {
-
-          if (event.target instanceof HTMLElement) {
-
-            event.target.classList.add('inactive')
-            event.target.classList.remove('active')
-
-          }
-
-        })
-
-        // 7. Focus on creation.
-        text_container.focus();
-
-        // TODO: Restore position of cursor.
-        // ... Currently just go to the last character.
-        {
-          const selected = window.getSelection()!
-          const selected_node = selected.anchorNode!
-          selected.collapse(selected_node, selected_node.textContent!.length)
-        }
-
-        // Just run with the default settings (to count words, etc).
-        input = this.run(input)
-
-      }
-
+    console.log('File loaded:', file)
+
+    const main = document.createElement('main')
+    {
+      main.classList.add('writing')
+      this.#container.appendChild(main)
     }
 
+    const text = document.createElement('section')
+    {
+      text.tabIndex = 0
+      text.classList.add('text-container')
+      main.appendChild(text)
+    }
+
+    const information = document.createElement('section')
+    {
+      information.classList.add('information')
+
+      Array('word', 'characters', 'sentences', 'paragraphs', 'persons').forEach( item => {
+
+        const counter = document.createElement('div')
+        counter.classList.add('counter', item)
+
+        const digit = document.createElement('span')
+        digit.textContent = '0'
+        counter.appendChild(digit)
+
+        const content = document.createTextNode( item[0].toUpperCase() + item.substring(1) )
+        counter.appendChild(content)
+
+        information.appendChild(counter)
+
+      })
+
+      main.appendChild(information)
+    }
+
+    input.id         = this.editors.length
+    input.name       = 'New Episode'
+    input.file       = input.name
+    input.characters = 0
+    input.words      = 0
+    input.sentences  = 0
+    input.paragraphs = 0
+    input.persons    = 0
+    input.container  = main
+    input.target     = text
+
+    this.editors.push(input)
+
+    input.target.addEventListener( 'mousedown',   async () => input.target.focus() )
+    input.target.addEventListener( 'focusin',     async () => input.target.classList.add('active'))
+    input.target.addEventListener( 'focusout',    async () => input.target.classList.remove('active') )
+
+    // 7. Focus on creation.
+    input.container.focus()
+
   }
 
-  // Count all words of all files opened in 
-  countAll () {
+  public remove ( id : number ) : void {
+
+    this.editors.splice(id, 1)
 
   }
 
-  // Save the current content into a HTML file.
-  save () {
+  //public load ( id : EditorEventInput ) : void {
 
-  }
+  //}
 
 }
 
@@ -310,15 +155,12 @@ window.addEventListener( 'DOMContentLoaded', () => {
 
   const main = document.body.querySelector('.main')
 
-  if (main instanceof HTMLElement) {
+  if ( !(main instanceof HTMLElement)) return;
 
-    const engine = new EngineScreen( main );
+  const engine = new EngineScreen( main )
 
-    //engine.create(String(api.threads))
-    engine.create('3. Book - 2. Chapter - 4. Episode')
+  engine.create('3. Book - 2. Chapter - 4. Episode')
 
-    //notification.new( Notifications[colour_pick_joke] )
+  //notification.new( Notifications[colour_pick_joke] )
 
-  }
-
-});
+})

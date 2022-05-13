@@ -1,8 +1,9 @@
-import { contextBridge } from 'electron';
+import { contextBridge } from 'electron'
 import { cpus } from 'os'
 
-contextBridge.exposeInMainWorld( 'api', {
+contextBridge.exposeInMainWorld( 'system', {
 
-  threads: cpus().length
+  profile : <number> cpus().length,
+  inputs  : <Array<EditorEventInput>> [],
 
 })
