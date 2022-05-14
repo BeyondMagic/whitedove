@@ -169,7 +169,11 @@ body {
           hyphens: auto;
           outline: none;
 
+          white-space: pre-line;
+
           color: rgba($fg, 0.75);
+
+          padding: 0.25rem 0;
 
         }
 

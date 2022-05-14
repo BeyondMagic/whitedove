@@ -72,7 +72,7 @@ class EngineScreen {
       plugin.container.setAttribute( 'data-characters',    '0' )
       plugin.container.setAttribute( 'data-senteces',      '0' )
       plugin.container.setAttribute( 'data-paragraphs',    '0' )
-      plugin.container.setAttribute( 'data-persons-cited', '0' )
+      plugin.container.setAttribute( 'data-persons',       '0' )
     }
 
     {
@@ -98,7 +98,7 @@ class EngineScreen {
 
                 if (element.childNodes[0]) {
 
-                  selection.collapse(element.childNodes[0], element.innerText.length)
+                  selection.collapse(element.childNodes[0], element.innerText.length - content.length)
 
                 } else {
 
@@ -115,6 +115,7 @@ class EngineScreen {
           break
 
           case 'ArrowUp':
+
 
             if (selection?.focusOffset === 0) {
 
@@ -185,7 +186,7 @@ class EngineScreen {
 
       })
 
-      plugin.applet.addEventListener( 'input', async () => this.count(plugin.id, plugin.applet) )
+      plugin.applet.addEventListener( 'input', async () => this.count(plugin) )
     }
 
     if (plugin.selection) {
@@ -216,8 +217,9 @@ class EngineScreen {
            text_to_cut = text.substring(0, offset) + text.substring(text.length)
            cutted_text = text.substring(offset, text.length)
 
-           parent.innerText        = text_to_cut
-           plugin.applet.innerText = cutted_text
+           parent.childNodes[0].textContent = text_to_cut
+           plugin.applet.textContent = '.'
+           plugin.applet.childNodes[0].textContent = cutted_text
 
          }
 
@@ -357,64 +359,71 @@ class EngineScreen {
     })
   }
 
-  public async count ( id : number, target : HTMLDivElement ) : Promise<void> {
+  private async count ( plugin : PluginInterface ) : Promise<void> {
 
-    this.editors[id].count = false
-    //const text = target.innerText
+    {
 
-    //const word       = this.editors[id].information.querySelector('.word')!.firstElementChild!
-    //const characters = this.editors[id].information.querySelector('.characters')!.firstElementChild!
-    //const sentences  = this.editors[id].information.querySelector('.sentences')!.firstElementChild!
-    //const paragraphs = this.editors[id].information.querySelector('.paragraphs')!.firstElementChild!
-    //const persons    = this.editors[id].information.querySelector('.persons')!.firstElementChild!
+      const text = plugin.applet.textContent
 
-    //if (!text || text.length === 0) {
+      if (!text || text.length === 0) {
 
-    //} else if (text) {
+        plugin.container.setAttribute( 'data-word',       '0' )
+        plugin.container.setAttribute( 'data-characters', '0' )
+        plugin.container.setAttribute( 'data-senteces',   '0' )
+        plugin.container.setAttribute( 'data-paragraphs', '0' )
+        plugin.container.setAttribute( 'data-persons',    '0' )
 
-    //  const words     : Array<string> = text.split(/\w /gm)
-    //  const lines     : Array<string> = text.match(/.$/gm)!
-    //  const strophes  : Array<string> = text.match(/\.|,|.$|\)|\]/gm)!
+      } else if (text) {
 
-    //  if (lines) paragraphs.textContent   = String(lines.length)
-    //  if (strophes) sentences.textContent = String(strophes.length)
+        const words      : Array<string> = text.split(/\w /gm)
+        const paragraphs : Array<string> = text.match(/.$/gm)!
+        const sentences  : Array<string> = text.match(/\.|,|.$|\)|\]/gm)!
 
-    //  word.textContent       = String(words.length)
-    //  characters.textContent = String(text.length)
+        plugin.container.setAttribute( 'data-word',       `${words.length}` )
+        plugin.container.setAttribute( 'data-characters', `${text.length}` )
+        plugin.container.setAttribute( 'data-senteces',   `${sentences.length}` )
+        plugin.container.setAttribute( 'data-paragraphs', `${paragraphs.length}` )
 
-    //}
+      }
 
-    //const text_elements = this.editors[id].target.querySelectorAll('.text')
+    }
 
-    //this.editors[id].paragraphs = this.editors[id].sentences =
-    //this.editors[id].words = this.editors[id].characters =
-    //this.editors[id].persons = 0
+    {
+      this.editors[plugin.id].count = false
 
-    //if (text_elements.length) {
+      let word_length       = 0
+      let characters_lenght = 0
+      let senteces_length   = 0
+      let paragraphs_length = 0
+      let persons_length    = 0
 
-    //  paragraphs.textContent = sentences.textContent =
-    //  word.textContent = characters.textContent =
-    //  persons.textContent = '0'
+      this.editors[plugin.id].target.childNodes.forEach( item => {
 
-    //} else {
+        if (item instanceof HTMLElement) {
 
-    //  text_elements.forEach( element => {
+          word_length       += parseInt( item.getAttribute( 'data-word' )! )
+          characters_lenght += parseInt( item.getAttribute( 'data-characters' )! )
+          senteces_length   += parseInt( item.getAttribute( 'data-senteces' )! )
+          paragraphs_length += parseInt( item.getAttribute( 'data-paragraphs' )! )
+          persons_length    += parseInt( item.getAttribute( 'data-persons' )! )
 
-    //    const paragraphs = parseInt( element.getAttribute('data-paragraphs')! )
-    //    const sentences  = parseInt( element.getAttribute('data-senteces')! )
+        }
 
-    //    if (paragraphs) this.editors[id].paragraphs += paragraphs
-    //    if (paragraphs) this.editors[id].paragraphs += paragraphs
+      })
 
-    //    this.editors[id].paragraphs +=  lines.length
-    //    this.editors[id].sentences  += strophes.length
-    //    this.editors[id].words      += words.length
-    //    this.editors[id].characters += text.length
-    //    this.editors[id].persons    += 0
+      this.editors[plugin.id].words      = word_length
+      this.editors[plugin.id].characters = senteces_length
+      this.editors[plugin.id].sentences  = senteces_length
+      this.editors[plugin.id].paragraphs = paragraphs_length
+      this.editors[plugin.id].persons    = persons_length
 
-    //  })
+      this.editors[plugin.id].information.querySelector('.word')!.firstElementChild!.textContent       = String(word_length)
+      this.editors[plugin.id].information.querySelector('.characters')!.firstElementChild!.textContent = String(characters_lenght)
+      this.editors[plugin.id].information.querySelector('.sentences')!.firstElementChild!.textContent  = String(senteces_length)
+      this.editors[plugin.id].information.querySelector('.paragraphs')!.firstElementChild!.textContent = String(paragraphs_length)
+      this.editors[plugin.id].information.querySelector('.persons')!.firstElementChild!.textContent    = String(persons_length)
 
-    //}
+    }
 
   }
 
