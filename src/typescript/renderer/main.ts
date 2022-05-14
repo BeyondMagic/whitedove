@@ -178,9 +178,19 @@ class EngineScreen {
           case 'historyRedo':    case 'historyUndo':
           case 'insertFromDrop': case 'insertFromPaste':
           case 'deleteByCut':    case 'deleteContentBackward': case 'deleteWordBackward':
-          case 'insertText':
+          case 'insertText':     case 'insertCompositionText':
 
             this.editors[plugin.id].count = true
+
+            switch (event.inputType) {
+
+              case 'insertText': case 'insertCompositionText':
+
+              break
+
+            }
+
+          break
 
         }
 
@@ -411,17 +421,35 @@ class EngineScreen {
 
       })
 
+      if (word_length     > 0 || characters_lenght > 0 ||
+          senteces_length > 0 || paragraphs_length > 0 ||
+          persons_length  > 0 ) {
+
+        this.editors[plugin.id].information.classList.add('active')
+
+      } else {
+
+        this.editors[plugin.id].information.classList.remove('active')
+
+      }
+
       this.editors[plugin.id].words      = word_length
-      this.editors[plugin.id].characters = senteces_length
+      this.editors[plugin.id].characters = characters_lenght
       this.editors[plugin.id].sentences  = senteces_length
       this.editors[plugin.id].paragraphs = paragraphs_length
       this.editors[plugin.id].persons    = persons_length
 
-      this.editors[plugin.id].information.querySelector('.word')!.firstElementChild!.textContent       = String(word_length)
-      this.editors[plugin.id].information.querySelector('.characters')!.firstElementChild!.textContent = String(characters_lenght)
-      this.editors[plugin.id].information.querySelector('.sentences')!.firstElementChild!.textContent  = String(senteces_length)
-      this.editors[plugin.id].information.querySelector('.paragraphs')!.firstElementChild!.textContent = String(paragraphs_length)
-      this.editors[plugin.id].information.querySelector('.persons')!.firstElementChild!.textContent    = String(persons_length)
+      const word_element = this.editors[plugin.id].information.querySelector('.word')!.firstElementChild!
+      const characters_element = this.editors[plugin.id].information.querySelector('.characters')!.firstElementChild!
+      const sentences_element = this.editors[plugin.id].information.querySelector('.sentences')!.firstElementChild!
+      const paragraphs_element = this.editors[plugin.id].information.querySelector('.paragraphs')!.firstElementChild!
+      const persons_element = this.editors[plugin.id].information.querySelector('.persons')!.firstElementChild!
+
+      word_element.textContent       = String(word_length)
+      characters_element.textContent = String(characters_lenght)
+      sentences_element.textContent  = String(senteces_length)
+      paragraphs_element.textContent = String(paragraphs_length)
+      persons_element.textContent    = String(persons_length)
 
     }
 
@@ -456,6 +484,27 @@ class EngineScreen {
 
         const digit = document.createElement('span')
         digit.textContent = '0'
+
+        const observer = new MutationObserver( mutations => {
+
+          mutations.forEach( mutation => {
+
+            if (mutation.target.textContent === '0') {
+
+              mutation.target.parentElement?.classList.remove('active')
+
+            } else {
+
+              mutation.target.parentElement?.classList.add('active')
+
+            }
+
+          })
+
+        })
+
+        observer.observe(digit, { attributes: true, childList: true, characterData: true } )
+
         counter.appendChild(digit)
 
         const content = document.createTextNode( item[0].toUpperCase() + item.substring(1) )

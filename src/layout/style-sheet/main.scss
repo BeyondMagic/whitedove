@@ -169,7 +169,7 @@ body {
           hyphens: auto;
           outline: none;
 
-          white-space: pre-line;
+          white-space: pre-wrap;
 
           color: rgba($fg, 0.75);
 
@@ -190,14 +190,24 @@ body {
 
     .information {
 
+      margin-top: 1rem;
+
+      padding: 0.25rem 0.5rem;
+
+      opacity: 0;
+
+      transition: opacity 1s linear;
+
       display: flex;
       flex-direction: row-reverse;
       justify-content: space-evenly;
       align-items: center;
 
-      margin-top: 1rem;
+      &.active {
 
-      padding: 0.25rem 0.5rem;
+        opacity: 1;
+
+      }
 
       .counter {
 
@@ -209,6 +219,7 @@ body {
         font-size: 0.8rem;
 
         transition: all 500ms ease-in-out;
+        display: none;
 
         span {
 
@@ -222,6 +233,12 @@ body {
           background-color: transparent;
           color: rgba($fg, 0.85);
           box-shadow: none;
+
+        }
+
+        &.active {
+
+          display: block;
 
         }
 
