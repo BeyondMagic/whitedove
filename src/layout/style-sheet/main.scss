@@ -99,12 +99,6 @@ body {
       border-radius: 0.25rem;
       box-shadow: 4px 4px 2rem rgba($bg-shadow, 0.4);
 
-      overflow-wrap: break-all;
-      hyphens: auto;
-
-      line-height: 1.25rem;
-      font-size: 1.125rem;
-
       &.active {
 
         background-color: rgba($fg, 0.02);
@@ -112,17 +106,70 @@ body {
 
       }
 
-      color: rgba($fg, 0.85);
+      // Plugins.
+      .plugin {
 
-      .character {
+        display: flex;
+        align-items: start;
+        flex-direction: row;
 
-        &.new {
+        margin-bottom: 1rem;
 
-          animation-name: slide-background;
-          animation-duration: 2s;
-          animation-iteration-count: 1;
-          animation-direction: forwards;
-          animation-timing-function: linear;
+        &:last-child {
+
+          margin-bottom: 0;
+
+        }
+
+        .tools {
+
+          opacity: 0;
+          transition: opacity 250ms ease-in-out;
+          margin: 0;
+
+          &.active {
+
+            flex-grow: 2rem;
+            opacity: 1;
+
+          }
+
+          .button {
+
+            padding: 0 0.5rem;
+            font-weight: bolder;
+            font-size: 1.2rem;
+            cursor: pointer;
+            user-select: none;
+
+            &.format:hover {
+
+              color: #538CD1;
+              text-shadow: 2px 2px 0.5rem #538CD1;
+
+            }
+
+            &.add:hover {
+
+              color: #C7A2CD;
+              text-shadow: 2px 2px 0.5rem #C7A2CD;
+
+
+            }
+
+          }
+
+        }
+
+        .content {
+
+          flex-grow: 1;
+
+          overflow-wrap: break-word;
+          hyphens: auto;
+          outline: none;
+
+          color: rgba($fg, 0.75);
 
         }
 
@@ -144,6 +191,7 @@ body {
       justify-content: space-evenly;
       align-items: center;
 
+      margin-top: 1rem;
 
       padding: 0.25rem 0.5rem;
 
