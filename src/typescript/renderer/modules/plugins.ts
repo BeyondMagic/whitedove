@@ -1,10 +1,12 @@
-import { PluginInterface, Universal } from './interfaces'
+import { PluginInterface, PluginInit, Universal } from './interfaces'
 
 declare var universal : Universal
 
 export class Plugins {
 
-  paragraph ( init : PluginInterface ) {
+  public paragraph ( init : PluginInterface ) {
+
+    console.log(init)
 
     if (typeof init.data === 'string') {
 
@@ -23,13 +25,19 @@ export class Plugins {
           break
 
         case 'insertParagraph':
-          //this.addPlugin({
-          //                 type: 'Paragraph',
-          //                 id: init.id,
-          //                 focus: true,
-          //                 after : init.container,
-          //                 selection: document.getSelection()
-          //              })
+
+          const run = new CustomEvent( 'add', { detail: {
+
+            type: new Plugins().paragraph,
+            id: init.id,
+            focus: true,
+            after : init.container,
+            selection: document.getSelection()
+
+          } as PluginInit } )
+
+          universal.editors[init.id].target.dispatchEvent(run)
+
           event.preventDefault()
 
           break
@@ -37,7 +45,6 @@ export class Plugins {
       }
 
     })
-
 
   }
 

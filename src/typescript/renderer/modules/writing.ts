@@ -27,26 +27,19 @@ export class EngineScreen {
     plugin.container = document.createElement('section')
     plugin.aside     = document.createElement('aside')
 
-    plugin.container.classList.add('plugin')
-    plugin.container.tabIndex = -1
+    {
+      if ( plugin.type instanceof Function) {
 
-    switch (plugin.type) {
+        plugin.type(plugin)
 
-      default:
-      case 'Paragraph':
+      }
+      this.#parameters.text(plugin)
+      plugin.type = null
 
-        this.#plugins.paragraph(plugin)
-        plugin = this.#parameters.text(plugin)
-
-        break
-
-      case 'Dialogue':
-
-        break
-
+      plugin.applet.contentEditable = 'true'
+      plugin.applet.tabIndex = 0
+      plugin.applet.spellcheck = false
     }
-
-    plugin.type = null
 
     {
       plugin.aside.classList.add('tools')
@@ -65,6 +58,9 @@ export class EngineScreen {
     }
 
     {
+      plugin.container.classList.add('plugin')
+      plugin.container.tabIndex = -1
+
       plugin.container.addEventListener( 'focusin',   () => plugin.aside.classList.add('active') )
       plugin.container.addEventListener( 'focusout',  () => plugin.aside.classList.remove('active') )
       plugin.container.addEventListener( 'mouseover', () => plugin.aside.classList.add('active') )
@@ -74,13 +70,11 @@ export class EngineScreen {
           plugin.aside.classList.remove('active')
 
       })
+
+
+      plugin.container.appendChild(plugin.aside)
+      plugin.container.appendChild(plugin.applet)
     }
-
-    plugin.container.appendChild(plugin.aside)
-    plugin.container.appendChild(plugin.applet)
-
-    plugin.applet.contentEditable = 'true'
-    plugin.applet.tabIndex = 0
 
     {
 
@@ -118,7 +112,18 @@ export class EngineScreen {
     {
       text.tabIndex = -1
       text.classList.add('text-container')
-      main.appendChild(text)
+    }
+
+    const settings = document.createElement('section')
+    {
+      settings.classList.add('settings')
+
+      const minimise = document.createElement('span')
+      minimise.classList.add('button', 'minimise')
+      minimise.addEventListener( 'click', () => text.classList.toggle('minimised') )
+      minimise.textContent = '-'
+
+      settings.appendChild(minimise)
     }
 
     const information = document.createElement('section')
@@ -161,9 +166,11 @@ export class EngineScreen {
         information.appendChild(counter)
 
       })
-
-      main.appendChild(information)
     }
+
+    main.appendChild(settings)
+    main.appendChild(text)
+    main.appendChild(information)
 
     // Setting default values.
     {
@@ -175,6 +182,7 @@ export class EngineScreen {
       input.sentences   = 0
       input.paragraphs  = 0
       input.persons     = 0
+      input.settings    = settings
       input.container   = main
       input.target      = text
       input.information = information
@@ -183,13 +191,21 @@ export class EngineScreen {
 
     // Set events.
     {
-      input.target.addEventListener( 'focusin',     async () => input.target.classList.add('active'))
-      input.target.addEventListener( 'focusout',    async () => input.target.classList.remove('active') )
+      input.target.addEventListener( 'add', event => {
+
+        const e = event as CustomEvent
+
+        this.addPlugin( e.detail as PluginInit)
+
+      })
+
+      input.target.addEventListener( 'focusin',  async () => input.target.classList.add('active'))
+      input.target.addEventListener( 'focusout', async () => input.target.classList.remove('active') )
     }
 
     // Add default plugins.
     {
-      this.addPlugin( { type: 'Paragraph', id: input.id, focus: true } )
+      this.addPlugin( { type: this.#plugins.paragraph, id: input.id, focus: true } )
     }
 
   }
@@ -200,8 +216,8 @@ export class EngineScreen {
 
   }
 
-  //public load ( id : EditorEventInput ) : void {
+  public load ( id : EditorEventInput ) : void {
 
-  //}
+  }
 
 }

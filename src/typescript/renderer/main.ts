@@ -17,8 +17,6 @@ window.addEventListener( 'DOMContentLoaded', () => {
 
   const engine = new EngineScreen( main )
 
-  console.log(universal)
-
   engine.create('You got me!')
 
 })

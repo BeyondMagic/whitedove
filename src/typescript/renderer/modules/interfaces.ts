@@ -9,7 +9,7 @@ export interface PluginInit {
   data?      : any
   focus?     : boolean
   after?     : HTMLElement
-  type       : 'Paragraph' | 'Dialogue' | null
+  type       : Function | null
   id         : number
   selection? : Selection | null
 
@@ -40,6 +40,9 @@ export interface EditorEventInput {
 
   count      : boolean
 
+  add        : PluginInit
+
+  settings    : HTMLElement // .settings
   container   : HTMLElement // .writing
   target      : HTMLElement // .text-container
   information : HTMLElement // .information

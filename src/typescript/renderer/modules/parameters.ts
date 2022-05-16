@@ -216,7 +216,7 @@ export class PluginParameters {
 
               case 'insertText':
 
-                console.log(event)
+                //console.log(event)
 
               break
 
@@ -229,6 +229,30 @@ export class PluginParameters {
       })
 
       plugin.applet.addEventListener( 'input', async () => this.count(plugin) )
+
+      plugin.applet.addEventListener( 'paste', async event => {
+
+        event.preventDefault()
+        plugin.selection = document.getSelection()!
+
+        const text = event.clipboardData?.getData('text/plain')
+        if (text) {
+
+          const current_text = plugin.applet.innerText
+          const to_move = plugin.selection.focusOffset + text.length
+
+          plugin.applet.innerText = current_text.slice(0, plugin.selection.focusOffset) + text + current_text.slice(plugin.selection.focusOffset)
+
+          plugin.selection.collapse(plugin.applet.childNodes[0], to_move)
+
+          universal.editors[plugin.id].count = true
+          this.count(plugin) 
+
+        }
+        plugin.selection = null
+
+      })
+
     }
 
     if (plugin.selection) {
