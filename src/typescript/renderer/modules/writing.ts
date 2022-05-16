@@ -123,7 +123,14 @@ export class EngineScreen {
 
       const minimise = document.createElement('span')
       minimise.classList.add('button', 'minimise')
-      minimise.addEventListener( 'click', () => text.classList.toggle('minimised') )
+      minimise.addEventListener( 'click', () => {
+
+        text.classList.toggle('minimised') 
+
+        if (minimise.textContent === '+') minimise.textContent = '-'
+        else minimise.textContent = '+'
+
+      })
       minimise.textContent = '-'
 
       settings.appendChild(minimise)

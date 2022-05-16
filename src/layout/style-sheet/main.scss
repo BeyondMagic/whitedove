@@ -81,6 +81,7 @@ body {
         font-weight: bolder;
         cursor: pointer;
         transition: all 250ms ease-in-out;
+        user-select: none;
 
         &.minimise {
 
@@ -124,7 +125,7 @@ body {
 
         .content {
 
-          visibility: hidden;
+          opacity: 0;
 
         }
 
@@ -172,10 +173,16 @@ body {
             cursor: pointer;
             user-select: none;
 
-            &.format:hover {
+            &.format {
 
-              color: #538CD1;
-              text-shadow: 2px 2px 0.5rem #538CD1;
+              vertical-align: top;
+
+              &:hover {
+
+                color: #538CD1;
+                text-shadow: 2px 2px 0.5rem #538CD1;
+
+              }
 
             }
 
