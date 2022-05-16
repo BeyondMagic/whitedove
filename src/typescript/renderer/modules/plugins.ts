@@ -6,8 +6,6 @@ export class Plugins {
 
   public paragraph ( init : PluginInterface ) {
 
-    console.log(init)
-
     if (typeof init.data === 'string') {
 
       init.applet.innerText = init.data

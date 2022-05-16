@@ -39,6 +39,9 @@ export class EngineScreen {
       plugin.applet.contentEditable = 'true'
       plugin.applet.tabIndex = 0
       plugin.applet.spellcheck = false
+
+      plugin.applet.addEventListener( 'focusin', () => plugin.container.classList.add('active') )
+      plugin.applet.addEventListener( 'focusout', () => plugin.container.classList.remove('active') )
     }
 
     {

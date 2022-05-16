@@ -60,10 +60,12 @@ export class PluginParameters {
           senteces_length > 0 || paragraphs_length > 0 ||
           persons_length  > 0 ) {
 
+        universal.editors[plugin.id].information.style.display = 'flex'
         universal.editors[plugin.id].information.classList.add('active')
 
       } else {
 
+        universal.editors[plugin.id].information.style.display = 'hidden'
         universal.editors[plugin.id].information.classList.remove('active')
 
       }
