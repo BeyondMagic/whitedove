@@ -7,7 +7,7 @@ const createWindow = () => {
     width:  800,
     height: 600,
     webPreferences: {
-      preload: __dirname + '/system/preload.js'
+      preload: __dirname + '/system/preload.js',
     },
     autoHideMenuBar: true,
     show: false,

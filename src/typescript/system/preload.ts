@@ -4,6 +4,5 @@ import { cpus } from 'os'
 contextBridge.exposeInMainWorld( 'system', {
 
   profile : <number> cpus().length,
-  inputs  : <Array<EditorEventInput>> [],
 
 })

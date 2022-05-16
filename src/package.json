@@ -6,14 +6,10 @@
   "author": "BeyondMagic © 2022",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "build": "npm run ts && npm run sass && npm run html",
-    "ts": "tsc --project typescript/tsconfig.json",
-    "sass": "sass ./layout/style-sheet/main.scss ./distribution/style-sheet/style.css --no-source-map",
-    "html": "cp -r ./layout/line-dividers/ ./layout/index.html -t ./distribution/",
+    "build": "./build.sh all",
     "start": "electron ."
   },
   "dependencies": {
-    "electron": "^18.2.0",
-    "typescript": "^4.6.4"
+    "electron": "^18.2.0"
   }
 }
