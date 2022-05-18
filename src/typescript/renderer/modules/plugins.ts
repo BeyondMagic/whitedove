@@ -30,7 +30,6 @@ export class Plugins {
             id: init.id,
             focus: true,
             after : init.container,
-            selection: document.getSelection()
 
           } as PluginInit } )
 

@@ -6,6 +6,22 @@ $bg-shadow: $fg;
 
 $writing-new: #608B4E;
 
+@keyframes insert_character {
+
+  from {
+
+    color: red;
+
+  }
+
+  to {
+
+    color: rgba($fg, 0.75);
+
+  }
+
+}
+
 body {
 
   width: 100vw;
@@ -148,7 +164,7 @@ body {
 
         &.active {
 
-          background-color: mix(black, $bg-ligher, 5%);
+          background-image: linear-gradient(to right, mix(black, $bg-ligher, 5%), white 75%);
 
         }
 
@@ -206,12 +222,22 @@ body {
           hyphens: auto;
           outline: none;
 
-          white-space: pre-wrap;
+          .character {
 
-          color: rgba($fg, 0.75);
+            white-space: pre-wrap;
 
-          padding: 0.25rem 0;
-          font-size: 0.9rem;
+            padding: 0.25rem 0;
+            font-size: 0.9rem;
+
+            color: rgba($fg, 0.75);
+
+            animation-name: insert_character;
+            animation-timing-function: ease-in-out;
+            animation-duration: 500ms;
+            animation-iteration-count: 1;
+            animation-direction: forwards;
+
+          }
 
         }
 

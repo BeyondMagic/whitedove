@@ -1,6 +1,7 @@
 export interface Universal {
 
-  editors : Array<EditorEventInput>
+  editors   : Array<EditorEventInput>
+  selection : Selection
 
 }
 
@@ -11,7 +12,6 @@ export interface PluginInit {
   after?     : HTMLElement
   type       : Function | null
   id         : number
-  selection? : Selection | null
 
 }
 

@@ -5,13 +5,16 @@ import { Universal } from './modules/interfaces'
 
 declare global { var universal : Universal }
 
-globalThis.universal = {
-  editors : []
-}
-
 //const sleep = (ms : number) => new Promise(r => setTimeout(r, ms))
 
 window.addEventListener( 'DOMContentLoaded', () => {
+
+  globalThis.universal = {
+
+    editors : [],
+    selection: document.getSelection()!,
+
+  }
 
   const main = document.body.querySelector('.main') as HTMLElement
 

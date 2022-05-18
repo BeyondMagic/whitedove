@@ -111,26 +111,29 @@ export class PluginParameters {
 
       plugin.applet.addEventListener( 'keydown', async event => {
 
-        const selection = document.getSelection()
-
         switch (event instanceof KeyboardEvent && event.key) {
 
           case 'Backspace':
 
-            if (selection?.focusOffset === 0 &&
+            if (universal.selection.focusOffset === 0 &&
                 universal.editors[plugin.id].container.children[0] !== plugin.container) {
 
               const element = plugin.container.previousElementSibling?.querySelector('.content')
+              console.log(plugin)
 
               if (element instanceof HTMLElement) {
 
-                const content = plugin.applet.innerText
+                const content      = plugin.applet.innerHTML
+                const content_text = plugin.applet.innerText
+
                 plugin.container.remove()
-                element.innerText += content
+                console.log(content, element.innerHTML)
+                element.innerHTML += content
 
                 if (element.childNodes[0]) {
 
-                  selection.collapse(element.childNodes[0], element.innerText.length - content.length)
+                  console.log(element.childNodes[0].textContent, 'content_text: ' + content_text.length, 'element text: ' + element.innerText.length)
+                  universal.selection.collapse(element.childNodes[0], element.innerText.length - content_text.length)
 
                 } else {
 
@@ -149,7 +152,7 @@ export class PluginParameters {
           case 'ArrowUp':
 
 
-            if (selection?.focusOffset === 0) {
+            if (universal.selection.focusOffset === 0) {
 
               const element = plugin.container.previousElementSibling?.querySelector('.content')
 
@@ -157,7 +160,7 @@ export class PluginParameters {
 
                 if (element.childNodes[0]) {
 
-                  selection.collapse(element.childNodes[0], element.innerText.length)
+                  universal.selection.collapse(element.childNodes[0], element.innerText.length)
 
                 } else {
 
@@ -174,7 +177,7 @@ export class PluginParameters {
 
           case 'ArrowDown':
 
-            if (selection?.focusOffset === plugin.applet.innerText.length) {
+            if (universal.selection.focusOffset === plugin.applet.innerText.length) {
 
               const element = plugin.container.nextElementSibling?.querySelector('.content')
 
@@ -182,7 +185,7 @@ export class PluginParameters {
 
                 if (element.childNodes[0]) {
 
-                  selection.collapse(element.childNodes[0], 0)
+                  universal.selection.collapse(element.childNodes[0], 0)
 
                 } else {
 
@@ -218,7 +221,27 @@ export class PluginParameters {
 
               case 'insertText':
 
-                //console.log(event)
+                const range     = universal.selection.getRangeAt(0)
+
+                const new_character = document.createElement('span')
+                new_character.classList.add('character', 'new')
+                new_character.textContent = event.data
+
+                const between_elements = document.createTextNode('')
+
+                range.insertNode(between_elements)
+                range.insertNode(new_character)
+
+                // Moving cursor.
+                {
+
+                  universal.selection.collapse(between_elements, 0)
+
+                }
+
+                plugin.applet.dispatchEvent( new Event('input'))
+
+                event.preventDefault()
 
               break
 
@@ -230,45 +253,49 @@ export class PluginParameters {
 
       })
 
-      plugin.applet.addEventListener( 'input', async () => this.count(plugin) )
+      plugin.applet.addEventListener( 'input', async () => {
+
+        console.log(plugin.applet.innerHTML)
+
+        this.count(plugin)
+
+      })
 
       plugin.applet.addEventListener( 'paste', async event => {
 
         event.preventDefault()
-        plugin.selection = document.getSelection()!
 
         const text = event.clipboardData?.getData('text/plain')
         if (text) {
 
-          const current_text = plugin.applet.innerText
-          const to_move = plugin.selection.focusOffset + text.length
+          const current_text = plugin.applet.innerHTML
+          const to_move = universal.selection.focusOffset + text.length
 
-          plugin.applet.innerText = current_text.slice(0, plugin.selection.focusOffset) + text + current_text.slice(plugin.selection.focusOffset)
+          plugin.applet.innerHTML = current_text.slice(0, universal.selection.focusOffset) + text + current_text.slice(universal.selection.focusOffset)
 
-          plugin.selection.collapse(plugin.applet.childNodes[0], to_move)
+          universal.selection.collapse(plugin.applet.childNodes[0], to_move)
 
           universal.editors[plugin.id].count = true
-          this.count(plugin) 
+          this.count(plugin)
 
         }
-        plugin.selection = null
 
       })
 
     }
 
-    if (plugin.selection) {
+    if (universal.selection.anchorNode && universal.selection.rangeCount) {
 
-      const current_applet = plugin.selection.anchorNode!
+      const current_applet = universal.selection.anchorNode!
       const text           = current_applet?.textContent!
-      const offset         = plugin.selection.anchorOffset
-      const focus_offset   = plugin.selection.focusOffset
+      const offset         = universal.selection.anchorOffset
+      const focus_offset   = universal.selection.focusOffset
       const parent         = current_applet.parentElement!
 
       let text_to_cut = text
       let cutted_text = ''
 
-      switch (plugin.selection.type) {
+      switch (universal.selection.type) {
 
         case 'Caret':
 
@@ -282,12 +309,12 @@ export class PluginParameters {
 
          } else {
 
-           text_to_cut = text.substring(0, offset) + text.substring(text.length)
-           cutted_text = text.substring(offset, text.length)
+           //text_to_cut = text.substring(0, offset) + text.substring(text.length)
+           //cutted_text = text.substring(offset, text.length)
 
-           parent.childNodes[0].textContent = text_to_cut
-           plugin.applet.textContent = '.'
-           plugin.applet.childNodes[0].textContent = cutted_text
+           //parent.childNodes[0].textContent = text_to_cut
+           //plugin.applet.textContent = '.'
+           //plugin.applet.childNodes[0].textContent = cutted_text
 
          }
 
