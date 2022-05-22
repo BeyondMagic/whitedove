@@ -10,12 +10,14 @@ export class EngineScreen {
   #container  : HTMLElement
   #plugins    : Plugins
   #parameters : PluginParameters
+  #cursor     : HTMLSpanElement
 
   public constructor ( element : HTMLElement ) {
 
     this.#container  = element
     this.#parameters = new PluginParameters()
     this.#plugins    = new Plugins()
+    this.#cursor     = document.createElement('span')
 
   }
 
@@ -93,7 +95,12 @@ export class EngineScreen {
 
       }
 
-      if (plugin.focus) plugin.applet.focus()
+      if (plugin.focus) {
+
+        plugin.applet.focus()
+        universal.updateCursor()
+
+      }
     }
 
     return plugin

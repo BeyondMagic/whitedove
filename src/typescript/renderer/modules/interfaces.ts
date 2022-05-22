@@ -2,6 +2,10 @@ export interface Universal {
 
   editors   : Array<EditorEventInput>
   selection : Selection
+  sleep     : Function
+
+  updateCursor : Function
+  cursor       : HTMLSpanElement
 
 }
 
@@ -17,11 +21,11 @@ export interface PluginInit {
 
 export interface PluginInterface extends PluginInit {
 
-  applet     : HTMLDivElement
-  container  : HTMLElement
-  aside      : HTMLElement
-  countable  : boolean
-  where?     : 'beforeend' | 'beforebegin' | 'afterend' | 'afterbegin'
+  applet        : HTMLDivElement
+  container     : HTMLElement
+  aside         : HTMLElement
+  countable     : boolean
+  where?        : 'beforeend' | 'beforebegin' | 'afterend' | 'afterbegin'
 
 }
 
