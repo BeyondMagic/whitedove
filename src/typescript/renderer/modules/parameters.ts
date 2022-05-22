@@ -154,14 +154,50 @@ export class PluginParameters {
 
       plugin.applet.addEventListener( 'keyup', async event => {
 
+        const current_character = universal.selection.anchorNode?.parentElement!
+
         switch (event instanceof KeyboardEvent && event.key) {
 
           case 'Home':
+
+            if (current_character === plugin.applet.firstElementChild) {
+
+              universal.selection.collapse(current_character, 0)
+
+            } else {
+
+              universal.selection.collapse(current_character.nextElementSibling, 0)
+
+            }
+
+            universal.updateCursor()
+
+            event.preventDefault()
+
+          break
+
           case 'End':
+
+            console.log()
+
+            if (current_character === plugin.applet.lastElementChild) {
+
+              universal.selection.collapse(current_character, 1)
+
+            } else {
+
+              universal.selection.collapse(current_character, 0)
+
+            }
+
+            universal.updateCursor()
+
+            event.preventDefault()
+
+          break
+
           case 'ArrowDown':
           case 'ArrowUp':
-
-            const current_character = universal.selection.anchorNode?.parentElement!
 
             if (current_character === plugin.applet.firstElementChild) {
 
@@ -232,11 +268,13 @@ export class PluginParameters {
 
                 const commonAncestor = range.commonAncestorContainer as HTMLElement
 
-                if (commonAncestor && commonAncestor.classList.contains('content')) {
+                if (commonAncestor instanceof HTMLElement &&
+                    commonAncestor.classList.contains('content')) {
 
                   range.insertNode(new_character)
 
-                } else if (commonAncestor) {
+                } else if (commonAncestor instanceof HTMLSpanElement) {
+
                   commonAncestor.insertAdjacentElement('afterend', new_character)
 
                 }

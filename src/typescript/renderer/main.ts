@@ -9,10 +9,10 @@ window.addEventListener( 'DOMContentLoaded', () => {
 
   globalThis.universal = {
 
-    editors : [],
-    selection: document.getSelection()!,
-    cursor: document.createElement('span'),
-    sleep: (ms : number) => new Promise(r => setTimeout(r, ms)),
+    editors   : [],
+    selection : document.getSelection()!,
+    cursor    : document.createElement('span'),
+    sleep     : (ms : number) => new Promise(r => setTimeout(r, ms)),
 
     updateCursor: async () : Promise<void> => {
 
