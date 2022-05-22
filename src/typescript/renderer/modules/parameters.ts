@@ -25,6 +25,43 @@ export class PluginParameters {
 
         switch (event instanceof KeyboardEvent && event.key) {
 
+          case 'a':
+
+            if (event.ctrlKey) {
+
+              const range = document.createRange()
+
+              // If everything is already selected, then select the whole plugin.
+              if (universal.selection.anchorNode === plugin.applet.firstChild &&
+                  universal.selection.focusNode === plugin.applet.lastChild) {
+
+                plugin.container.classList.add('selected')
+
+                range.setStartBefore(plugin.applet.firstElementChild!)
+                range.setEndAfter(plugin.applet.lastElementChild!)
+
+                universal.selection.removeAllRanges()
+                universal.selection.addRange(range)
+
+              } else {
+
+                Array.from(plugin.applet.children).forEach( item => item.classList.add('selected') )
+
+                range.setStart(plugin.applet.firstElementChild!, 0)
+                range.setEnd(plugin.applet.lastElementChild!, 1)
+
+                universal.selection.removeAllRanges()
+                universal.selection.addRange(range)
+
+              }
+
+              universal.updateCursor()
+              event.preventDefault()
+
+            }
+
+          break
+
           case 'Escape':
 
             plugin.applet.querySelectorAll('.new').forEach( element => element.classList.remove('new') )
@@ -32,6 +69,8 @@ export class PluginParameters {
           break
 
           case 'Backspace':
+
+            plugin.applet.querySelectorAll('.selected').forEach( item => item.remove() )
 
             if (universal.selection.focusOffset === 0 &&
                 universal.editors[plugin.id].container.children[0] !== plugin.container) {
@@ -125,8 +164,6 @@ export class PluginParameters {
 
               if (element instanceof HTMLElement) {
 
-                console.log('lol')
-
                 if (element.firstElementChild) {
 
                   universal.selection.collapse(element.firstElementChild, 0)
@@ -177,8 +214,6 @@ export class PluginParameters {
           break
 
           case 'End':
-
-            console.log()
 
             if (current_character === plugin.applet.lastElementChild) {
 
@@ -303,8 +338,6 @@ export class PluginParameters {
       })
 
       plugin.applet.addEventListener( 'input', async () => {
-
-        console.log(plugin.applet.innerHTML)
 
         this.count(plugin)
 

@@ -6,6 +6,7 @@ export interface Universal {
 
   updateCursor : Function
   cursor       : HTMLSpanElement
+  cursor_focus : HTMLSpanElement
 
 }
 

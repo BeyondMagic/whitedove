@@ -4,7 +4,9 @@ $fg: black;
 $bg-ligher: white;
 $bg-shadow: $fg;
 
-$writing-new: #608B4E;
+$writing-new: #537195;
+
+$cursor-color: $writing-new;
 
 @keyframes insert-character {
 
@@ -52,62 +54,76 @@ body {
   .cursor {
 
     position: absolute;
-    margin-top: 0.05rem;
 
     width: 1px;
-    height: 1.5rem;
+    height: 1.3rem;
 
     user-select: none;
     cursor: none;
     pointer-events: none;
 
-    background-color: $fg;
+    background-color: $cursor-color;
 
     box-shadow: 0 0 0.1rem $fg;
 
+    &.caret {
 
-    &.inactive {
+      &.inactive {
 
-      animation-delay: 500ms;
-      animation-name: caret-cursor-blink;
-      animation-timing-function: step-start;
-      animation-duration: 1s;
-      animation-iteration-count: infinite;
+        animation-delay: 500ms;
+        animation-name: caret-cursor-blink;
+        animation-timing-function: step-start;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+
+      }
 
     }
 
-    &.selection {
+    &.range {
 
-      &::after,
-      &::before {
+      &.inactive {
+
+        opacity: 0;
+
+      }
+
+      &.after::after,
+      &.before::before {
 
         content: '';
-        width: 3px;
-        height: 3px;
+        width: 1rem;
+        height: 1rem;
 
         z-index: 2;
 
         position: absolute;
 
-        border-radius: 100%;
-        background-color: $bg;
-        border: 1px solid $fg;
+        background-color: $cursor-color;
 
-        box-shadow: 0 0 0.25rem $fg;
+        box-shadow: 0 0 0.25rem $cursor-color;
 
       }
 
-      &::before {
+      &.before::before {
 
-        top: -2px;
+        top: -1rem;
         right: 1px;
 
+        border-bottom-left-radius: 50%;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+
       }
 
-      &::after {
+      &.after::after {
 
-        bottom: -2px;
+        bottom: -1rem;
         left: 1px;
+
+        border-top-right-radius: 50%;
+        border-bottom-left-radius: 50%;
+        border-bottom-right-radius: 50%;
 
       }
 
@@ -246,6 +262,13 @@ body {
 
         }
 
+        &.selected {
+
+          background-image: none;
+          background-color: rgba($cursor-color, 0.25);
+
+        }
+
         .tools {
 
           opacity: 0;
@@ -292,12 +315,6 @@ body {
 
         }
 
-        .content {
-
-          flex-grow: 1;
-
-        }
-
         &.text {
 
           .content {
@@ -308,6 +325,12 @@ body {
 
             //caret-color: transparent;
 
+            ::selection {
+
+              background: transparent;
+
+            }
+
             .character {
 
               white-space: pre-wrap;
@@ -315,7 +338,15 @@ body {
 
               color: rgba($fg, 0.75);
 
-              margin: 4px 0;
+              margin: 1px 0;
+
+              letter-spacing: 0.005rem;
+
+              &.selected {
+
+                background-color: rgba($cursor-color, 0.25);
+
+              }
 
               &.new {
 
