@@ -1,0 +1,50 @@
+@keyframes insert-character {
+
+  from {
+
+    color: $text-insert-color;
+
+  }
+
+  to {
+
+    color: $fg;
+
+  }
+
+}
+
+@keyframes caret-cursor-blink {
+
+  50% {
+
+    opacity: 0;
+
+  }
+
+}
+
+@keyframes increase-width {
+
+  from {
+
+    background-color: $text-insert-color;
+
+    width: 0.5rem;
+    transform: skew(15deg, 15deg);
+
+  }
+
+  50% {
+
+    transform: skew(-15deg, 0deg);
+
+  }
+
+  to {
+
+    background-color: $writing-new;
+
+  }
+
+}

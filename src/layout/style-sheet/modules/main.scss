@@ -1,0 +1,227 @@
+.main {
+
+  display: flex;
+  flex-direction: row;
+  align-content: space-between;
+  justify-content: space-between;
+
+  padding: 0.4rem 0.9rem;
+
+  .writing {
+
+    width: 48%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+
+    position: relative;
+
+    .settings {
+
+      display: flex;
+      flex-direction: row;
+      justify-content: end;
+
+      .button {
+
+        font-weight: bolder;
+        cursor: pointer;
+        transition: all 250ms ease-in-out;
+        user-select: none;
+
+        &.bookmark {
+
+        }
+
+        &.minimise {
+
+          padding: 0 0.5rem;
+          color: #3D649D;
+
+          &:hover {
+
+            color: red;
+
+          }
+
+        }
+
+      }
+
+    }
+
+    .text-container {
+
+      padding: 3rem 2rem;
+
+      transition: all 300ms ease-in-out;
+
+      background-color: $bg-ligher;
+      border-radius: 0.5rem;
+      box-shadow: 0.3rem 0.3rem 1rem rgba($bg-shadow, 0.25);
+
+      height: 85vh;
+
+      &.active {
+
+        background-color: rgba($fg, 0.02);
+        outline: none;
+
+      }
+
+      &.minimised {
+
+        overflow: hidden;
+        max-height: 1rem;
+        padding: 0;
+
+        .content {
+
+          opacity: 0;
+
+        }
+
+      }
+
+      // Plugins.
+      .plugin {
+
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+
+        margin-bottom: 1rem;
+
+        &:last-child {
+
+          margin-bottom: 0;
+
+        }
+
+        &.active {
+
+          background-image: linear-gradient(to right, mix($fg, $bg-ligher, 5%), transparent 75%);
+
+        }
+
+        &.selected {
+
+          background-image: none;
+          background-color: rgba($cursor-color, 0.25);
+
+        }
+
+        .tools {
+
+          opacity: 0;
+          transition: opacity 250ms ease-in-out;
+          margin: 0;
+
+
+          &.active {
+
+            opacity: 1;
+
+          }
+
+          .button {
+
+            padding: 0 0.5rem;
+            font-weight: bolder;
+            font-size: 1.2rem;
+            cursor: pointer;
+            user-select: none;
+
+            &.format {
+
+              vertical-align: top;
+
+              &:hover {
+
+                color: #538CD1;
+                text-shadow: 2px 2px 0.5rem #538CD1;
+
+              }
+
+            }
+
+            &.bookmark {
+
+            }
+
+            &.sketch {
+
+            }
+
+            &.add:hover {
+
+              color: #C7A2CD;
+              text-shadow: 2px 2px 0.5rem #C7A2CD;
+
+
+            }
+
+          }
+
+        }
+
+        &.text {
+
+          .content {
+
+            overflow-wrap: break-word;
+            hyphens: auto;
+            outline: none;
+
+            caret-color: transparent;
+
+            ::selection {
+
+              background: transparent;
+
+            }
+
+            .character {
+
+              white-space: pre-wrap;
+              font-size: 0.9rem;
+
+              color: rgba($fg, 0.75);
+
+              margin: 1px 0;
+
+              letter-spacing: 0.005rem;
+
+              &.selected {
+
+                background-color: rgba($cursor-color, 0.25);
+
+              }
+
+              &.new {
+
+                color: $fg;
+
+                animation-name: insert-character;
+                animation-timing-function: ease-in-out;
+                animation-duration: 500ms;
+                animation-iteration-count: 1;
+                animation-direction: forwards;
+
+              }
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+}
