@@ -10,14 +10,12 @@ export class EngineScreen {
   #container  : HTMLElement
   #plugins    : Plugins
   #parameters : PluginParameters
-  #cursor     : HTMLSpanElement
 
   public constructor ( element : HTMLElement ) {
 
     this.#container  = element
     this.#parameters = new PluginParameters()
     this.#plugins    = new Plugins()
-    this.#cursor     = document.createElement('span')
 
   }
 
@@ -143,51 +141,8 @@ export class EngineScreen {
       settings.appendChild(minimise)
     }
 
-    const information = document.createElement('section')
-    {
-      information.classList.add('information')
-
-      Array('word', 'characters', 'sentences', 'paragraphs', 'persons').forEach( item => {
-
-        const counter = document.createElement('div')
-        counter.classList.add('counter', item)
-
-        const digit = document.createElement('span')
-        digit.textContent = '0'
-
-        const observer = new MutationObserver( mutations => {
-
-          mutations.forEach( mutation => {
-
-            if (mutation.target.textContent === '0') {
-
-              mutation.target.parentElement?.classList.remove('active')
-
-            } else {
-
-              mutation.target.parentElement?.classList.add('active')
-
-            }
-
-          })
-
-        })
-
-        observer.observe(digit, { attributes: true, childList: true, characterData: true } )
-
-        counter.appendChild(digit)
-
-        const content = document.createTextNode( item[0].toUpperCase() + item.substring(1) )
-        counter.appendChild(content)
-
-        information.appendChild(counter)
-
-      })
-    }
-
     main.appendChild(settings)
     main.appendChild(text)
-    main.appendChild(information)
 
     // Setting default values.
     {
@@ -202,7 +157,6 @@ export class EngineScreen {
       input.settings    = settings
       input.container   = main
       input.target      = text
-      input.information = information
     }
     universal.editors.push(input)
 

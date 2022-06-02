@@ -4,9 +4,9 @@ export interface Universal {
   selection : Selection
   sleep     : Function
 
-  updateCursor : Function
-  cursor       : HTMLSpanElement
-  cursor_focus : HTMLSpanElement
+  updateCursor  : Function
+  cursor_anchor : HTMLSpanElement
+  cursor_focus  : HTMLSpanElement
 
 }
 

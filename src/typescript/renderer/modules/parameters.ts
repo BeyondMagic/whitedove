@@ -23,29 +23,30 @@ export class PluginParameters {
 
       plugin.applet.addEventListener( 'keydown', async event => {
 
+        // Inserting a letter so fast the cursor actually doesn't update! So remove the transition.
+        if (event.repeat) {
+
+          universal.cursor_focus.style.transitionDuration = '0ms'
+
+        // Restore the state of the cursor transtion duration.
+        } else {
+
+          universal.cursor_focus.style.transitionDuration = '100ms'
+
+        }
+
+        // TODO: Find a less repetive way to declare this as KeyboardEvent in TS.
         switch (event instanceof KeyboardEvent && event.key) {
 
           case 'a':
 
+            // Simulate, select everything!
             if (event.ctrlKey) {
 
               const range = document.createRange()
 
-              // If everything is already selected, then select the whole plugin.
-              if (universal.selection.anchorNode === plugin.applet.firstChild &&
-                  universal.selection.focusNode === plugin.applet.lastChild) {
-
-                plugin.container.classList.add('selected')
-
-                range.setStartBefore(plugin.applet.firstElementChild!)
-                range.setEndAfter(plugin.applet.lastElementChild!)
-
-                universal.selection.removeAllRanges()
-                universal.selection.addRange(range)
-
-              } else {
-
-                Array.from(plugin.applet.children).forEach( item => item.classList.add('selected') )
+              // Can't select nothing!
+              if (plugin.applet.children.length !== 0) {
 
                 range.setStart(plugin.applet.firstElementChild!, 0)
                 range.setEnd(plugin.applet.lastElementChild!, 1)
@@ -53,9 +54,12 @@ export class PluginParameters {
                 universal.selection.removeAllRanges()
                 universal.selection.addRange(range)
 
+                Array.from(plugin.applet.children).forEach( item => item.classList.add('selected') )
+
+                universal.updateCursor()
+
               }
 
-              universal.updateCursor()
               event.preventDefault()
 
             }
@@ -70,31 +74,26 @@ export class PluginParameters {
 
           case 'Backspace':
 
+            // Remove all selected elements.
             plugin.applet.querySelectorAll('.selected').forEach( item => item.remove() )
 
+            // If it's at the start of the content.
             if (universal.selection.focusOffset === 0 &&
                 universal.editors[plugin.id].container.children[0] !== plugin.container) {
 
+              // Select previous text plugin.
               const element = plugin.container.previousElementSibling?.querySelector('.content')
 
               if (element instanceof HTMLElement) {
 
-                // If there are no characters.
-                if (element.children.length === 0) {
+                universal.selection.collapse(element.lastElementChild, 1)
 
-                  element.focus()
-
-                } else {
-
-                  universal.selection.collapse(element.lastElementChild, 1)
-
+                // Just update the content.
+                {
+                  universal.updateCursor()
+                  plugin.container.remove()
+                  event.preventDefault()
                 }
-
-                universal.updateCursor()
-
-                plugin.container.remove()
-
-                event.preventDefault()
 
               }
 
@@ -128,32 +127,6 @@ export class PluginParameters {
 
             universal.updateCursor()
 
-            break
-
-          case 'ArrowRight':
-
-            if (universal.selection.anchorNode?.nextSibling) {
-
-              universal.selection.collapse(universal.selection.anchorNode!.nextSibling, 1)
-
-            }
-
-            universal.updateCursor()
-            event.preventDefault()
-
-          break
-
-          case 'ArrowLeft':
-
-            if (universal.selection.anchorNode!.previousSibling) {
-
-              universal.selection.collapse(universal.selection.anchorNode!.previousSibling, 1)
-
-            }
-
-            universal.updateCursor()
-            event.preventDefault()
-
           break
 
           case 'ArrowDown':
@@ -182,7 +155,7 @@ export class PluginParameters {
 
             universal.updateCursor()
 
-            break
+          break
 
         }
 
@@ -201,7 +174,7 @@ export class PluginParameters {
 
               universal.selection.collapse(current_character, 0)
 
-            } else {
+            } else if (current_character.nextElementSibling instanceof HTMLSpanElement) {
 
               universal.selection.collapse(current_character.nextElementSibling, 0)
 
@@ -219,7 +192,7 @@ export class PluginParameters {
 
               universal.selection.collapse(current_character, 1)
 
-            } else {
+            } else if (current_character instanceof HTMLSpanElement) {
 
               universal.selection.collapse(current_character, 0)
 
@@ -228,6 +201,51 @@ export class PluginParameters {
             universal.updateCursor()
 
             event.preventDefault()
+
+          break
+
+          case 'ArrowRight':
+          case 'ArrowLeft':
+
+            if (current_character instanceof HTMLSpanElement) {
+
+              if (universal.selection.type === 'Caret') {
+
+                universal.selection.collapse(current_character, universal.selection.focusOffset)
+
+              // Obviously for Range.
+              } else {
+
+                const range = document.createRange()
+
+                // Select behind: 0, 1.
+                if (universal.selection.focusOffset === 0 && universal.selection.anchorOffset === 1) {
+
+                  range.setStart(universal.selection.focusNode!.parentElement!, universal.selection.focusOffset)
+                  range.setEnd(universal.selection.anchorNode!.parentElement!, universal.selection.anchorOffset)
+
+                // Select front: 1, 0.
+                } else if (universal.selection.focusOffset === 1 && universal.selection.anchorOffset === 0) {
+
+                  range.setStart(universal.selection.anchorNode!.parentElement!, universal.selection.anchorOffset)
+                  range.setEnd(universal.selection.focusNode!.parentElement!, universal.selection.focusOffset)
+
+                }
+
+                universal.selection.removeAllRanges()
+                universal.selection.addRange(range)
+
+                console.log(universal.selection)
+
+              }
+
+              // Just update the central events.
+              {
+                universal.updateCursor(event.repeat)
+                event.preventDefault()
+              }
+
+            }
 
           break
 
@@ -244,9 +262,11 @@ export class PluginParameters {
 
             }
 
-            universal.updateCursor()
-
-            event.preventDefault()
+            // Just update the central events.
+            {
+              universal.updateCursor()
+              event.preventDefault()
+            }
 
           break
 
@@ -274,7 +294,9 @@ export class PluginParameters {
                   const character_to_remove = universal.selection.anchorNode
                   const previous_character  = character_to_remove.previousElementSibling
 
-                  if (character_to_remove instanceof HTMLSpanElement) {
+                  // If it's after the character.
+                  if (character_to_remove instanceof HTMLSpanElement &&
+                      universal.selection.focusOffset === 1) {
 
                     character_to_remove.remove()
 
@@ -286,8 +308,10 @@ export class PluginParameters {
 
                   }
 
-                  universal.updateCursor()
-                  event.preventDefault()
+                  {
+                    universal.updateCursor()
+                    event.preventDefault()
+                  }
 
                 }
 
@@ -301,31 +325,43 @@ export class PluginParameters {
                 new_character.classList.add('character', 'new')
                 new_character.textContent = event.data
 
-                const commonAncestor = range.commonAncestorContainer as HTMLElement
+                const commonAncestor = range.commonAncestorContainer
 
+                // In case there is not a single character on the content.
                 if (commonAncestor instanceof HTMLElement &&
                     commonAncestor.classList.contains('content')) {
 
                   range.insertNode(new_character)
 
+                // In case there is already a character.
                 } else if (commonAncestor instanceof HTMLSpanElement) {
 
-                  commonAncestor.insertAdjacentElement('afterend', new_character)
+                  // Verify if it should inserted after or before.
+                  switch (universal.selection.focusOffset) {
+
+                    // To insert before.
+                    case 0: commonAncestor.insertAdjacentElement( 'beforebegin' , new_character); break;
+
+                    // To insert after.
+                    case 1: commonAncestor.insertAdjacentElement( 'afterend'    , new_character); break;
+
+                  }
 
                 }
 
-                // In case the character was deleted.
+                // In case the character was deleted before we could focus on it.
                 if (new_character.textContent?.length !== 0) {
 
                   universal.selection.collapse(new_character, 1)
 
                 }
 
-                universal.updateCursor()
-
-                plugin.applet.dispatchEvent( new Event('input'))
-
-                event.preventDefault()
+                // Update main events for the input.
+                {
+                  universal.updateCursor()
+                  plugin.applet.dispatchEvent( new Event('input'))
+                  event.preventDefault()
+                }
 
               break
 
@@ -442,9 +478,9 @@ export class PluginParameters {
         const sentences  : Array<string> = text.match(/\.|,|.$|\)|\]/gm)!
 
         plugin.container.setAttribute( 'data-word',       `${words.length}` )
-        plugin.container.setAttribute( 'data-characters', `${text.length}` )
-        plugin.container.setAttribute( 'data-senteces',   `${sentences.length}` )
         plugin.container.setAttribute( 'data-paragraphs', `${paragraphs.length}` )
+        plugin.container.setAttribute( 'data-senteces',   `${sentences.length}` )
+        plugin.container.setAttribute( 'data-characters', `${text.length}` )
 
       }
 
@@ -473,37 +509,11 @@ export class PluginParameters {
 
       })
 
-      if (word_length     > 0 || characters_lenght > 0 ||
-          senteces_length > 0 || paragraphs_length > 0 ||
-          persons_length  > 0 ) {
-
-        universal.editors[plugin.id].information.style.display = 'flex'
-        universal.editors[plugin.id].information.classList.add('active')
-
-      } else {
-
-        universal.editors[plugin.id].information.style.display = 'hidden'
-        universal.editors[plugin.id].information.classList.remove('active')
-
-      }
-
       universal.editors[plugin.id].words      = word_length
       universal.editors[plugin.id].characters = characters_lenght
       universal.editors[plugin.id].sentences  = senteces_length
       universal.editors[plugin.id].paragraphs = paragraphs_length
       universal.editors[plugin.id].persons    = persons_length
-
-      const word_element = universal.editors[plugin.id].information.querySelector('.word')!.firstElementChild!
-      const characters_element = universal.editors[plugin.id].information.querySelector('.characters')!.firstElementChild!
-      const sentences_element = universal.editors[plugin.id].information.querySelector('.sentences')!.firstElementChild!
-      const paragraphs_element = universal.editors[plugin.id].information.querySelector('.paragraphs')!.firstElementChild!
-      const persons_element = universal.editors[plugin.id].information.querySelector('.persons')!.firstElementChild!
-
-      word_element.textContent       = String(word_length)
-      characters_element.textContent = String(characters_lenght)
-      sentences_element.textContent  = String(senteces_length)
-      paragraphs_element.textContent = String(paragraphs_length)
-      persons_element.textContent    = String(persons_length)
 
     }
 
