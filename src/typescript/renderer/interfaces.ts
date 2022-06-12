@@ -1,12 +1,42 @@
+export interface LanguageData {
+
+  en     : string
+  en_GB? : string
+  pt_BR? : string
+  ja_JP? : string
+  fr_FR? : string
+
+}
+
+// To become more modular.
+export interface Component {
+
+  // For identification for external modules, the name of the module.
+  name        : string
+  authors     : Array<string>
+  description : LanguageData
+  date        : Number
+  enabled     : boolean
+
+  // In case it needs extra events to work correctly.
+  event : Array<string> | null
+
+  // This function will accept any type of event and can return any type of data.
+  send (arg: any) : any
+
+}
+
+export interface ComponentsList {
+
+  [key : string] : Component
+
+}
+
+// 
 export interface Universal {
 
-  editors   : Array<EditorEventInput>
-  selection : Selection
-  sleep     : Function
-
-  updateCursor  : Function
-  cursor_anchor : HTMLSpanElement
-  cursor_focus  : HTMLSpanElement
+  components          : ComponentsList
+  sleep (arg: number) : Promise<void>
 
 }
 

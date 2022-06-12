@@ -96,7 +96,6 @@ export class EngineScreen {
       if (plugin.focus) {
 
         plugin.applet.focus()
-        universal.updateCursor()
 
       }
     }

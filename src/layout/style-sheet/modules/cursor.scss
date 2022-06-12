@@ -14,6 +14,12 @@ body > .cursor {
 
   transition: all 100ms ease-in-out;
 
+  &.hidden {
+
+    opacity: 0;
+
+  }
+
   &.caret {
 
     &.inactive {
@@ -29,12 +35,6 @@ body > .cursor {
   }
 
   &.range {
-
-    &.inactive {
-
-      opacity: 0;
-
-    }
 
     &.after::after,
     &.before::before {

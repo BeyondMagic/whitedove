@@ -8,8 +8,8 @@ body {
 
   display: grid;
 
-  grid-template-columns: 0.1fr 1fr 0.1fr;
-  grid-template-rows: 1fr 0.05fr;
+  grid-template-columns: 0.02fr 1fr 0.02fr;
+  grid-template-rows: 1fr 0.02fr;
   gap: 0px 0px; 
   grid-template-areas:
     "left-side-bar text-body right-side-bar"
