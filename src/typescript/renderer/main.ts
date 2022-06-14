@@ -1,27 +1,32 @@
+// #.
 //import { EngineScreen } from './modules/writing'
+// #. C++ alike.
 import { Universal, Component } from './interfaces'
+// #. Where our global variable will be stored.
 import { Global } from './global'
-//import { ContextMenu } from './modules/writing'
-//import { NotificationServer } from './modules/writing'
-//import { WindowsEvents } from './modules/windowsevents'
-import { default as Components } from './modules'
+// #. All components that are going to be loaded.
+import { default as Components } from './components_loader'
 
-// Load central information
+// #. Load global variable. To be acessed by other modules and components.
 declare global { var universal : Universal }
 globalThis.universal = Global
 
-// Load modules/components.
-window.addEventListener( 'DOMContentLoaded', () => {
+// #. Add each component from modules.
+Components.forEach( component => {
 
-  Components.forEach( constructor => {
+  universal.components[component.name] = new component() as Component
 
-    const component = new constructor.component() as Component
+  /// Add the global events for the window of the component.
+  universal.components[component.name].events?.forEach( event => {
 
-    universal.components[component.name] = component
-
-    console.log(universal.components)
+    window.addEventListener( event, () => universal.components[component.name].send() )
 
   })
+
+})
+
+// #. This will load other modules.
+window.addEventListener( 'DOMContentLoaded', () => {
 
   //const main = document.body.querySelector('.main') as HTMLElement
 

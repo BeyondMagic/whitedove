@@ -16,28 +16,34 @@
 
 import { Component, LanguageData } from '../interfaces'
 
-export class component implements Component {
+export interface AlilasSelectionInterface extends Component {
 
-  // Settling defaults.
+  // #. Use to identify the selection of the page.
+  //    Might as well change to something else after, more global.
+  selection     : Selection
+
+}
+
+export class AlilasSelection implements Component {
+
+  // Initialisation.
   enabled     = true
   name        = 'aliasselection'
   authors     = [ 'João F. © BeyondMagic koetemagie@gmail.com' ]
-  event       = [ 'resize' ]
+  events      = [ 'resize' ]
   date        = 1655059477278 
   description : LanguageData = {
 
-    en    : 'To have a far more beautiful type of selection.',
+    en : 'To have a far more beautiful visual selection.',
 
   }
 
-  // For the plugin to work with.
+  // Extended.
   #cursor_anchor = document.createElement('span')
   #cursor_focus  = document.createElement('span')
-  #selection     = document.getSelection()!
+  selection      = document.getSelection()!
 
-  // Simplify a little bit the process here.
-  // ...
-
+  // Plugin worksheet below.
   public constructor () {
 
     this.#cursor_focus.classList.add('cursor', 'caret', 'inactive', 'hidden')
@@ -50,11 +56,15 @@ export class component implements Component {
 
   }
 
-  // The global function.
+  // Simplify a little bit the process here.
+  // ...
+
   public send = async () : Promise<void> => {
 
+    console.log('hah')
+
     // If there's no selection or caret, at all.
-    if (!this.#selection.anchorNode) {
+    if (!this.selection.anchorNode) {
 
       return this.#cursor_anchor.classList.add('hidden')
 
@@ -64,8 +74,8 @@ export class component implements Component {
 
     }
 
-    const anchor = this.#selection.anchorNode
-    const focus  = this.#selection.focusNode
+    const anchor = this.selection.anchorNode
+    const focus  = this.selection.focusNode
 
     if ( !(anchor instanceof HTMLElement) ||
          !(focus  instanceof HTMLElement) ) return;
@@ -75,9 +85,9 @@ export class component implements Component {
 
     let top    : number
     let left   : number
-    let offset : number = this.#selection.focusOffset
+    let offset : number = this.selection.focusOffset
 
-    if (this.#selection.type === 'Caret') {
+    if (this.selection.type === 'Caret') {
 
       // Saving previous position in case to not trigger animation again.
       const previous_top  = parseInt( this.#cursor_focus.style.top )
@@ -147,7 +157,7 @@ export class component implements Component {
         this.#cursor_focus.classList.remove('caret', 'inactive')
         this.#cursor_focus.classList.add('range', 'before')
 
-        switch (this.#selection.anchorOffset) {
+        switch (this.selection.anchorOffset) {
           case 0: left = positions.left; break  // Behind the character
           case 1: left = positions.right; break // Front ...
         }

@@ -19,10 +19,10 @@ export interface Component {
   enabled     : boolean
 
   // In case it needs extra events to work correctly.
-  event : Array<string> | null
+  events? : Array<string>
 
   // This function will accept any type of event and can return any type of data.
-  send (arg: any) : any
+  send (arg?: any) : any
 
 }
 
