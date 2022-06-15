@@ -1,58 +1,131 @@
-// WhiteDove - Component : aliasselection
+// WhiteDove - Component : AlilasSelection
 //
 // Files to be inserted in the soure code:
 //  - alilas_selection.scss
 //  - alilas_selection.ts
 //
-// 1. This component is intended to be used with any type of 
-//    Input that has selection, or a caret and is possible to select.
-//    It does not rely on anything but itself.
-//
-// 2. To make it work, you have to call it upon when the selection of 
+// 1. To make it work, you have to call it upon when the selection of
 //    the page changes. For example, read the documentation about:
 //    'input', 'beforeinput', 'keydown', 'keyup', to start.
 //
 // João F. BeyondMagic © 2022 <koetemagie@gmail.com>
 
-import { Component, LanguageData } from '../interfaces'
+import { Component, LanguageData, ExternalConditional, Setting } from '../interfaces'
 
+interface ColorSetting {
+
+  selection : Setting
+  cursor    : Setting
+  caret     : Setting
+
+}
+
+// #. To be used by other methods and components to identify this plugin and use its methods.
 export interface AlilasSelectionInterface extends Component {
 
   // #. Use to identify the selection of the page.
   //    Might as well change to something else after, more global.
-  selection     : Selection
+  selection : Selection
+
+  // #. To set the colors of the visual selection.
+  colors : ColorSetting
 
 }
 
-export class AlilasSelection implements Component {
+// #. Implementation of the plugin.
+export class AlilasSelection implements AlilasSelectionInterface {
 
   // Initialisation.
-  enabled     = true
-  name        = 'aliasselection'
-  authors     = [ 'João F. © BeyondMagic koetemagie@gmail.com' ]
-  events      = [ 'resize' ]
-  date        = 1655059477278 
-  description : LanguageData = {
+  public          enabled     = true
+  public readonly name        = 'AlilasSelection'
+  public readonly authors     = [ 'João F. © BeyondMagic koetemagie@gmail.com' ]
+  public readonly events      = [ 'resize' ]
+  public readonly date        = 1655059477278
+  public readonly conditional : ExternalConditional = {
+
+    required : [ 'ConfigurationPage', 'ChalkBoard' ]
+
+  }
+  public readonly description : LanguageData = {
 
     en : 'To have a far more beautiful visual selection.',
 
   }
 
   // Extended.
-  #cursor_anchor = document.createElement('span')
-  #cursor_focus  = document.createElement('span')
-  selection      = document.getSelection()!
+  private readonly cursor_anchor = document.createElement('span')
+  private readonly cursor_focus  = document.createElement('span')
+  private readonly cursor_range  = document.createElement('span')
+  public  readonly selection     = document.getSelection()!
+
+  // #. The color of the selection and cursor of this component...
+  //    To be configured.
+  public readonly colors : ColorSetting = {
+
+    selection : {
+      field       : '',
+      name        : { en : 'Selection' },
+      description : { en : 'This is for the range, the back selection.' }
+    },
+    cursor : {
+      field       : '',
+      name        : { en : 'Cursor' },
+      description : { en : 'The color of the buttons of the range.' }
+    },
+    caret : {
+      field       : '',
+      name        : { en : 'Caret' },
+      description : { en : 'Individual caret, the bar.' }
+    },
+
+  }
 
   // Plugin worksheet below.
   public constructor () {
 
-    this.#cursor_focus.classList.add('cursor', 'caret', 'inactive', 'hidden')
-    this.#cursor_anchor.classList.add('cursor', 'range', 'inactive', 'after', 'hidden')
+    Object.keys(this.colors).forEach( item => {
+
+      const color = getComputedStyle( document.body ).getPropertyValue(`--alilasselection-${item}`)
+
+      console.log(color)
+
+    })
+
+    this.cursor_focus.classList.add('cursor', 'caret', 'inactive', 'hidden')
+    this.cursor_anchor.classList.add('cursor', 'range', 'inactive', 'after', 'hidden')
 
     this.send()
 
-    document.body.appendChild(this.#cursor_focus)
-    document.body.appendChild(this.#cursor_anchor)
+    document.body.appendChild(this.cursor_focus)
+    document.body.appendChild(this.cursor_anchor)
+
+  }
+
+  public destroy () {
+
+    document.body.removeChild(this.cursor_focus)
+    document.body.removeChild(this.cursor_anchor)
+
+    // Remove all events.
+    this.events.forEach( event => {
+
+      window.removeEventListener( event, () => this.send() )
+
+    })
+
+  }
+
+  public config ( open = false, settings? : ColorSetting ) {
+
+    // Set the new colors!
+    if (settings) {
+
+    }
+
+    // Open the config page using other component.
+    if (open) {
+
+    }
 
   }
 
@@ -61,37 +134,41 @@ export class AlilasSelection implements Component {
 
   public send = async () : Promise<void> => {
 
-    console.log('hah')
+    if (this.selection.rangeCount) {
 
-    // If there's no selection or caret, at all.
-    if (!this.selection.anchorNode) {
-
-      return this.#cursor_anchor.classList.add('hidden')
-
-    } else {
-
-      this.#cursor_anchor.classList.remove('hidden')
+      console.log(document.getSelection()!.getRangeAt(0))
 
     }
 
+    /*
     const anchor = this.selection.anchorNode
     const focus  = this.selection.focusNode
 
+    // See 4th note in the component's description.
     if ( !(anchor instanceof HTMLElement) ||
          !(focus  instanceof HTMLElement) ) return;
 
-    const positions       = anchor.getBoundingClientRect()
-    let positions_focus   = focus.getBoundingClientRect()
+    const geometry : CursorGeometry = {
 
-    let top    : number
-    let left   : number
-    let offset : number = this.selection.focusOffset
+      top    : 0,
+      left   : 0,
+      offset : 0,
 
+      anchor : anchor.getBoundingClientRect()!,
+      focus  : focus.getBoundingClientRect()!,
+
+    }
+
+    // #. A single cursor as browesers behave.
     if (this.selection.type === 'Caret') {
 
       // Saving previous position in case to not trigger animation again.
-      const previous_top  = parseInt( this.#cursor_focus.style.top )
-      const previous_left = parseInt( this.#cursor_focus.style.left )
+      const previous_geometry : CursorGeometry = {
+
+        top  : parseInt( this.#cursor_focus.style.top ),
+        left : parseInt( this.#cursor_focus.style.left ),
+
+      }
 
       // Setting classes of the cursors.
       {
@@ -103,43 +180,45 @@ export class AlilasSelection implements Component {
         this.#cursor_focus.classList.add('caret')
       }
 
-      // #. I don't know why this implemented in the Webkit'ss engine, but the cursor is displayed
+      // #. I don't know why this implemented in the Browser engine, but the cursor is displayed
       //    on the next element before the focus element.
-      if (offset === 1 && focus.nextElementSibling instanceof HTMLSpanElement) {
+      if (geometry.offset === 1 &&
+          // In case we have a character after this one.
+          focus.nextElementSibling instanceof HTMLSpanElement) {
 
-        positions_focus = focus.nextElementSibling.getBoundingClientRect()
-        offset          = 0
+        geometry.focus  = focus.nextElementSibling.getBoundingClientRect()
+        geometry.offset = 0
 
       }
 
       // In case the element selected is the plugin.applet itself.
       if (focus.classList.contains('content')) {
 
-        top  = positions_focus.top + 2
-        left = positions_focus.left
+        geometry.top  = geometry.focus.top + 2
+        geometry.left = geometry.focus.left
 
       // In case there is a character selected.
       } else {
 
-        top = positions_focus.top
+        top = geometry.focus.top
 
         // To put position in...
-        switch (offset) {
-          case 0: left = positions_focus.left; break  // ... behind the character.
-          case 1: left = positions_focus.right; break // ... front of the character.
+        switch (geometry.offset) {
+          case 0: geometry.left = geometry.focus.left; break  // ... behind the character.
+          case 1: geometry.left = geometry.focus.right; break // ... front of the character.
         }
 
       }
 
       // Set positions of the cursors on the same place.
       {
-        this.#cursor_anchor.style.top  = this.#cursor_focus.style.top  = `${top}px`
-        this.#cursor_anchor.style.left = this.#cursor_focus.style.left = `${left!}px`
+        this.#cursor_anchor.style.top  = this.#cursor_focus.style.top  = `${geometry.top}px`
+        this.#cursor_anchor.style.left = this.#cursor_focus.style.left = `${geometry.left}px`
       }
 
-      // Trigger the animation of the cursor in case it's a new position.
-      if (Math.ceil(top)   !== previous_top && 
-          Math.ceil(left!) !== previous_left) {
+      // Trigger the animation of the cursor in case of a new position.
+      if (Math.ceil(geometry.top)   !== previous_geometry.top && 
+          Math.ceil(geometry.left) !== previous_geometry.left) {
 
         this.#cursor_focus.classList.remove('inactive')
         this.#cursor_focus.offsetWidth
@@ -158,32 +237,29 @@ export class AlilasSelection implements Component {
         this.#cursor_focus.classList.add('range', 'before')
 
         switch (this.selection.anchorOffset) {
-          case 0: left = positions.left; break  // Behind the character
-          case 1: left = positions.right; break // Front ...
+          case 0: geometry.left = geometry.anchor.left; break  // Behind the character
+          case 1: geometry.left = geometry.anchor.right; break // Front ...
         }
 
-        top = positions.top
+        this.#cursor_focus.style.top  = `${geometry.anchor.top}px`
+        this.#cursor_focus.style.left = `${geometry.left}px`
       }
-
-      this.#cursor_focus.style.top  = `${top}px`
-      this.#cursor_focus.style.left = `${left!}px`
 
       // Last part of selection.
       {
         this.#cursor_anchor.classList.remove('hidden')
 
-        switch (offset) {
-          case 0: left = positions_focus.left; break  // Behind the character
-          case 1: left = positions_focus.right; break // Front ...
+        switch (geometry.offset) {
+          case 0: geometry.left = geometry.focus.left; break  // Behind the character
+          case 1: geometry.left = geometry.focus.right; break // Front ...
         }
 
-        top = positions_focus.top
+        this.#cursor_anchor.style.top  = `${geometry.focus.top}px`
+        this.#cursor_anchor.style.left = `${geometry.left}px`
+
       }
 
-      this.#cursor_anchor.style.top  = `${top}px`
-      this.#cursor_anchor.style.left = `${left!}px`
-
-    }
+    }*/
 
   }
 

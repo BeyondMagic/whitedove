@@ -1,4 +1,6 @@
-export const Global = {
+import { Universal } from './interfaces'
+
+export const Global : Universal = {
 
   // For all the loaded components
   components : {},

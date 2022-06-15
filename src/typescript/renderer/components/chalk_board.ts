@@ -1,11 +1,50 @@
-import { Universal, PluginInit, PluginInterface, EditorEventInput } from './interfaces'
-import { PluginParameters } from './parameters'
-import { Plugins } from './plugins'
+// WhiteDove - Component : ChalkBoard
+//
+// Files to be inserted in the soure code:
+//  - chalk_board.scss
+//  - chalk_board.ts
+//
+// 1. Conditional for this :
+//    I Optional:
+//      - ContextMenu
+//      - NotificationServer
+//      - AlilasSelection
+//
+//    II. Required:
+//      -
+//
+// 2. This component has its own components called "plugins", it can be configured on its page.
+//
+// João F. BeyondMagic © 2022 <koetemagie@gmail.com>
 
-declare var universal : Universal
+import { Component, LanguageData, ExternalConditional } from '../interfaces'
+
+// #. To be used by other methods and components to identify this plugin and use its methods.
+export interface ChalkBoardInterface extends Component {
+
+
+
+}
 
 //import { EngineScreen } from "./modules/writing"
-export class EngineScreen {
+export class ChalkBoard implements ChalkBoardInterface {
+
+  // Initialisation.
+  public          enabled     = true
+  public readonly name        = 'ChalkBoard'
+  public readonly authors     = [ 'João F. © BeyondMagic koetemagie@gmail.com' ]
+  //public readonly events      = undefined
+  public readonly date        = 1655250181325
+  public readonly conditional : ExternalConditional = {
+
+    optional : [ 'AlilasSelection', 'ContextMenu', 'NotificationServer' ],
+
+  }
+  public readonly description : LanguageData = {
+
+    en : 'To write in a wonderful way.',
+
+  }
 
   #container  : HTMLElement
   #plugins    : Plugins

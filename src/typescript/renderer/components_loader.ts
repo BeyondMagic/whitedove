@@ -6,10 +6,10 @@
 
 // #. Visual selection.
 import { AlilasSelection } from './components/alilas_selection'
-
+// #. For the writing boards.
+//import { ChalkBoard } from './components/chalk_board'
 // #. Context menu.
 //import { ContextMenu } from './components/...'
-
 // #. Notification Server
 //import { NotificationServer } from './components/...'
 
@@ -17,6 +17,7 @@ import { AlilasSelection } from './components/alilas_selection'
 const components : Array<any> = [
 
   AlilasSelection,
+  //ChalkBoard,
 
 ]
 

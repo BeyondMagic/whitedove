@@ -1,10 +1,26 @@
 export interface LanguageData {
 
-  en     : string
-  en_GB? : string
-  pt_BR? : string
-  ja_JP? : string
-  fr_FR? : string
+  readonly en     : string
+  readonly en_GB? : string
+  readonly pt_BR? : string
+  readonly ja_JP? : string
+  readonly fr_FR? : string
+
+}
+
+export interface Setting {
+
+  readonly name        : LanguageData
+  readonly description : LanguageData
+
+  field : any
+
+}
+
+export interface ExternalConditional {
+
+  readonly required? : Array<string>
+  readonly optional? : Array<string>
 
 }
 
@@ -12,17 +28,26 @@ export interface LanguageData {
 export interface Component {
 
   // For identification for external modules, the name of the module.
-  name        : string
-  authors     : Array<string>
-  description : LanguageData
-  date        : Number
-  enabled     : boolean
+  readonly name        : string
+  readonly authors     : Array<string>
+  readonly description : LanguageData
+  readonly date        : Number
+           enabled     : boolean
 
   // In case it needs extra events to work correctly.
-  events? : Array<string>
+  readonly events? : Array<string>
+
+  // Other components that can work with this.
+  readonly conditional? : ExternalConditional
 
   // This function will accept any type of event and can return any type of data.
   send (arg?: any) : any
+
+  // To remove the component from the page.
+  destroy (arg: void) : any
+
+  // To configurate the plugin.
+  config (open: boolean, settings: any) : any
 
 }
 
@@ -35,7 +60,7 @@ export interface ComponentsList {
 // 
 export interface Universal {
 
-  components          : ComponentsList
+  readonly components          : ComponentsList
   sleep (arg: number) : Promise<void>
 
 }

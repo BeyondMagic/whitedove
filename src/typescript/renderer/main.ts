@@ -1,5 +1,3 @@
-// #.
-//import { EngineScreen } from './modules/writing'
 // #. C++ alike.
 import { Universal, Component } from './interfaces'
 // #. Where our global variable will be stored.
@@ -12,34 +10,19 @@ declare global { var universal : Universal }
 globalThis.universal = Global
 
 // #. Add each component from modules.
-Components.forEach( component => {
+Components.forEach( component_decorator => {
 
-  universal.components[component.name] = new component() as Component
+  const component : Component = new component_decorator()
+
+  universal.components[component.name] = component
+
+  console.log(universal.components[component.name].name)
 
   /// Add the global events for the window of the component.
-  universal.components[component.name].events?.forEach( event => {
+  component.events?.forEach( event => {
 
-    window.addEventListener( event, () => universal.components[component.name].send() )
+    window.addEventListener( event, () => component.send() )
 
   })
-
-})
-
-// #. This will load other modules.
-window.addEventListener( 'DOMContentLoaded', () => {
-
-  //const main = document.body.querySelector('.main') as HTMLElement
-
-  //{
-  //  const engine = new EngineScreen( main )
-
-  //  engine.create('You got me!')
-  //  engine.create('You gdwd')
-  //}
-
-  //// Setup cursor.
-  //{
-
-  //}
 
 })
