@@ -1,0 +1,32 @@
+// João F. © BeyondMagic 2022 <koetemagie@gmail.com>
+
+// #. Colours for everyone.
+@import './modules/colours';
+
+// #. Animations (keyframes).
+@import './modules/keyframes';
+
+// #. For NotificationServer.
+@import './modules/notification';
+
+// 3. The cursor effects and selection.
+@import './modules/alilas_selection';
+
+// 3. ConfigPage.
+@import './modules/configuration_page';
+
+// #. Main template of the page.
+@import './modules/page';
+
+// #. Main for writing and reading.
+@import './modules/main';
+
+
+* {
+
+  margin: 0;
+  padding: 0;
+
+  box-sizing: border-box;
+
+}

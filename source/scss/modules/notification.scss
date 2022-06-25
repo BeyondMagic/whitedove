@@ -1,0 +1,224 @@
+body {
+
+  >.notification-container {
+
+    $bg: white;
+    $fg: black;
+    $urgent: #FC566A;
+    $normal: #5CDA93;
+    $low: #4F91FF;
+    $width: 22rem;
+    $icon-container-size: 1.5rem;
+    $icon-size: 1.25rem;
+
+    @mixin pseudo_bg( $color ) {
+      &::before {
+        background-color: $color;
+      }
+    }
+
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    >.notification {
+
+      position: relative;
+
+      background-color: rgba($bg, 0.05);
+
+      border-radius: 0.25rem;
+
+      min-width: $width;
+      max-width: $width;
+
+      right: 0;
+
+      overflow-wrap: break-all;
+      hyphens: auto;
+      outline: none;
+      word-break: break-word;
+      white-space: pre-wrap;
+
+      display: grid;
+      grid-template-columns: 1fr $icon-container-size;
+      grid-template-rows: 2rem 1fr 2rem;
+      gap: 0px 0px;
+      grid-template-areas: "title header" "body body" "buttons buttons";
+
+      //-webkit-user-select: none;
+
+      box-shadow: 4px 4px 1rem rgba($fg, 0.2);
+
+      padding: 0.5rem 1rem;
+
+      //background-color: red;
+
+      transition-property: all;
+      transition-duration: 300ms;
+      transition-timing-function: linear;
+
+      &.remove {
+
+        right: -($width + 2rem);
+
+      }
+
+      >.title {
+
+        display: flex;
+        align-items: center;
+
+        grid-area: title;
+
+        font-weight: bold;
+
+        padding-left: 0.75rem;
+
+        background-color: rgba($fg, 0.01);
+        border-bottom: 2px solid  rgba($fg, 0.03);
+
+      }
+
+      >.header {
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        grid-area: header;
+
+        display: flex;
+        flex-direction: row-reverse;
+
+        >.button {
+
+          width: $icon-container-size;
+          height: $icon-container-size;
+
+          font-weight: bolder;
+
+          text-align: center;
+
+          border-radius: 100%;
+
+          cursor: pointer;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:hover {
+
+            background-color: rgba($urgent, 0.2);
+
+            >.close {
+
+              fill: $urgent;
+
+            }
+
+          }
+
+          >.close {
+
+            width: $icon-size;
+            height: $icon-size;
+            fill: $fg;
+
+          }
+
+        }
+
+      }
+
+      >.body {
+
+        grid-area: body;
+        //background-color: green;
+
+        user-select: none;
+
+        padding: 0.5rem 1rem;
+
+        color: rgba($fg, 0.8);
+
+      }
+
+      >.buttons {
+
+        grid-area: buttons;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+
+        >.button {
+
+          padding: 0.1rem 1.1rem;
+          cursor: pointer;
+
+          box-shadow: 1px 1px 0.25rem rgba($fg, 0.25);
+
+          border-radius: 4px;
+
+          &.accept {
+
+            background-color: $normal;
+
+          }
+
+          &.dismiss {
+
+            background-color: rgba($fg, 0.01);
+
+          }
+
+        }
+
+      }
+
+      &:hover {
+
+        &::before {
+
+          width: 0.2rem;
+          left: -0.85rem
+
+        }
+
+      }
+
+      &::before {
+
+        content: '';
+
+        height: 100%;
+        width: 0.1rem;
+
+        position: absolute;
+        left: -0.8rem;
+        top: 0;
+
+
+        transition-property: width, left;
+        transition-duration: 100ms;
+        transition-timing-function: linear;
+
+      }
+
+      &.urgent { @include pseudo_bg($urgent) }
+      &.normal { @include pseudo_bg($normal) }
+      &.low { @include pseudo_bg($low) }
+
+    }
+
+  }
+
+}
+
