@@ -53,7 +53,10 @@ vim.filetype.add({
       build('scss')
     end,
     [whitedove_folder .. "/ts/.*"] = function()
-      build('ts')
+      build('ts main')
+    end,
+    [whitedove_folder .. "/ts/global.ts"] = function()
+      build('ts global')
     end,
 
     -- ...

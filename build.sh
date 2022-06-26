@@ -4,7 +4,21 @@ case "$1" in
 
   'ts' | 'typescript')
 
-    esbuild ./source/ts/main.ts --bundle --platform=browser --outfile=./distribution/js/main.js
+    case "$2" in
+
+      'global' )
+
+        esbuild ./source/ts/global.ts --bundle --platform=browser --outfile=./distribution/js/global.js
+
+      ;;
+
+      'main' )
+
+        esbuild ./source/ts/main.ts --bundle --platform=browser --outfile=./distribution/js/main.js
+
+      ;;
+
+    esac
 
   ;;
 
