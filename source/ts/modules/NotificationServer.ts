@@ -1,4 +1,4 @@
-export interface Button {
+interface Button {
 
   readonly name   : string
   readonly action : Function
@@ -6,15 +6,21 @@ export interface Button {
 
 }
 
-interface NotificationType {
+// #. For modules who has their own notification system
+export interface NotificationInit {
 
-  readonly title : string
   readonly level : 'urgent' | 'normal' | 'low'
   readonly text  : string
 
   readonly buttons? : Array<Button>
 
   time? : number
+
+}
+
+export interface NotificationType extends NotificationInit {
+
+  readonly title : string
 
 }
 
@@ -90,7 +96,7 @@ export class NotificationServer {
       const body = document.createElement('section')
       {
         body.classList.add('body')
-        body.textContent = data.text
+        body.insertAdjacentHTML('beforeend', data.text)
       }
 
       if (data.buttons) {
