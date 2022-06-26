@@ -1,3 +1,5 @@
+import svg_close from '../../icons/keyboard_arrow_right.svg'
+
 interface Button {
 
   readonly name   : string
@@ -76,10 +78,12 @@ export class NotificationServer {
           button.classList.add('button')
           button.addEventListener( 'click', () => this.remove(0, notification))
 
-          const icon = create_icon(icons.close)
-          {
+          const icon = create_icon(svg_close)
+          if (icon) {
+
             icon.classList.add('close')
             button.append(icon)
+
           }
 
         }

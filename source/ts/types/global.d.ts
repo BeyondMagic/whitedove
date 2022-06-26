@@ -1,27 +1,19 @@
-import { NotificationServer } from "../modules/NotificationServer"
+import { NotificationType } from "../modules/NotificationServer"
+import { WhiteBoardData } from "../modules/WhiteBoard"
 
 export {}
 
 declare global {
 
-  /**
-   * For all types of SVG icons.
-   */
-  var icons = {
-
-    close : string
-
-  }
 
   /**
-   * Creates an Icon based on the path.
-   * @param d The vectors of the icon, the `d` parameter of `path`.
-   * @param size The width and height of the icon.
+   * Creates an SVG Element and returns based on the data..
+   * @param d The SVG element in string.
    * @returns A SVG Element.
    * @example
-   * await create_icon('M24 26.4 13.65 36.75q-.5.5-1.2.5t-1.2-.5q-.5-.5-.5-1.2t.5-1.2L21.6', 64);
+   * await create_icon('<svg>d</svg>', 64);
    */
-  function create_icon (d : string, size? : number = 48) : SVGSVGElement
+  function create_icon (d : string, size? : number = 48) : SVGSVGElement | null
 
   /**
    * Makes the thread sleep for `ms` milliseconds.
@@ -54,6 +46,22 @@ declare global {
      *  notification_server.remove(0, notification)
      */
     async function remove ( delay : number, notification : HTMLElement ) : Promise<void>
+
+  }
+
+  /*
+   * To create white boards.
+   */
+  namespace white_board {
+
+    /**
+     * Creates a new white board from the file.
+     * @param data WhiteBoardData
+     * @returns A promise of WhiteBoardData.
+     * @example
+     *  const whiteboard = whiteboardr.create('/home/iris/story/theater.json')
+     */
+    async function create ( file : string ) : Promise<WhiteBoardData>
 
   }
 
