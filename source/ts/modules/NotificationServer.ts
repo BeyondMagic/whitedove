@@ -14,9 +14,6 @@ interface NotificationType {
 
   readonly buttons? : Array<Button>
 
-  // Default action if click.
-  readonly action? : Function
-
   time? : number
 
 }
@@ -24,10 +21,7 @@ interface NotificationType {
 export class NotificationServer {
 
   private parent : HTMLElement
-  
-  /*
-    *
-    */
+
   public constructor ( parent : HTMLElement ) {
 
     const container = document.createElement('main')
@@ -40,11 +34,7 @@ export class NotificationServer {
 
   }
 
-  /*
-    *
-    *
-    */
-  public async create ( data : NotificationType ) : Promise<void> {
+  public async create ( data : NotificationType ) : Promise<HTMLElement> {
 
     const notification = document.createElement('section')
 
@@ -80,7 +70,7 @@ export class NotificationServer {
           button.classList.add('button')
           button.addEventListener( 'click', () => this.remove(0, notification))
 
-          const icon = createIcon(icons.close)
+          const icon = create_icon(icons.close)
           {
             icon.classList.add('close')
             button.append(icon)
@@ -138,15 +128,17 @@ export class NotificationServer {
     // #. To remove the notification after a few seconds.
     if (data.time > 0) this.remove(data.time, notification)
 
+    return notification
 
   }
 
-  /*
-    *
-    */
   public async remove ( delay : number, notification : HTMLElement ) : Promise<void> {
 
-    // Parse the seconds computed CSS of transition and then make it in miliseconds.
+    // #. Just a little test to make sure it's a notification.
+    //    Not so sure though.
+    if (!notification.classList.contains('notification')) return
+
+    // #. Parse the seconds computed CSS of transition and then make it in miliseconds.
     let transition_time = parseFloat((getComputedStyle(notification).getPropertyValue('transition-duration').slice(0, -1)))
     {
       transition_time *= 1000
@@ -163,14 +155,5 @@ export class NotificationServer {
     notification.remove()
 
   }
-
-  /*
-    *
-    */
-  //private create_button ( notification : HTMLElement, data : Button, clas : string ) : HTMLElement {
-
-
-
-  //}
 
 }
