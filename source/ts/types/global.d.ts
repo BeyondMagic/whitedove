@@ -61,7 +61,7 @@ declare global {
      * @example
      *  const whiteboard = whiteboardr.create('/home/iris/story/theater.json')
      */
-    async function create ( file : string ) : Promise<WhiteBoardData>
+    async function create ( file : string ) : Promise<WhiteBoardData | null>
 
   }
 

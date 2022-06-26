@@ -1,10 +1,16 @@
 import { NotificationInit } from "../modules/NotificationServer"
 import right_icon from '../../icons/keyboard_arrow_right.svg'
 
-export interface WhiteBoardData {
+export interface WhiteBoardInit {
 
   name: '',
+
+}
+
+export interface WhiteBoardData extends WhiteBoardInit {
+
   container : HTMLElement,
+  file : string,
 
 }
 
@@ -27,20 +33,24 @@ export class WhiteBoard {
 
   }
 
-  public async create ( file : string ) : Promise<WhiteBoardData> {
+  /**
+   *  Create a page for the this file.
+   *  @param Array<PagesData> The list pages.
+   *  @returns HTMLElement The container
+   *  @example
+   *  const page = this.create_container(file_data.pages)
+   */
+  private create_container () : HTMLElement {
 
-    //const board = this.parse(file)
-    const whiteboard = <WhiteBoardData>{}
+    const container = document.createElement('section')
 
-    // 1. Create board container (page).
-    whiteboard.container = document.createElement('section')
     {
-      whiteboard.container.classList.add('container')
+      container.classList.add('container')
 
       const header = document.createElement('section')
       {
         header.classList.add('header')
-        whiteboard.container.append(header)
+        container.append(header)
       }
 
       const board = document.createElement('section')
@@ -51,19 +61,68 @@ export class WhiteBoard {
 
         if (icon) board.append(icon)
 
-        whiteboard.container.append(board)
+        container.append(board)
       }
 
       const information = document.createElement('section')
       {
         information.classList.add('information')
-        whiteboard.container.append(information)
+        container.append(information)
       }
 
-      this.parent.append(whiteboard.container)
+      this.parent.append(container)
     }
 
-    this.notify({ text: `The file <b>${file}</b> was loaded into the WhiteBoard.`, level: 'low' })
+    return container
+
+  }
+
+  /**
+    * Load file and parse to JSON, then verify if it's a valid WhiteBoardData file.
+    * @param string 
+    */
+  private parse ( file : string ) : WhiteBoardInit | null {
+
+    Neutralino.filesystem.readFile(file).then( content => {
+
+      const data : WhiteBoardData = JSON.parse( content )
+
+      if (!('name' in data)) throw 'No property for name';
+
+      return data
+
+    }).catch( error => {
+
+      console.error(error)
+
+      if (error instanceof Object && 'code' in error) {
+
+        this.notify({text: `<b>${error.code}</b><br>${error.message}`, level: 'urgent'})
+
+      } else {
+
+        this.notify({text: error, level: 'urgent'})
+
+      }
+
+    })
+
+    return <WhiteBoardData>{}
+
+  }
+
+  public async create ( file : string ) : Promise<WhiteBoardData | null> {
+
+    const init = this.parse(file)
+
+    if (!init) return null
+
+    const whiteboard = init as WhiteBoardData
+
+    // 1. Create board container (page).
+    whiteboard.container = this.create_container()
+
+    //this.notify({ text: `The file <b>${file}</b> was loaded into the WhiteBoard.`, level: 'low' })
 
     this.data.push(whiteboard)
 
@@ -73,14 +132,14 @@ export class WhiteBoard {
 
   private notify (data : NotificationInit ) : void {
 
-    //notification_server.create({
+    notification_server.create({
 
-    //  title: 'WhiteBoard',
-    //  text: data.text,
-    //  level: data.level,
-    //  buttons: data.buttons
+      title: 'WhiteBoard',
+      text: data.text,
+      level: data.level,
+      buttons: data.buttons
 
-    //})
+    })
 
 
   }
