@@ -1,5 +1,11 @@
 #!/usr/bin/env sh
 
+build () {
+
+  esbuild "$1" --loader:.svg=text --tsconfig=./source/ts/tsconfig.json --bundle --platform=browser --outfile="$2"
+
+}
+
 case "$1" in
 
   'ts' | 'typescript')
@@ -8,13 +14,13 @@ case "$1" in
 
       'global' )
 
-        esbuild ./source/ts/global.ts --bundle --platform=browser --outfile=./distribution/js/global.js
+        build ./source/ts/global.ts ./distribution/js/global.js
 
       ;;
 
       'main' )
 
-        esbuild ./source/ts/main.ts --bundle --platform=browser --outfile=./distribution/js/main.js
+        build ./source/ts/main.ts ./distribution/js/main.js
 
       ;;
 
