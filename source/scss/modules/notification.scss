@@ -2,8 +2,6 @@ body {
 
   >.notification-container {
 
-    $bg: white;
-    $fg: black;
     $urgent: #FC566A;
     $normal: #5CDA93;
     $low: #4F91FF;
@@ -56,7 +54,7 @@ body {
 
       padding: 0.5rem 1rem;
 
-      //background-color: red;
+      background-color: $bg;
 
       transition-property: all;
       transition-duration: 300ms;
