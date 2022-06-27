@@ -4,7 +4,7 @@ interface Button {
 
   readonly name   : string
   readonly action : Function
-  readonly level  : 'accept' | 'dismiss'
+  readonly level  : 'accept' | 'alternate'
 
 }
 
