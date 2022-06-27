@@ -3,18 +3,16 @@ import { WhiteBoard } from './modules/WhiteBoard'
 
 Neutralino.init()
 
-//Neutralino.events.on('ready', () => {
-//
-//  notification_server.create({ title: 'Neutralino', level: 'low', text: 'Server is up running 👍.'})
-//
-//})
+Neutralino.events.on('ready', () => {
+
+  notification_server.create({ title: 'Neutralino', level: 'low', text: 'Server is up running 👍.'})
+
+})
 
 // #. To load files.
 document.addEventListener( 'DOMContentLoaded', () => {
 
   const main = document.body.querySelector('.main')
-
-  globalThis.notification_server = new NotificationServer(document.body)
 
   if (!(main instanceof HTMLElement)) {
 
@@ -24,8 +22,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
   }
 
+  globalThis.notification_server = new NotificationServer(document.body)
   globalThis.white_board         = new WhiteBoard(main)
 
   white_board.create('/home/iris/story/#. Theater.json')
- 
+
 })
