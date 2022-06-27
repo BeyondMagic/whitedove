@@ -1,18 +1,18 @@
 import { NotificationInit } from "../modules/NotificationServer"
-import right_icon from '../../icons/keyboard_arrow_right.svg'
+import description from '../../icons/description.svg'
 
 export interface WhiteBoardInit {
 
-  name: string,
-  synopsis: string,
-  authors: Array<string>,
+  name     : string,
+  synopsis : string,
+  authors  : Array<string>,
 
 }
 
 export interface WhiteBoardData extends WhiteBoardInit {
 
   container : HTMLElement,
-  file : string,
+  file      : string,
 
 }
 
@@ -36,13 +36,13 @@ export class WhiteBoard {
   }
 
   /**
-   *  Create a page for the this file.
-   *  @param Array<PagesData> The list pages.
+   *  Create a container for the this WhiteBoard.
+   *  @param WhiteBoardData The data for this container.
    *  @returns HTMLElement The container
    *  @example
    *  const page = this.create_container(file_data.pages)
    */
-  private create_container () : HTMLElement {
+  private create_container ( data : WhiteBoardData ) : HTMLElement {
 
     const container = document.createElement('section')
 
@@ -53,16 +53,34 @@ export class WhiteBoard {
       {
         header.classList.add('header')
         container.append(header)
+
+        // #. An icon to show the file path.
+        const file_container = document.createElement('span')
+        {
+          const name = document.createElement('span')
+          name.classList.add('name')
+          name.textContent = data.file
+
+          const icon = create_icon(description)
+
+          if (icon) {
+
+            icon.classList.add('icon')
+            file_container.append(icon)
+
+          }
+
+          file_container.classList.add('file-container')
+          file_container.append(name)
+        }
+
+        header.append(file_container)
+
       }
 
       const board = document.createElement('section')
       {
         board.classList.add('board')
-
-        const icon = create_icon(right_icon)
-
-        if (icon) board.append(icon)
-
         container.append(board)
       }
 
@@ -178,16 +196,21 @@ export class WhiteBoard {
 
     if (!init) return null
 
-    const whiteboard = <WhiteBoardData>{}
+    this.data.push(init as WhiteBoardData)
 
-    // 1. Create board container (page).
-    whiteboard.container = this.create_container()
+    // 1. Define WhiteBoard new defaults.
+    const whiteboard = this.data[this.data.length - 1]
+    {
+      // #. Original file path.
+      whiteboard.file = file
+
+      // #. Create board container (page).
+      whiteboard.container = this.create_container(whiteboard)
+    }
 
     this.notify({ text: `The file <b>${file}</b> was loaded into the WhiteBoard.`, level: 'low' })
 
-    this.data.push(whiteboard)
-
-    return this.data[this.data.length - 1]
+    return whiteboard
 
   }
 
