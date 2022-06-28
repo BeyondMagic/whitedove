@@ -40,6 +40,12 @@ case "$1" in
 
   ;;
 
+  'fonts' )
+
+    cp -r ./source/fonts/ -t ./distribution/
+
+  ;;
+
   'app' )
 
     neu build
@@ -48,6 +54,7 @@ case "$1" in
 
   'all' )
 
+    $0 fonts
     $0 ts
     $0 scss
     $0 html
