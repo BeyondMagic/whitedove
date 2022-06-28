@@ -5,6 +5,7 @@ interface Button {
   readonly name   : string
   readonly action : Function
   readonly level  : 'accept' | 'alternate'
+  readonly icon?  : SVGSVGElement | null
 
 }
 
@@ -113,15 +114,29 @@ export class NotificationServer {
 
           const button = document.createElement('span')
 
-          button.textContent = item.name
-          button.classList.add('button', item.level)
+          {
+            button.classList.add('button', item.level)
+            button.addEventListener( 'click', () => {
 
-          button.addEventListener( 'click', () => {
+              this.remove(0, notification)
+              item.action()
 
-            this.remove(0, notification)
-            item.action()
+            })
+          }
 
-          })
+          if (item.icon) {
+
+            item.icon.classList.add('icon')
+            button.append(item.icon)
+
+          }
+
+          {
+            const text   = document.createElement('span')
+            text.textContent = item.name
+            text.classList.add('name')
+            button.append(text)
+          }
 
           buttons.append(button)
 
