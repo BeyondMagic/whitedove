@@ -9,11 +9,12 @@ declare global {
   /**
    * Creates an SVG Element and returns based on the data..
    * @param d The SVG element in string.
+   * @param size Force the viewbox.
    * @returns A SVG Element.
    * @example
    * await create_icon('<svg>d</svg>', 64);
    */
-  function create_icon (d : string, size? : number = 48) : SVGSVGElement | null
+  function create_icon (d : string, size : number = 48) : SVGSVGElement | null
 
   /**
    * Makes the thread sleep for `ms` milliseconds.

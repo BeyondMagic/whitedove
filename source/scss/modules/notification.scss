@@ -5,7 +5,7 @@ body {
     $urgent: #FC566A;
     $normal: #5CDA93;
     $low: #4F91FF;
-    $width: 22rem;
+    $width: 25rem;
     $icon-container-size: 1.5rem;
     $icon-size: 1.25rem;
 
@@ -44,14 +44,17 @@ body {
       font-family: $defaut-font;
 
       display: grid;
-      grid-template-columns: 1fr $icon-container-size;
+      grid-template-columns: 6rem 1fr 4rem $icon-container-size;
       grid-template-rows: 2rem 1fr 2rem;
       gap: 0px 0px;
-      grid-template-areas: "title title" "body header" "buttons buttons";
+      grid-template-areas:
+        "icon title date header"
+        "icon body body header"
+        "icon buttons buttons header";
 
       //-webkit-user-select: none;
 
-      box-shadow: 4px 4px 1rem rgba($fg, 0.2);
+      box-shadow: 4px 4px 1rem rgba($fg, 0.3);
 
       padding: 0.5rem 1rem;
 
@@ -67,18 +70,82 @@ body {
 
       }
 
+      >.date {
+
+        grid-area: date;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        color: rgba($fg, 0.5);
+        font-weight: 300;
+        font-size: 0.9rem;
+
+      }
+
+      >.icon-container {
+
+        grid-area: icon;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        >.icon-box {
+
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          background-color: rgba($fg, 0.2);
+
+          width: 3.5rem;
+          height: 3.5rem;
+          border-radius: 50%;
+
+          >.icon {
+
+            width: 2rem;
+            height: 2rem;
+
+            fill: $fg;
+
+          }
+
+          // #. List here the names for icons given the notification <data.icon.name>.
+          &.neutralino {
+
+            background-color: rgba($neutralino-color, 0.2);
+
+            >.icon {
+
+              fill: $neutralino-color;
+
+            }
+
+          }
+
+        }
+
+      }
+
       >.title {
 
         display: flex;
         align-items: center;
+        gap: 0.5rem;
 
         grid-area: title;
 
-        font-weight: bold;
-
-        padding-left: 0.75rem;
-
         background-color: rgba($fg, 0.01);
+
+        >.name {
+
+          font-weight: bold;
+          color: rgba($fg, 0.8);
+
+        }
 
       }
 
@@ -140,8 +207,6 @@ body {
 
         user-select: none;
 
-        padding: 0.5rem 1rem;
-
         color: rgba($fg, 0.65);
 
       }
@@ -155,15 +220,13 @@ body {
         justify-content: center;
         gap: 0.5rem;
 
+
         >.button {
 
-          padding: 0.15rem 1.1rem;
+          padding: 0.2rem 1.1rem;
           cursor: pointer;
 
-          box-shadow: 1px 1px 0.25rem rgba($fg, 0.25);
           border-radius: 3px;
-
-          border: 1px solid;
 
           display: flex;
           justify-content: center;
@@ -186,12 +249,15 @@ body {
           >.name {
 
             transition: color $animation;
+            text-transform: uppercase;
+
+            font-size: 0.9rem;
+            font-weight: 500;
 
           }
 
           &.accept {
 
-            border-color: $normal;
             $color: mix(black, $normal, 15%);
 
             >.name { color: $color; }
@@ -199,10 +265,7 @@ body {
 
             &:hover {
 
-              border-color: transparent;
               $color: mix(black, $normal, 15%);
-
-              background-color: $color;
 
               >.name { color: $bg; }
               >.icon { fill: $bg; }
@@ -212,8 +275,6 @@ body {
           }
 
           &.alternate {
-
-            border-color: rgba($fg, 0.01);
 
             >.name { color: mix(black, rgba($fg, 0.01), 15%); }
 

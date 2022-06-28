@@ -7,16 +7,17 @@ globalThis.sleep = (ms: number) : Promise<void> => {
 globalThis.create_icon = (data : string, size : number = 48) : SVGSVGElement | null => {
 
   const template = document.createElement('template')
+  {
+    data = data.trim()
+    template.innerHTML = data
+  }
 
-  data = data.trim()
-
-  template.innerHTML = data
-
-  const svg = template.content.firstChild
+  const svg = template.content.firstElementChild
 
   if (svg instanceof SVGSVGElement) {
 
-    if (!svg.getAttributeNS(null, 'viewbox')) {
+    // #. For the style-sheet be able to change the width and height.
+    if (!svg.getAttributeNS(null, 'viewBox')) {
 
       svg.setAttributeNS(null, 'viewBox', `0 0 ${size} ${size}`)
 
@@ -26,7 +27,10 @@ globalThis.create_icon = (data : string, size : number = 48) : SVGSVGElement | n
 
   } else {
 
-    notification_server.create({title: 'create_icon', text: 'Unable to create the SVG element.', level: 'normal'})
+    notification_server.create({
+      title: 'create_icon',
+      text: 'Unable to create the SVG element.',
+      level: 'normal'})
 
     return null
 

@@ -16,6 +16,12 @@ export interface NotificationInit {
   readonly text  : string
 
   readonly buttons? : Array<Button>
+  readonly icon?    : {
+
+    readonly element : SVGSVGElement | null
+    readonly name    : string
+
+  }
 
   time? : number
 
@@ -46,10 +52,9 @@ export class NotificationServer {
   public async create ( data : NotificationType ) : Promise<HTMLElement> {
 
     const notification = document.createElement('section')
-
-    notification.classList.add('notification', data.level)
-
     {
+
+      notification.classList.add('notification', data.level)
 
       // #. Calculate the time of the notifcation by its level.
       if (!data.time) {
@@ -91,11 +96,39 @@ export class NotificationServer {
         header.append(button)
       }
 
+      const date = document.createElement('section')
+      {
+        date.classList.add('date')
+        date.textContent = '1 day'
+      }
+
+      if (data.icon && data.icon.element) {
+
+        const icon = document.createElement('section')
+        {
+          icon.classList.add('icon-container')
+          const box = document.createElement('span')
+          {
+            box.classList.add('icon-box', data.icon.name)
+            data.icon.element.classList.add('icon')
+            box.append(data.icon.element)
+          }
+          icon.append(box)
+        }
+
+        notification.append(icon)
+      }
+
       const title = document.createElement('section')
       {
         title.classList.add('title')
 
-        title.textContent = data.title
+        {
+          const name = document.createElement('span')
+          name.classList.add('name')
+          name.textContent = data.title
+          title.append(name)
+        }
       }
 
       const body = document.createElement('section')
@@ -145,7 +178,7 @@ export class NotificationServer {
         notification.append(buttons)
       }
 
-      notification.append(header, title, body)
+      notification.append(header, title, body, date)
     }
 
     this.parent.appendChild(notification)
