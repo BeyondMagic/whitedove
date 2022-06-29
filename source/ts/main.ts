@@ -6,9 +6,37 @@ import icon_settings from'../icons/settings.svg'
 
 Neutralino.init()
 
-Neutralino.events.on('ready', () => {
+// #. Our 'ready' event of Neutralino.
+Neutralino.os.getPath('data').then( path => {
 
-  notification_server.create({ 
+  // #. system.data_path
+  globalThis.system.data_path = path.concat('/whitedove/')
+
+}).finally( () => {
+
+  // #. notification_server
+  globalThis.notification_server = new NotificationServer(document.body)
+
+  // #. white_board
+  {
+    const main = document.body.querySelector('.main')
+
+    if (main instanceof HTMLElement) {
+
+      globalThis.white_board = new WhiteBoard(main)
+
+    } else {
+
+      const error = "Failed to find the '.main' HTMLElement in the body HTMLElement."
+      notification_server.create({ title: 'DOM', text: error, level: 'urgent'})
+      console.error(error)
+
+    }
+  }
+
+  //white_board.create('/home/iris/story/#. Theater.json')
+
+  notification_server.create({
 
     title : 'Neutralino',
     level : 'urgent',
@@ -28,24 +56,6 @@ Neutralino.events.on('ready', () => {
 
   })
 
-})
-
-// #. To load files.
-document.addEventListener( 'DOMContentLoaded', () => {
-
-  const main = document.body.querySelector('.main')
-
-  if (!(main instanceof HTMLElement)) {
-
-    const error = "Failed to find the '.main' HTMLElement in the body HTMLElement."
-    notification_server.create({ title: 'DOM', text: error, level: 'urgent'})
-    return console.error(error)
-
-  }
-
-  globalThis.notification_server = new NotificationServer(document.body)
-  globalThis.white_board         = new WhiteBoard(main)
-
-  //white_board.create('/home/iris/story/#. Theater.json')
+  notification_server.backup()
 
 })

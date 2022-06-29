@@ -1,4 +1,5 @@
 import svg_close from '../../icons/keyboard_arrow_right.svg'
+import svg_notification from '../../icons/notifications.svg'
 
 interface Button {
 
@@ -9,19 +10,27 @@ interface Button {
 
 }
 
-// #. For modules who has their own notification system
-export interface NotificationInit {
+interface NotificationIcon {
+
+  readonly element : SVGSVGElement | null
+  readonly name    : string
+
+}
+
+// #. For history.
+export interface NotificationHistoryItem {
 
   readonly level : 'urgent' | 'normal' | 'low'
   readonly text  : string
 
+  readonly icon? : NotificationIcon
+
+}
+
+// #. For modules who has their own notification system
+export interface NotificationInit extends NotificationHistoryItem {
+
   readonly buttons? : Array<Button>
-  readonly icon?    : {
-
-    readonly element : SVGSVGElement | null
-    readonly name    : string
-
-  }
 
   time? : number
 
@@ -35,7 +44,9 @@ export interface NotificationType extends NotificationInit {
 
 export class NotificationServer {
 
-  private parent : HTMLElement
+  private parent    : HTMLElement
+  private history   : Array<NotificationHistoryItem>
+  private full_path : string
 
   public constructor ( parent : HTMLElement ) {
 
@@ -45,7 +56,160 @@ export class NotificationServer {
 
     parent.appendChild(container)
 
-    this.parent = container
+    this.parent    = container
+    this.full_path = system.data_path + '/history.json'
+    this.history   = []
+
+    this.parse(system.data_path).then( data => this.history = data )
+
+  }
+
+  /**
+    * Parse the history file to add to our history.
+    * @param string Directory path of the history.
+    * @returns Promise<Array>NotificationHistoryItem>> The history already parsed. If catches an error, will return an empty list.
+    * @example
+    *   const history = this.parse('/home/anon/.local/share/whitedove/')
+    */
+  private async parse ( directory : string ) : Promise<Array<NotificationHistoryItem>> {
+
+    // #. Parse each notification.
+    const history = await Neutralino.filesystem.readFile(this.full_path).then( data => {
+
+      const unparsed_history = JSON.parse(data) as Array<NotificationHistoryItem>
+
+      unparsed_history.forEach( (item, index) => {
+
+        const msg = `The notification [${index}]`
+
+        {
+          if (!('level' in item)) throw `${msg} does not have the property 'level'.`
+
+          // #. Make sure the level can exist.
+          {
+            let strange_level = false
+
+            Array.from(['urgent', 'normal', 'low']).forEach( level => {
+
+                strange_level = (level === item.level)
+
+            })
+
+            if (strange_level) throw `${msg} has a unrecognised level.`
+          }
+
+          if (!('text' in item && typeof item.text === 'string')) throw `${msg} text property does not exist or it's not a string.`
+
+          if ('icon' in item && item.icon) {
+
+            if (typeof item.icon.name !== 'string') throw `${msg} the name property of icon is not a string!`
+
+            if (typeof item.icon.element !== 'string') throw `${msg} the element property of icon is not an string!`
+
+            // TODO: Verify if `item.icon.element` it's a valid element?...
+
+          }
+
+        }
+
+      })
+
+      return unparsed_history
+
+    }).catch( error => {
+
+      // #. Create the folder and file if not found.
+      if (error.code === 'NE_FS_FILRDER') {
+
+        Neutralino.filesystem.createDirectory(directory)
+
+        Neutralino.filesystem.writeFile(this.full_path, JSON.stringify([], null, 2)).then( () => {
+
+          this.notify({
+            text  : `Created the history file on <b>${this.full_path}</b>`,
+            level : 'urgent'
+          })
+
+        })
+      }
+
+      //this.create
+      console.error(error)
+
+      return [] as Array<NotificationHistoryItem>
+
+    })
+
+    return history
+
+  }
+
+  /**
+    * Save the notification to the history variable of NotificationServer.
+    * @param NotificationType Data of the notification to save.
+    * @example
+    *   this.save(notification_data)
+    */
+  private save ( data : NotificationType ) : void {
+
+    if (data.icon) {
+
+      const element : any = data.icon.element?.innerHTML
+
+      const notification : NotificationHistoryItem = {
+
+        level : data.level,
+        text  : data.text,
+        icon  : {
+
+          name: data.icon.name,
+          element: element,
+
+        }
+
+      }
+
+      this.history.push(notification)
+
+    } else {
+
+      const notification : NotificationHistoryItem = {
+
+        level : data.level,
+        text  : data.text,
+
+      }
+
+      this.history.push(notification)
+
+    }
+
+    console.log(this.history)
+
+  }
+
+  /**
+    * Notify from this module with the default settings.
+    * @param NotificationInit The initial notification to load.
+    * @example
+    *   this.notify({ text: 'lol', '' })
+    */
+  private notify ( data : NotificationInit ) : void {
+
+    this.create({
+
+      title   : 'NotificationServer',
+      text    : data.text,
+      level   : data.level,
+      buttons : data.buttons,
+      icon    : {
+
+        element: create_icon(svg_notification),
+        name: 'notification_server'
+
+      }
+
+    })
 
   }
 
@@ -186,6 +350,9 @@ export class NotificationServer {
     // #. To remove the notification after a few seconds.
     if (data.time > 0) this.remove(data.time, notification)
 
+    // #. To add on history.
+    this.save(data)
+
     return notification
 
   }
@@ -211,6 +378,39 @@ export class NotificationServer {
     await sleep(transition_time)
 
     notification.remove()
+
+  }
+
+  public async backup () : Promise<boolean> {
+
+    const data = JSON.stringify(this.history, null, 2)
+
+    return Neutralino.filesystem.writeFile(this.full_path, data).then( () => {
+
+      this.notify({
+        text  : `History file saved`,
+        level : 'low'
+      })
+
+      return true
+
+    }).catch( error => {
+
+      if ('code' in error) {
+
+        this.notify({
+          text  : `Failed to save history file`,
+          level : 'urgent',
+          // TODO: Buttons to retry.
+        })
+
+      }
+
+      console.error(error)
+
+      return false
+
+    })
 
   }
 

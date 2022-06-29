@@ -5,7 +5,6 @@ export {}
 
 declare global {
 
-
   /**
    * Creates an SVG Element and returns based on the data..
    * @param d The SVG element in string.
@@ -23,6 +22,19 @@ declare global {
    * await sleep(5000);
    */
   async function sleep (ms : number) : Promise<void>
+
+  /**
+   * This is the place to guard any additional paths that will be repeated through the program.
+   * Normally it is set at the start of the program.
+   */
+  namespace system {
+
+    /**
+     * This is the path to guard any additional data of the program.
+     */
+    var data_path : string
+
+  }
 
   /**
    * A notification server where all modules can send to inform the user about something.
@@ -47,6 +59,14 @@ declare global {
      *  notification_server.remove(0, notification)
      */
     async function remove ( delay : number, notification : HTMLElement ) : Promise<void>
+
+    /**
+    * Save the notification to the history file.
+    * @returns boolean `true` if saved correctly. `false` if failed to save.
+    * @example
+    *   this.backup()
+    */
+    async function backup () : Promise<boolean>
 
   }
 

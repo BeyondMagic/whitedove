@@ -98,7 +98,7 @@ body {
           justify-content: center;
           align-items: center;
 
-          background-color: rgba($fg, 0.2);
+          background-color: rgba($fg, 0.25);
 
           width: 3.5rem;
           height: 3.5rem;
@@ -116,11 +116,23 @@ body {
           // #. List here the names for icons given the notification <data.icon.name>.
           &.neutralino {
 
-            background-color: rgba($neutralino-color, 0.2);
+            background-color: rgba($neutralino-color, 0.35);
 
             >.icon {
 
               fill: $neutralino-color;
+
+            }
+
+          }
+
+          &.notification_server {
+
+            background-color: rgba($notification-color, 0.35);
+
+            >.icon {
+
+              fill: $notification-color;
 
             }
 
