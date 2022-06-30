@@ -1,4 +1,4 @@
-import { NotificationType } from "../modules/NotificationServer"
+import { NotificationType, NotificationHistoryItem } from "../modules/NotificationServer"
 import { WhiteBoardData } from "../modules/WhiteBoard"
 
 export {}
@@ -64,9 +64,23 @@ declare global {
     * Save the notification to the history file.
     * @returns boolean `true` if saved correctly. `false` if failed to save.
     * @example
-    *   this.backup()
+    *   notification_server.backup()
     */
     async function backup () : Promise<boolean>
+
+    /**
+    * Loads the page showing the history of notifications.
+    * @example
+    *   notification_server.page()
+    */
+    async function page () : Promise<void>
+
+    /**
+      * Parse the history file to add to our history. Do this after constructing the class.
+      * @example
+      *   await notification_server.parse()
+      */
+    async function parse () : Promise<void>
 
   }
 

@@ -12,7 +12,7 @@ interface Button {
 
 interface NotificationIcon {
 
-  readonly element : SVGSVGElement | null
+  element : SVGSVGElement | null
   readonly name    : string
 
 }
@@ -44,11 +44,12 @@ export interface NotificationType extends NotificationInit {
 
 export class NotificationServer {
 
-  private parent    : HTMLElement
-  private history   : Array<NotificationHistoryItem>
-  private full_path : string
+  private parent       : HTMLElement
+  private history      : Array<NotificationHistoryItem>
+  private history_file : string
+  private directory    : string
 
-  public constructor ( parent : HTMLElement ) {
+  public constructor ( parent : HTMLElement, directory : string = system.data_path, file : string = '/history.json' ) {
 
     const container = document.createElement('main')
 
@@ -56,29 +57,21 @@ export class NotificationServer {
 
     parent.appendChild(container)
 
-    this.parent    = container
-    this.full_path = system.data_path + '/history.json'
-    this.history   = []
-
-    this.parse(system.data_path).then( data => this.history = data )
+    this.parent       = container
+    this.history_file = directory + file
+    this.directory    = directory
+    this.history      = []
 
   }
 
-  /**
-    * Parse the history file to add to our history.
-    * @param string Directory path of the history.
-    * @returns Promise<Array>NotificationHistoryItem>> The history already parsed. If catches an error, will return an empty list.
-    * @example
-    *   const history = this.parse('/home/anon/.local/share/whitedove/')
-    */
-  private async parse ( directory : string ) : Promise<Array<NotificationHistoryItem>> {
+  public async parse () : Promise<void> {
 
     // #. Parse each notification.
-    const history = await Neutralino.filesystem.readFile(this.full_path).then( data => {
+    this.history = await Neutralino.filesystem.readFile(this.history_file).then( data => {
 
       const unparsed_history = JSON.parse(data) as Array<NotificationHistoryItem>
 
-      unparsed_history.forEach( (item, index) => {
+      const parsed_history = unparsed_history.map( (item, index) => {
 
         const msg = `The notification [${index}]`
 
@@ -106,7 +99,33 @@ export class NotificationServer {
 
             if (typeof item.icon.element !== 'string') throw `${msg} the element property of icon is not an string!`
 
-            // TODO: Verify if `item.icon.element` it's a valid element?...
+          }
+
+        }
+
+        // 1. Return the item with icon.
+        if (item.icon) {
+
+          return {
+
+            level : item.level,
+            text  : item.text,
+            icon  : {
+
+              element : create_icon(String(item.icon.element)),
+              name    : item.icon.name,
+
+            }
+
+          }
+
+        // 2. Return the item without icon.
+        } else {
+
+          return {
+
+            level : item.level,
+            text  : item.text,
 
           }
 
@@ -114,33 +133,31 @@ export class NotificationServer {
 
       })
 
-      return unparsed_history
+      return parsed_history
 
     }).catch( error => {
 
       // #. Create the folder and file if not found.
       if (error.code === 'NE_FS_FILRDER') {
 
-        Neutralino.filesystem.createDirectory(directory)
+        Neutralino.filesystem.createDirectory(this.directory)
 
-        Neutralino.filesystem.writeFile(this.full_path, JSON.stringify([], null, 2)).then( () => {
+        Neutralino.filesystem.writeFile(this.history_file, JSON.stringify([], null, 2)).then( () => {
 
           this.notify({
-            text  : `Created the history file on <b>${this.full_path}</b>`,
+            text  : `Created the history file on <b>${this.history_file}</b>`,
             level : 'urgent'
           })
 
         })
       }
 
-      //this.create
+      //this.notify
       console.error(error)
 
       return [] as Array<NotificationHistoryItem>
 
     })
-
-    return history
 
   }
 
@@ -154,16 +171,14 @@ export class NotificationServer {
 
     if (data.icon) {
 
-      const element : any = data.icon.element?.innerHTML
-
       const notification : NotificationHistoryItem = {
 
         level : data.level,
         text  : data.text,
         icon  : {
 
-          name: data.icon.name,
-          element: element,
+          name    : data.icon.name,
+          element : data.icon.element,
 
         }
 
@@ -183,8 +198,6 @@ export class NotificationServer {
       this.history.push(notification)
 
     }
-
-    console.log(this.history)
 
   }
 
@@ -383,9 +396,14 @@ export class NotificationServer {
 
   public async backup () : Promise<boolean> {
 
-    const data = JSON.stringify(this.history, null, 2)
+    // #. To change the `icon.element` of the notification to a string that can be saved in the file.
+    const history_string = this.history.map( item => {
 
-    return Neutralino.filesystem.writeFile(this.full_path, data).then( () => {
+      if (item.icon && item.icon.element) item.icon.element = item.icon.element?.outerHTML as any
+
+    })
+
+    return Neutralino.filesystem.writeFile(this.history_file, JSON.stringify(history_string, null, 2)).then( () => {
 
       this.notify({
         text  : `History file saved`,
@@ -411,6 +429,12 @@ export class NotificationServer {
       return false
 
     })
+
+  }
+
+  public async page () : Promise<void> {
+
+    console.log(this.history)
 
   }
 

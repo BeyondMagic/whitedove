@@ -6,16 +6,17 @@ import icon_settings from'../icons/settings.svg'
 
 Neutralino.init()
 
-// #. Our 'ready' event of Neutralino.
 Neutralino.os.getPath('data').then( path => {
 
   // #. system.data_path
   globalThis.system.data_path = path.concat('/whitedove/')
 
-}).finally( () => {
+// #. Our 'ready' event of Neutralino.
+}).finally( async () => {
 
   // #. notification_server
   globalThis.notification_server = new NotificationServer(document.body)
+  await notification_server.parse()
 
   // #. white_board
   {
@@ -56,6 +57,6 @@ Neutralino.os.getPath('data').then( path => {
 
   })
 
-  notification_server.backup()
+  notification_server.page()
 
 })
