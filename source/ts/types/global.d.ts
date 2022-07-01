@@ -43,12 +43,13 @@ declare global {
 
     /**
      * Creates a new notification based on information.
-     * @param data NotificationType
+     * @param data NotificationType Data of the notification to save.
+     * @param save boolean Save to history.
      * @returns A promise of HTMLElement (the notification).
      * @example
      *  notification_server.create({ title: 'Board', level: 'low', text: 'Did not found the name.'})
      */
-    async function create ( data : NotificationType ) : Promise<HTMLElement>
+    async function create ( data : NotificationType, save : boolean = true ) : Promise<HTMLElement>
 
     /**
      * Removes a notification.

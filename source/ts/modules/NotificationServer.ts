@@ -125,11 +125,11 @@ export class NotificationServer {
 
       }
 
-    })
+    }, false)
 
   }
 
-  public async create ( data : NotificationType ) : Promise<HTMLElement> {
+  public async create ( data : NotificationType, save : boolean = true ) : Promise<HTMLElement> {
 
     const notification = document.createElement('section')
     {
@@ -267,7 +267,7 @@ export class NotificationServer {
     if (data.time > 0) this.remove(data.time, notification)
 
     // #. To add on history.
-    this.save(data)
+    if (save) this.save(data)
 
     return notification
 
