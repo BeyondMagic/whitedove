@@ -57,6 +57,7 @@ Neutralino.os.getPath('data').then( path => {
 
   })
 
+  notification_server.backup()
   notification_server.page()
 
 })

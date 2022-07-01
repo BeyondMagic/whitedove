@@ -64,103 +64,6 @@ export class NotificationServer {
 
   }
 
-  public async parse () : Promise<void> {
-
-    // #. Parse each notification.
-    this.history = await Neutralino.filesystem.readFile(this.history_file).then( data => {
-
-      const unparsed_history = JSON.parse(data) as Array<NotificationHistoryItem>
-
-      const parsed_history = unparsed_history.map( (item, index) => {
-
-        const msg = `The notification [${index}]`
-
-        {
-          if (!('level' in item)) throw `${msg} does not have the property 'level'.`
-
-          // #. Make sure the level can exist.
-          {
-            let strange_level = false
-
-            Array.from(['urgent', 'normal', 'low']).forEach( level => {
-
-                strange_level = (level === item.level)
-
-            })
-
-            if (strange_level) throw `${msg} has a unrecognised level.`
-          }
-
-          if (!('text' in item && typeof item.text === 'string')) throw `${msg} text property does not exist or it's not a string.`
-
-          if ('icon' in item && item.icon) {
-
-            if (typeof item.icon.name !== 'string') throw `${msg} the name property of icon is not a string!`
-
-            if (typeof item.icon.element !== 'string') throw `${msg} the element property of icon is not an string!`
-
-          }
-
-        }
-
-        // 1. Return the item with icon.
-        if (item.icon) {
-
-          return {
-
-            level : item.level,
-            text  : item.text,
-            icon  : {
-
-              element : create_icon(String(item.icon.element)),
-              name    : item.icon.name,
-
-            }
-
-          }
-
-        // 2. Return the item without icon.
-        } else {
-
-          return {
-
-            level : item.level,
-            text  : item.text,
-
-          }
-
-        }
-
-      })
-
-      return parsed_history
-
-    }).catch( error => {
-
-      // #. Create the folder and file if not found.
-      if (error.code === 'NE_FS_FILRDER') {
-
-        Neutralino.filesystem.createDirectory(this.directory)
-
-        Neutralino.filesystem.writeFile(this.history_file, JSON.stringify([], null, 2)).then( () => {
-
-          this.notify({
-            text  : `Created the history file on <b>${this.history_file}</b>`,
-            level : 'urgent'
-          })
-
-        })
-      }
-
-      //this.notify
-      console.error(error)
-
-      return [] as Array<NotificationHistoryItem>
-
-    })
-
-  }
-
   /**
     * Save the notification to the history variable of NotificationServer.
     * @param NotificationType Data of the notification to save.
@@ -399,7 +302,9 @@ export class NotificationServer {
     // #. To change the `icon.element` of the notification to a string that can be saved in the file.
     const history_string = this.history.map( item => {
 
-      if (item.icon && item.icon.element) item.icon.element = item.icon.element?.outerHTML as any
+      if (item.icon && item.icon.element) item.icon.element = item.icon.element.outerHTML as any
+
+      return item
 
     })
 
@@ -427,6 +332,103 @@ export class NotificationServer {
       console.error(error)
 
       return false
+
+    })
+
+  }
+
+  public async parse () : Promise<void> {
+
+    // #. Parse each notification.
+    this.history = await Neutralino.filesystem.readFile(this.history_file).then( data => {
+
+      const unparsed_history = JSON.parse(data) as Array<NotificationHistoryItem>
+
+      const parsed_history = unparsed_history.map( (item, index) => {
+
+        const msg = `The notification [${index}]`
+
+        {
+          if (!('level' in item)) throw `${msg} does not have the property 'level'.`
+
+          // #. Make sure the level can exist.
+          {
+            let strange_level = false
+
+            Array.from(['urgent', 'normal', 'low']).forEach( level => {
+
+                strange_level = (level === item.level)
+
+            })
+
+            if (strange_level) throw `${msg} has a unrecognised level.`
+          }
+
+          if (!('text' in item && typeof item.text === 'string')) throw `${msg} text property does not exist or it's not a string.`
+
+          if ('icon' in item && item.icon) {
+
+            if (typeof item.icon.name !== 'string') throw `${msg} the name property of icon is not a string!`
+
+            if (typeof item.icon.element !== 'string') throw `${msg} the element property of icon is not an string!`
+
+          }
+
+        }
+
+        // 1. Return the item with icon.
+        if (item.icon) {
+
+          return {
+
+            level : item.level,
+            text  : item.text,
+            icon  : {
+
+              element : create_icon(String(item.icon.element)),
+              name    : item.icon.name,
+
+            }
+
+          }
+
+        // 2. Return the item without icon.
+        } else {
+
+          return {
+
+            level : item.level,
+            text  : item.text,
+
+          }
+
+        }
+
+      })
+
+      return parsed_history
+
+    }).catch( error => {
+
+      // #. Create the folder and file if not found.
+      if (error.code === 'NE_FS_FILRDER') {
+
+        Neutralino.filesystem.createDirectory(this.directory)
+
+        Neutralino.filesystem.writeFile(this.history_file, JSON.stringify([], null, 2)).then( () => {
+
+          this.notify({
+            text  : `Created the history file on <b>${this.history_file}</b>`,
+            level : 'urgent'
+          })
+
+        })
+      }
+
+      //this.notify
+      console.error(error)
+
+      return [] as Array<NotificationHistoryItem>
 
     })
 
