@@ -44,8 +44,8 @@ body {
       font-family: $defaut-font;
 
       display: grid;
-      grid-template-columns: 6rem 1fr 4rem $icon-container-size;
-      grid-template-rows: 2rem 1fr 2rem;
+      grid-template-columns: 6rem 1fr 5rem $icon-container-size;
+      grid-template-rows: 2rem 1fr 2.5rem;
       gap: 0px 0px;
       grid-template-areas:
         "icon title date header"
@@ -64,9 +64,42 @@ body {
       transition-duration: 300ms;
       transition-timing-function: linear;
 
+      &.urgent { @include pseudo_bg($urgent) }
+      &.normal { @include pseudo_bg($normal) }
+      &.low { @include pseudo_bg($low) }
+
       &.remove {
 
         right: -($width + 2rem);
+
+      }
+
+      &:hover {
+
+        &::before {
+
+          width: 0.2rem;
+          left: -0.85rem
+
+        }
+
+      }
+
+      &::before {
+
+        content: '';
+
+        height: 100%;
+        width: 0.1rem;
+
+        position: absolute;
+        left: -0.8rem;
+        top: 0;
+
+
+        transition-property: width, left;
+        transition-duration: 100ms;
+        transition-timing-function: linear;
 
       }
 
@@ -228,10 +261,9 @@ body {
         grid-area: buttons;
 
         display: flex;
-        align-items: center;
+        align-items: end;
         justify-content: center;
         gap: 0.5rem;
-
 
         >.button {
 
@@ -295,39 +327,6 @@ body {
         }
 
       }
-
-      &:hover {
-
-        &::before {
-
-          width: 0.2rem;
-          left: -0.85rem
-
-        }
-
-      }
-
-      &::before {
-
-        content: '';
-
-        height: 100%;
-        width: 0.1rem;
-
-        position: absolute;
-        left: -0.8rem;
-        top: 0;
-
-
-        transition-property: width, left;
-        transition-duration: 100ms;
-        transition-timing-function: linear;
-
-      }
-
-      &.urgent { @include pseudo_bg($urgent) }
-      &.normal { @include pseudo_bg($normal) }
-      &.low { @include pseudo_bg($low) }
 
     }
 
