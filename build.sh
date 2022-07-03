@@ -24,6 +24,13 @@ case "$1" in
 
       ;;
 
+      'all' | * )
+
+        $0 ts global
+        $0 ts main
+
+      ;;
+
     esac
 
   ;;
@@ -52,10 +59,10 @@ case "$1" in
 
   ;;
 
-  'all' )
+  'all' | * )
 
     $0 fonts
-    $0 ts
+    $0 ts all
     $0 scss
     $0 html
     $0 app
