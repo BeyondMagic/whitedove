@@ -1,15 +1,21 @@
-// #. system
-globalThis.system = {} as any
+import { TimeParser } from './modules/TimeParser'
 
-// #. sleep
-globalThis.sleep = (ms: number) : Promise<void> => {
+// #. WhiteDove sets.
+globalThis.WhiteDove = {} as any
+globalThis.WhiteDove.system = {} as any
+
+// #. WhiteDove.timeParser
+globalThis.WhiteDove.timeParser = new TimeParser()
+
+// #. WhiteDove.sleep
+globalThis.WhiteDove.sleep = (ms: number) : Promise<void> => {
 
   return new Promise( resolve => setTimeout(resolve, ms) )
 
 }
 
-// #. create_icon
-globalThis.create_icon = (data : string, size : number = 48) : SVGSVGElement | null => {
+// #. WhiteDove.createIcon
+globalThis.WhiteDove.createIcon = (data : string, size : number = 48) : SVGSVGElement | null => {
 
   const template = document.createElement('template')
   {
@@ -32,7 +38,7 @@ globalThis.create_icon = (data : string, size : number = 48) : SVGSVGElement | n
 
   } else {
 
-    notification_server.create({
+    WhiteDove.notificationServer.create({
       title: 'create_icon',
       text: 'Unable to create the SVG element.',
       level: 'normal'})

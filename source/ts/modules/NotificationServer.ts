@@ -49,7 +49,7 @@ export class NotificationServer {
   private history_file : string
   private directory    : string
 
-  public constructor ( parent : HTMLElement, directory : string = system.data_path, file : string = '/history.json' ) {
+  public constructor ( parent : HTMLElement, directory : string = WhiteDove.system.data_path, file : string = '/history.json' ) {
 
     const container = document.createElement('main')
 
@@ -120,7 +120,7 @@ export class NotificationServer {
       buttons : data.buttons,
       icon    : {
 
-        element: create_icon(svg_notification),
+        element: WhiteDove.createIcon(svg_notification),
         name: 'notification_server'
 
       }
@@ -164,7 +164,7 @@ export class NotificationServer {
           button.classList.add('button')
           button.addEventListener( 'click', () => this.remove(0, notification))
 
-          const icon = create_icon(svg_close)
+          const icon = WhiteDove.createIcon(svg_close)
           if (icon) {
 
             icon.classList.add('close')
@@ -179,7 +179,7 @@ export class NotificationServer {
       const date = document.createElement('section')
       {
         date.classList.add('date')
-        date.textContent = '1 day'
+        date.textContent = WhiteDove.timeParser.parse( new Date('June 30, 2022 23:20:30') )
       }
 
       if (data.icon && data.icon.element) {
@@ -287,11 +287,11 @@ export class NotificationServer {
       delay -= transition_time
     }
 
-    if (delay > 0) await sleep(delay)
+    if (delay > 0) await WhiteDove.sleep(delay)
 
     notification.classList.add('remove')
 
-    await sleep(transition_time)
+    await WhiteDove.sleep(transition_time)
 
     notification.remove()
 
@@ -385,7 +385,7 @@ export class NotificationServer {
             text  : item.text,
             icon  : {
 
-              element : create_icon(String(item.icon.element)),
+              element : WhiteDove.createIcon(String(item.icon.element)),
               name    : item.icon.name,
 
             }
