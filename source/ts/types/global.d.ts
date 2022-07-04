@@ -81,7 +81,7 @@ declare global {
        * @example
        *  WhiteDove.notifcationServer.remove(0, notification)
        */
-      async function remove ( delay : number, notification : HTMLElement ) : Promise<void>
+      async function remove ( data : NotificationType, snapshot : number, notification : HTMLElement, save : boolean ) : Promise<void>
 
       /**
       * Save the notification to the history file.
@@ -96,13 +96,20 @@ declare global {
       * @example
       *   WhiteDove.notifcationServer.page()
       */
-      async function page () : Promise<void>
+      function show_sidebar () : void
 
       /**
-        * Parse the history file to add to our history. Do this after constructing the class.
-        * @example
-        *   await WhiteDove.notificationServer.parse()
-        */
+      * To open the configuration page of the NotificationServer.
+      * @example
+      *   WhiteDove.notificationServer.show_config_page()
+      */
+      function show_config_page () : void
+
+      /**
+      * Parse the history file to add to our history. Do this after constructing the class.
+      * @example
+      *   await WhiteDove.notificationServer.parse()
+      */
       async function parse () : Promise<void>
 
     }

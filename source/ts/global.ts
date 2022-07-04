@@ -1,7 +1,9 @@
 import { TimeParser } from './modules/TimeParser'
 
+Neutralino.init()
+
 // #. WhiteDove sets.
-globalThis.WhiteDove = {} as any
+globalThis.WhiteDove        = {} as any
 globalThis.WhiteDove.system = {} as any
 
 // #. WhiteDove.timeParser

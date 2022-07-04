@@ -4,8 +4,6 @@ import { NotificationServer } from './modules/NotificationServer'
 import icon_neutralino from'../icons/atom.svg'
 import icon_settings from'../icons/settings.svg'
 
-Neutralino.init()
-
 Neutralino.os.getPath('data').then( path => {
 
   globalThis.WhiteDove.system.data_path = path.concat('/whitedove/')
@@ -15,7 +13,10 @@ Neutralino.os.getPath('data').then( path => {
 // #. Our 'ready' event of Neutralino.
 .finally( async () => {
 
+  // 1. Define NotificationServer for global.
   globalThis.WhiteDove.notificationServer = new NotificationServer(document.body)
+
+  // 1.1. Wait parsing of all Notifications from system.
   await WhiteDove.notificationServer.parse()
 
   // #. white_board
@@ -57,7 +58,7 @@ Neutralino.os.getPath('data').then( path => {
 
   }, false)
 
-  WhiteDove.notificationServer.backup()
-  WhiteDove.notificationServer.page()
+  //WhiteDove.notificationServer.backup()
+  WhiteDove.notificationServer.show_sidebar()
 
 })

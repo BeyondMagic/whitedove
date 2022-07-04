@@ -1,5 +1,6 @@
 body {
 
+  >.notification-page >.notification-list,
   >.notification-container {
 
     $urgent: #FC566A;
@@ -14,14 +15,6 @@ body {
         background-color: $color;
       }
     }
-
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
 
     >.notification {
 
@@ -327,6 +320,167 @@ body {
         }
 
       }
+
+    }
+
+  }
+
+  >.notification-container {
+
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 10;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+  }
+
+  >.notification-page {
+
+    $width: 28rem;
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+
+    height: calc(100% - $page-header-height);
+    width: 28rem;
+
+    background-color: $bg;
+
+    box-shadow: 2px -2px 1rem rgba($fg, 0.25);
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 3rem 1fr 3rem;
+    grid-template-areas:
+      'bottom-bar'
+      'notification-list'
+      'header';
+
+    &.hidden {
+
+      right: -$width;
+
+    }
+
+
+    >.header {
+
+      grid-area: header;
+
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: 'left right';
+
+      >.left {
+
+        grid-area: left;
+
+      }
+
+      >.right {
+
+        grid-area: right;
+
+        padding: 0 0.5rem;
+
+        display: flex;
+        justify-content: right;
+        align-items: center;
+
+        >.config {
+
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          cursor: pointer;
+
+          $extra: 0.5rem;
+          $size: 1.5rem;
+
+          width: $size + $extra;
+          height: $size + $extra;
+
+          border-radius: 50%;
+
+          $transition-effect: 100ms ease-in-out;
+
+          transition: background-color $transition-effect;
+
+          >.icon {
+
+            width: $size;
+            height: $size;
+
+            fill: rgba($fg, 0.75);
+
+            transition: fill $transition-effect;
+
+          }
+
+          &:hover {
+
+            $color: #721FC8;
+
+            background-color: rgba($color, 0.1);
+
+            >.icon {
+
+              fill: $color;
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+    >.notification-list {
+
+      grid-area: notification-list;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: baseline;
+      align-items: end;
+      gap: 1rem;
+
+      padding: 1rem;
+
+      overflow-y: scroll;
+      overflow-x: hidden;
+
+      // #. In history.
+      >.notification {
+
+        margin: 0;
+
+        box-shadow: none;
+
+
+       >.header >.button {
+
+         display: none;
+
+       }
+
+
+      }
+
+    }
+
+    >.bottom-bar {
+
+      grid-area: bottom-bar;
 
     }
 

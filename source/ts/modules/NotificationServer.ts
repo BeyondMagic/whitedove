@@ -1,5 +1,6 @@
 import svg_close from '../../icons/keyboard_arrow_right.svg'
 import svg_notification from '../../icons/notifications.svg'
+import svg_settings from '../../icons/settings.svg'
 
 interface Button {
 
@@ -20,15 +21,22 @@ interface NotificationIcon {
 // #. For history.
 export interface NotificationHistoryItem {
 
-  readonly level : 'urgent' | 'normal' | 'low'
-  readonly text  : string
+  level    : 'urgent' | 'normal' | 'low'
+  text     : string
+  title    : string
+  snapshot : number
 
-  readonly icon? : NotificationIcon
+  icon? : NotificationIcon
 
 }
 
 // #. For modules who has their own notification system
-export interface NotificationInit extends NotificationHistoryItem {
+export interface NotificationInit {
+
+  readonly level : 'urgent' | 'normal' | 'low'
+  readonly text  : string
+
+  readonly icon? : NotificationIcon
 
   readonly buttons? : Array<Button>
 
@@ -45,6 +53,8 @@ export interface NotificationType extends NotificationInit {
 export class NotificationServer {
 
   private parent       : HTMLElement
+  private sidebar      : HTMLElement
+  private sidebar_body : HTMLElement
   private history      : Array<NotificationHistoryItem>
   private history_file : string
   private directory    : string
@@ -52,11 +62,19 @@ export class NotificationServer {
   public constructor ( parent : HTMLElement, directory : string = WhiteDove.system.data_path, file : string = '/history.json' ) {
 
     const container = document.createElement('main')
-
-    container.classList.add('notification-container')
-
+    {
+      container.classList.add('notification-container')
+    }
     parent.appendChild(container)
 
+    const page = document.createElement('main')
+    {
+      page.classList.add('notification-page')
+    }
+    document.body.append(page)
+
+    this.sidebar_body = document.createElement('section')
+    this.sidebar      = page
     this.parent       = container
     this.history_file = directory + file
     this.directory    = directory
@@ -70,42 +88,37 @@ export class NotificationServer {
     * @example
     *   this.save(notification_data)
     */
-  private save ( data : NotificationType ) : void {
+  private async save ( data : NotificationType, snapshot : number ) : Promise<void> {
+
+    console.log('AAAAAAAAAAAAAAAAA')
+
+    const notification : NotificationHistoryItem = {
+
+      level     : data.level,
+      text      : data.text,
+      title     : data.title,
+      snapshot  : snapshot,
+
+    }
 
     if (data.icon) {
 
-      const notification : NotificationHistoryItem = {
+      notification.icon = {
 
-        level : data.level,
-        text  : data.text,
-        icon  : {
-
-          name    : data.icon.name,
-          element : data.icon.element,
-
-        }
+        name    : data.icon.name,
+        element : data.icon.element,
 
       }
-
-      this.history.push(notification)
-
-    } else {
-
-      const notification : NotificationHistoryItem = {
-
-        level : data.level,
-        text  : data.text,
-
-      }
-
-      this.history.push(notification)
 
     }
+
+    this.history.push(notification)
+    this.sidebar_body.insertAdjacentElement( 'afterbegin', this.create_notification(notification, snapshot, false) )
 
   }
 
   /**
-    * Notify from this module with the default settings.
+    * Notify from this module with the default settings and without saving to history.
     * @param NotificationInit The initial notification to load.
     * @example
     *   this.notify({ text: 'lol', '' })
@@ -129,30 +142,83 @@ export class NotificationServer {
 
   }
 
-  public async create ( data : NotificationType, save : boolean = true ) : Promise<HTMLElement> {
+  /**
+    * Add each notifcation from `this.history` and then add it to the sidebar.
+    * Just run this once.
+    * @example
+    *   await this.create_side_bar()
+    */
+  private async create_side_bar () : Promise<void> {
+
+    const header = document.createElement('section')
+    {
+      header.classList.add('header')
+
+      // 1. Left part of the header.
+      const left = document.createElement('section')
+      {
+        left.classList.add('left')
+      }
+      header.appendChild(left)
+
+      // 2. Right part of the header.
+      const right = document.createElement('section')
+      {
+        right.classList.add('right')
+
+        // 2.1. This symbol is used to open the configuration page of the NotificationServer.
+        const config = document.createElement('span')
+        {
+          config.classList.add('config')
+
+          config.addEventListener('click', () => this.show_config_page() )
+
+          const icon = WhiteDove.createIcon(svg_settings)
+          if (icon) {
+
+            icon.classList.add('icon')
+            config.appendChild(icon)
+
+          }
+
+        }
+        right.appendChild(config)
+
+      }
+      header.appendChild(right)
+
+    }
+
+    const list = this.sidebar_body
+    {
+      list.classList.add('notification-list')
+
+      this.history.forEach( item => {
+
+        const notification = this.create_notification(item, item.snapshot)
+
+        list.insertAdjacentElement( 'afterbegin', notification)
+
+      })
+    }
+
+    this.sidebar.append(header, list)
+
+  }
+
+  /**
+    * Create the element of notification given the data.
+    * @param data NotificationType | NotificationHistoryItem The data of the notificaiton to be created in a HTML element.
+    * @example
+    *   const notification = this.create_notification(data)
+    *   notification.classList.add('mine-special')
+    */
+  private create_notification ( data : NotificationType | NotificationHistoryItem, snapshot : number, save : boolean = false ) : HTMLElement {
 
     const notification = document.createElement('section')
     {
 
       notification.classList.add('notification', data.level)
-
-      // #. Calculate the time of the notifcation by its level.
-      if (!data.time) {
-
-        switch (data.level) {
-
-          // 1. Will be here forever (infinite).
-          case 'urgent': data.time = -1; break
-
-          // 2. Set for 5 seconds.
-          case 'normal': data.time = 5000; break
-
-          // 3. Set for 2.5 seconds.
-          case 'low':    data.time = 2500; break
-
-        }
-
-      }
 
       const header = document.createElement('section')
       {
@@ -162,7 +228,7 @@ export class NotificationServer {
         {
 
           button.classList.add('button')
-          button.addEventListener( 'click', () => this.remove(0, notification))
+          button.addEventListener( 'click', () => this.remove( data, snapshot, notification, save) )
 
           const icon = WhiteDove.createIcon(svg_close)
           if (icon) {
@@ -179,7 +245,7 @@ export class NotificationServer {
       const date = document.createElement('section')
       {
         date.classList.add('date')
-        date.textContent = WhiteDove.timeParser.parse( new Date('June 30, 2022 23:20:30') )
+        date.textContent = WhiteDove.timeParser.parse(snapshot)
       }
 
       if (data.icon && data.icon.element) {
@@ -217,7 +283,7 @@ export class NotificationServer {
         body.insertAdjacentHTML('beforeend', data.text)
       }
 
-      if (data.buttons) {
+      if ('buttons' in data && data.buttons) {
 
         const buttons = document.createElement('section')
 
@@ -231,7 +297,10 @@ export class NotificationServer {
             button.classList.add('button', item.level)
             button.addEventListener( 'click', () => {
 
-              this.remove(0, notification)
+              const new_data = data
+              new_data.time = 0
+
+              this.remove(new_data, snapshot, notification, save)
               item.action()
 
             })
@@ -261,19 +330,43 @@ export class NotificationServer {
       notification.append(header, title, body, date)
     }
 
+    return notification
+
+  }
+
+  public async create ( data : NotificationType, save : boolean = true ) : Promise<HTMLElement> {
+
+    // #. Calculate the time of the notifcation by its level.
+    if (!data.time) {
+
+      switch (data.level) {
+
+        // 1. Will be here forever (infinite).
+        case 'urgent': data.time = -1; break
+
+        // 2. Set for 5 seconds.
+        case 'normal': data.time = 5000; break
+
+        // 3. Set for 2.5 seconds.
+        case 'low':    data.time = 2500; break
+
+      }
+
+    }
+
+    const snapshot = +new Date()
+    const notification = this.create_notification(data, snapshot, save)
+
     this.parent.appendChild(notification)
 
     // #. To remove the notification after a few seconds.
-    if (data.time > 0) this.remove(data.time, notification)
-
-    // #. To add on history.
-    if (save) this.save(data)
+    if (data.time > 0) this.remove(data, snapshot, notification, save)
 
     return notification
 
   }
 
-  public async remove ( delay : number, notification : HTMLElement ) : Promise<void> {
+  public async remove ( data : NotificationType, snapshot : number, notification : HTMLElement, save : boolean ) : Promise<void> {
 
     // #. Just a little test to make sure it's a notification.
     //    Not so sure though.
@@ -284,16 +377,19 @@ export class NotificationServer {
     {
       transition_time *= 1000
 
-      delay -= transition_time
+      data.time! -= transition_time
     }
 
-    if (delay > 0) await WhiteDove.sleep(delay)
+    if (data.time! > 0) await WhiteDove.sleep(data.time!)
 
     notification.classList.add('remove')
 
     await WhiteDove.sleep(transition_time)
 
     notification.remove()
+
+    // #. See if we can save it.
+    if (save) this.save(data, snapshot)
 
   }
 
@@ -376,33 +472,29 @@ export class NotificationServer {
 
         }
 
-        // 1. Return the item with icon.
+        // 1. Garbage collector lul.
+        const notification : NotificationHistoryItem = {
+
+          level    : item.level,
+          text     : item.text,
+          title    : item.title,
+          snapshot : item.snapshot,
+
+        }
+
+        // 1.1. Return the item with icon.
         if (item.icon) {
 
-          return {
+          notification.icon = {
 
-            level : item.level,
-            text  : item.text,
-            icon  : {
-
-              element : WhiteDove.createIcon(String(item.icon.element)),
-              name    : item.icon.name,
-
-            }
-
-          }
-
-        // 2. Return the item without icon.
-        } else {
-
-          return {
-
-            level : item.level,
-            text  : item.text,
+            element : WhiteDove.createIcon(String(item.icon.element)),
+            name    : item.icon.name,
 
           }
 
         }
+
+        return notification
 
       })
 
@@ -432,9 +524,18 @@ export class NotificationServer {
 
     })
 
+    // #. Add to the sidebar.
+    await this.create_side_bar()
+
   }
 
-  public async page () : Promise<void> {
+  public show_config_page () : void {
+
+    console.log('うあっ')
+
+  }
+
+  public show_sidebar () : void {
 
     console.log(this.history)
 

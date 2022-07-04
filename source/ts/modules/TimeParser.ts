@@ -128,8 +128,6 @@ export class TimeParser {
     let token       : string     = 'ago'
     let list_choice : keyof Time = 'ago'
 
-    console.log('lol')
-
     switch (typeof date) {
       case 'number':
         break;
@@ -137,7 +135,6 @@ export class TimeParser {
         date = +new Date(date);
         break;
       case 'object':
-        console.log('lol')
         if (date.constructor === Date) date = date.getTime();
         break;
       default:
