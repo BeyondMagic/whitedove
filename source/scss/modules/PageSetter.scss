@@ -1,0 +1,122 @@
+body {
+
+  $bar-top-height: 2rem;
+
+  width: 100vw;
+  height: 100vh;
+
+  padding: 0;
+  margin: 0;
+
+  display: grid;
+
+
+  grid-template-columns: 0.02fr 1fr 0.02fr;
+  grid-template-rows: $bar-top-height 1fr 0.02fr;
+  gap: 0px 0px; 
+  grid-template-areas:
+    "top-bar top-bar top-bar"
+    "left-side-bar text-body right-side-bar"
+    "bottom-bar bottom-bar bottom-bar";
+
+  overflow: hidden;
+
+  .left-side-bar, .right-side-bar, .bottom-bar, .top-bar, .main {
+
+    position: relative;
+
+  }
+
+  .left-side-bar {
+
+    grid-area: left-side-bar;
+    //background-color: red;
+
+  }
+
+  .right-side-bar {
+
+    grid-area: right-side-bar;
+    //background-color: green;
+
+  }
+
+  .bottom-bar {
+
+    grid-area: bottom-bar;
+    //background-color: blue;
+
+  }
+
+  .top-bar {
+
+    grid-area: top-bar;
+
+    >.icon-container {
+
+      height: $bar-top-height;
+      width: $bar-top-height;
+
+      $box-size: $bar-top-height - 0.25rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      >.icon-box {
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+
+        height: $box-size;
+        width: $box-size;
+
+        $icon-size: $box-size - 0.5rem;
+
+        cursor: pointer;
+
+        &.notification {
+
+          $color: #1978AA;
+
+          >.icon {
+
+            fill: rgba($fg, 0.75);
+
+            width: $icon-size;
+            height: $icon-size;
+
+          }
+
+          &:hover {
+
+            background-color: rgba($color, 0.05);
+
+            >.icon {
+
+              fill: $color;
+              stroke: $color;
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+  .main {
+
+    grid-area: text-body;
+    //background-color: red;
+
+  }
+
+
+}

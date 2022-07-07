@@ -1,4 +1,5 @@
 import { NotificationServer } from './modules/NotificationServer'
+import { PageSetter } from './modules/PageSetter'
 //import { WhiteBoard } from './modules/WhiteBoard'
 
 import icon_neutralino from'../icons/atom.svg'
@@ -62,3 +63,10 @@ Neutralino.os.getPath('data').then( path => {
   WhiteDove.notificationServer.show_sidebar()
 
 })
+
+{
+  const pageSetter = new PageSetter()
+
+  pageSetter.parse_all()
+
+}

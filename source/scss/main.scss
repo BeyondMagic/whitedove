@@ -9,6 +9,9 @@
 // #. Animations (keyframes).
 @import './modules/keyframes';
 
+// 1. Main template of the page.
+@import './modules/PageSetter';
+
 // #. For NotificationServer.
 @import './modules/NotificationServer';
 
@@ -20,9 +23,6 @@
 
 // 3. ConfigPage.
 @import './modules/configuration_page';
-
-// #. Main template of the page.
-@import './modules/page';
 
 // #. Main for writing and reading.
 @import './modules/main';

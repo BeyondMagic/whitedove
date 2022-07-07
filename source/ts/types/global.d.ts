@@ -66,7 +66,7 @@ declare global {
       /**
        * Creates a new notification based on information.
        * @param data NotificationType Data of the notification to save.
-       * @param save boolean Save to history.
+       * @param save boolean Save to history. Initial value is `true`.
        * @returns A promise of HTMLElement (the notification).
        * @example
        *  WhiteDove.notifcationServer.create({ title: 'Board', level: 'low', text: 'Did not found the name.'})
