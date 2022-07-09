@@ -34,7 +34,7 @@ body {
       word-break: break-word;
       white-space: pre-wrap;
 
-      font-family: $defaut-font;
+      font-family: $default-font;
 
       display: grid;
       grid-template-columns: 6rem 1fr 5rem $icon-container-size;
@@ -352,15 +352,17 @@ body {
 
     background-color: $bg;
 
-    box-shadow: 2px -2px 1rem rgba($fg, 0.25);
+    box-shadow: 2px 0.5rem 1rem rgba($fg, 0.25);
 
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 3rem 1fr 3rem;
     grid-template-areas:
-      'bottom-bar'
+      'header'
       'notification-list'
-      'header';
+      'bottom-bar';
+
+    transition: right 150ms linear;
 
     &.hidden {
 
@@ -381,6 +383,22 @@ body {
 
         grid-area: left;
 
+        display: flex;
+        justify-content: left;
+        align-items: center;
+
+        padding: 0 1.5rem;
+
+        >.label {
+
+          font-family: $default-font;
+          font-size: 1.15rem;
+          font-weight: 600;
+          color: rgba($fg, 0.8);
+
+
+        }
+
       }
 
       >.right {
@@ -393,7 +411,7 @@ body {
         justify-content: right;
         align-items: center;
 
-        >.config {
+        >.button {
 
           display: flex;
           justify-content: center;
@@ -424,15 +442,37 @@ body {
 
           }
 
-          &:hover {
+          &.clear {
 
-            $color: #721FC8;
+            &:hover {
 
-            background-color: rgba($color, 0.1);
+              $color: #424A89;
 
-            >.icon {
+              background-color: rgba($color, 0.1);
 
-              fill: $color;
+              >.icon {
+
+                fill: $color;
+
+              }
+
+            }
+
+          }
+
+          &.config {
+
+            &:hover {
+
+              $color: #721FC8;
+
+              background-color: rgba($color, 0.1);
+
+              >.icon {
+
+                fill: $color;
+
+              }
 
             }
 
@@ -462,9 +502,23 @@ body {
       // #. In history.
       >.notification {
 
+        transition-duration: 75ms;
+
         margin: 0;
 
         box-shadow: none;
+
+        &::before {
+
+          display: none;
+
+        }
+
+        &:hover {
+
+          right: 15px;
+
+        }
 
 
        >.header >.button {

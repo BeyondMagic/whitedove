@@ -1,4 +1,5 @@
-import svg_close from '../../icons/keyboard_arrow_right.svg'
+import svg_arrow_right from '../../icons/keyboard_arrow_right.svg'
+import svg_clear_all from '../../icons/clear_all.svg'
 import svg_notification from '../../icons/notifications.svg'
 import svg_settings from '../../icons/settings.svg'
 
@@ -90,8 +91,6 @@ export class NotificationServer {
     */
   private async save ( data : NotificationType, snapshot : number ) : Promise<void> {
 
-    console.log('AAAAAAAAAAAAAAAAA')
-
     const notification : NotificationHistoryItem = {
 
       level     : data.level,
@@ -150,6 +149,8 @@ export class NotificationServer {
     */
   private async create_side_bar () : Promise<void> {
 
+    this.sidebar.classList.add('hidden')
+
     const header = document.createElement('section')
     {
       header.classList.add('header')
@@ -158,18 +159,40 @@ export class NotificationServer {
       const left = document.createElement('section')
       {
         left.classList.add('left')
+
+        // 1.1. Add a text for `Notifications`.
+        const label = document.createElement('span')
+        {
+          label.textContent = 'Notifications'
+          label.classList.add('label')
+          left.appendChild(label)
+        }
       }
       header.appendChild(left)
 
-      // 2. Right part of the header.
+      // 2.1. Right part of the header.
       const right = document.createElement('section')
       {
         right.classList.add('right')
+        const clear = document.createElement('span')
+        {
+          clear.classList.add('clear', 'button')
 
-        // 2.1. This symbol is used to open the configuration page of the NotificationServer.
+          clear.addEventListener('click', () => console.log('aaaaaaaaa') )
+
+          const icon = WhiteDove.createIcon(svg_clear_all)
+          if (icon) {
+
+            icon.classList.add('icon')
+            clear.appendChild(icon)
+
+          }
+        }
+
+        // 2.2. This symbol is used to open the configuration page of the NotificationServer.
         const config = document.createElement('span')
         {
-          config.classList.add('config')
+          config.classList.add('config', 'button')
 
           config.addEventListener('click', () => this.show_config_page() )
 
@@ -180,9 +203,8 @@ export class NotificationServer {
             config.appendChild(icon)
 
           }
-
         }
-        right.appendChild(config)
+        right.append(clear, config)
 
       }
       header.appendChild(right)
@@ -230,7 +252,7 @@ export class NotificationServer {
           button.classList.add('button')
           button.addEventListener( 'click', () => this.remove( data, snapshot, notification, save) )
 
-          const icon = WhiteDove.createIcon(svg_close)
+          const icon = WhiteDove.createIcon(svg_arrow_right)
           if (icon) {
 
             icon.classList.add('close')
@@ -238,8 +260,8 @@ export class NotificationServer {
 
           }
 
+          header.append(button)
         }
-        header.append(button)
       }
 
       const date = document.createElement('section')
@@ -535,9 +557,19 @@ export class NotificationServer {
 
   }
 
-  public show_sidebar () : void {
+  public show_sidebar ( button : HTMLElement ) : void {
 
-    console.log(this.history)
+    if (this.sidebar.classList.contains('hidden')) {
+
+      this.sidebar.classList.remove('hidden')
+      button.classList.add('active')
+
+    } else {
+
+      this.sidebar.classList.add('hidden')
+      button.classList.remove('active')
+
+    }
 
   }
 

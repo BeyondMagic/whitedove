@@ -93,10 +93,11 @@ declare global {
 
       /**
       * Loads the page showing the history of notifications.
+      * @param HTMLElement button The element which will tell that has actived.
       * @example
       *   WhiteDove.notifcationServer.page()
       */
-      function show_sidebar () : void
+      function show_sidebar ( button : HTMLElement ) : void
 
       /**
       * To open the configuration page of the NotificationServer.

@@ -1,5 +1,6 @@
 import icon_html from '../../icons/html.svg'
 import icon_notification from '../../icons/notifications.svg'
+import { WhiteBoard } from './WhiteBoard'
 
 export class PageSetter {
 
@@ -123,6 +124,8 @@ export class PageSetter {
       const icon_box = document.createElement('span')
       {
         icon_box.classList.add('notification', 'icon-box')
+        icon_box.addEventListener( 'click', () => WhiteDove.notificationServer.show_sidebar(icon_box) )
+
         const icon = WhiteDove.createIcon(icon_notification)
 
         if (icon) {

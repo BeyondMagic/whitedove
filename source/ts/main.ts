@@ -2,8 +2,8 @@ import { NotificationServer } from './modules/NotificationServer'
 import { PageSetter } from './modules/PageSetter'
 //import { WhiteBoard } from './modules/WhiteBoard'
 
-import icon_neutralino from'../icons/atom.svg'
-import icon_settings from'../icons/settings.svg'
+//import icon_neutralino from'../icons/atom.svg'
+//import icon_settings from'../icons/settings.svg'
 
 Neutralino.os.getPath('data').then( path => {
 
@@ -39,28 +39,27 @@ Neutralino.os.getPath('data').then( path => {
 
   //WhiteDove.whiteBoard.create('/home/iris/story/#. Theater.json')
 
-  WhiteDove.notificationServer.create({
+  //WhiteDove.notificationServer.create({
 
-    title : 'Neutralino',
-    level : 'urgent',
-    text  : 'Server is up running',
-    icon  : { element: WhiteDove.createIcon(icon_neutralino), name: 'neutralino' },
+  //  title : 'Neutralino',
+  //  level : 'urgent',
+  //  text  : 'Server is up running',
+  //  icon  : { element: WhiteDove.createIcon(icon_neutralino), name: 'neutralino' },
 
-    buttons: [
+  //  buttons: [
 
-      {
-        name   : 'remove',
-        level  : 'accept',
-        action : () => {},
-        icon   : WhiteDove.createIcon(icon_settings)
-      }
+  //    {
+  //      name   : 'remove',
+  //      level  : 'accept',
+  //      action : () => {},
+  //      icon   : WhiteDove.createIcon(icon_settings)
+  //    }
 
-    ]
+  //  ]
 
-  }, false)
+  //}, false)
 
   //WhiteDove.notificationServer.backup()
-  WhiteDove.notificationServer.show_sidebar()
 
 })
 
