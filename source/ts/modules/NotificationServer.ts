@@ -19,18 +19,6 @@ interface NotificationIcon {
 
 }
 
-// #. For history.
-export interface NotificationHistoryItem {
-
-  level    : 'urgent' | 'normal' | 'low'
-  text     : string
-  title    : string
-  snapshot : number
-
-  icon? : NotificationIcon
-
-}
-
 // #. For modules who has their own notification system
 export interface NotificationInit {
 
@@ -41,45 +29,41 @@ export interface NotificationInit {
 
   readonly buttons? : Array<Button>
 
-  time? : number
-
 }
 
 export interface NotificationType extends NotificationInit {
 
   readonly title : string
 
+  // #. This is the unique ID!
+  snapshot? : number
+
+
 }
 
 export class NotificationServer {
 
-  private parent       : HTMLElement
   private sidebar      : HTMLElement
   private sidebar_body : HTMLElement
-  private history      : Array<NotificationHistoryItem>
+  private history      : Array<NotificationType>
   private history_file : string
   private directory    : string
+  private next_id : number
 
   public constructor ( parent : HTMLElement, directory : string = WhiteDove.system.data_path, file : string = '/history.json' ) {
-
-    const container = document.createElement('main')
-    {
-      container.classList.add('notification-container')
-    }
-    parent.appendChild(container)
 
     const page = document.createElement('main')
     {
       page.classList.add('notification-page')
     }
-    document.body.append(page)
+    parent.append(page)
 
     this.sidebar_body = document.createElement('section')
     this.sidebar      = page
-    this.parent       = container
     this.history_file = directory + file
     this.directory    = directory
     this.history      = []
+    this.next_id      = 0
 
   }
 
@@ -89,30 +73,9 @@ export class NotificationServer {
     * @example
     *   this.save(notification_data)
     */
-  private async save ( data : NotificationType, snapshot : number ) : Promise<void> {
+  private async save ( data : NotificationType ) : Promise<void> {
 
-    const notification : NotificationHistoryItem = {
-
-      level     : data.level,
-      text      : data.text,
-      title     : data.title,
-      snapshot  : snapshot,
-
-    }
-
-    if (data.icon) {
-
-      notification.icon = {
-
-        name    : data.icon.name,
-        element : data.icon.element,
-
-      }
-
-    }
-
-    this.history.push(notification)
-    this.sidebar_body.insertAdjacentElement( 'afterbegin', this.create_notification(notification, snapshot, false) )
+    this.history.push(data)
 
   }
 
@@ -137,7 +100,7 @@ export class NotificationServer {
 
       }
 
-    }, false)
+    })
 
   }
 
@@ -149,7 +112,7 @@ export class NotificationServer {
     */
   private async create_side_bar () : Promise<void> {
 
-    this.sidebar.classList.add('hidden')
+    //this.sidebar.classList.add('hidden')
 
     const header = document.createElement('section')
     {
@@ -217,7 +180,7 @@ export class NotificationServer {
 
       this.history.forEach( item => {
 
-        const notification = this.create_notification(item, item.snapshot)
+        const notification = this.create_notification(item)
 
         list.insertAdjacentElement( 'afterbegin', notification)
 
@@ -231,15 +194,17 @@ export class NotificationServer {
   /**
     * Create the element of notification given the data.
     * @param data NotificationType | NotificationHistoryItem The data of the notificaiton to be created in a HTML element.
+    * @param snapshot The time being taken this notifcation.
     * @example
-    *   const notification = this.create_notification(data)
+    *   const notification = this.create_notification(data, +new Date())
     *   notification.classList.add('mine-special')
     */
-  private create_notification ( data : NotificationType | NotificationHistoryItem, snapshot : number, save : boolean = false ) : HTMLElement {
+  private create_notification ( data : NotificationType ) : HTMLElement {
 
     const notification = document.createElement('section')
     {
 
+      notification.setAttribute('data-id', String(data.snapshot))
       notification.classList.add('notification', data.level)
 
       const header = document.createElement('section')
@@ -250,7 +215,7 @@ export class NotificationServer {
         {
 
           button.classList.add('button')
-          button.addEventListener( 'click', () => this.remove( data, snapshot, notification, save) )
+          button.addEventListener( 'click', () => this.remove( notification ) )
 
           const icon = WhiteDove.createIcon(svg_arrow_right)
           if (icon) {
@@ -267,7 +232,7 @@ export class NotificationServer {
       const date = document.createElement('section')
       {
         date.classList.add('date')
-        date.textContent = WhiteDove.timeParser.parse(snapshot)
+        date.textContent = WhiteDove.timeParser.parse(data.snapshot)
       }
 
       if (data.icon && data.icon.element) {
@@ -319,10 +284,7 @@ export class NotificationServer {
             button.classList.add('button', item.level)
             button.addEventListener( 'click', () => {
 
-              const new_data = data
-              new_data.time = 0
-
-              this.remove(new_data, snapshot, notification, save)
+              this.remove(notification)
               item.action()
 
             })
@@ -356,65 +318,58 @@ export class NotificationServer {
 
   }
 
-  public async create ( data : NotificationType, save : boolean = true ) : Promise<HTMLElement> {
+  public async create ( data : NotificationType ) : Promise<HTMLElement> {
 
-    // #. Calculate the time of the notifcation by its level.
-    if (!data.time) {
+    data.snapshot = +new Date()
 
-      switch (data.level) {
+    const notification = this.create_notification(data)
 
-        // 1. Will be here forever (infinite).
-        case 'urgent': data.time = -1; break
+    this.history.push(data)
 
-        // 2. Set for 5 seconds.
-        case 'normal': data.time = 5000; break
-
-        // 3. Set for 2.5 seconds.
-        case 'low':    data.time = 2500; break
-
-      }
-
-    }
-
-    const snapshot = +new Date()
-    const notification = this.create_notification(data, snapshot, save)
-
-    this.parent.appendChild(notification)
-
-    // #. To remove the notification after a few seconds.
-    if (data.time > 0) this.remove(data, snapshot, notification, save)
+    this.sidebar_body.appendChild(notification)
 
     return notification
 
   }
 
-  public async remove ( data : NotificationType, snapshot : number, notification : HTMLElement, save : boolean ) : Promise<void> {
+  public async remove ( notification : HTMLElement ) : Promise<void> {
 
     // #. Just a little test to make sure it's a notification.
     //    Not so sure though.
     if (!notification.classList.contains('notification')) return
 
     // #. Parse the seconds computed CSS of transition and then make it in miliseconds.
-    let transition_time = parseFloat((getComputedStyle(notification).getPropertyValue('transition-duration').slice(0, -1)))
-    {
-      transition_time *= 1000
-
-      data.time! -= transition_time
-    }
-
-    if (data.time! > 0) await WhiteDove.sleep(data.time!)
+    let transition_time = parseFloat(
+      ( getComputedStyle(notification).getPropertyValue('transition-duration').slice(0, -1) )
+    ) * 1000
 
     notification.classList.add('remove')
 
     await WhiteDove.sleep(transition_time)
 
+    // Remove from body.
     notification.remove()
 
-    // #. See if we can save it.
-    if (save) this.save(data, snapshot)
+    // Get the position from the element itself.
+    let position = parseInt( notification.getAttribute('data-id')! )
+    let index : number
+
+    // Remove from history.
+    for (let i = 0; i < this.history.length; i++) {
+
+      if (this.history[i].snapshot === position) {
+
+        index = i
+        this.history.splice(index, 1)
+        break
+
+      }
+
+    }
 
   }
 
+  // TODO: Make the ID not save.
   public async backup () : Promise<boolean> {
 
     // #. To change the `icon.element` of the notification to a string that can be saved in the file.
@@ -455,12 +410,13 @@ export class NotificationServer {
 
   }
 
+  // TODO: Make a new id for the notification.
   public async parse () : Promise<void> {
 
     // #. Parse each notification.
     this.history = await Neutralino.filesystem.readFile(this.history_file).then( data => {
 
-      const unparsed_history = JSON.parse(data) as Array<NotificationHistoryItem>
+      const unparsed_history = JSON.parse(data) as Array<NotificationType>
 
       const parsed_history = unparsed_history.map( (item, index) => {
 
@@ -494,29 +450,7 @@ export class NotificationServer {
 
         }
 
-        // 1. Garbage collector lul.
-        const notification : NotificationHistoryItem = {
-
-          level    : item.level,
-          text     : item.text,
-          title    : item.title,
-          snapshot : item.snapshot,
-
-        }
-
-        // 1.1. Return the item with icon.
-        if (item.icon) {
-
-          notification.icon = {
-
-            element : WhiteDove.createIcon(String(item.icon.element)),
-            name    : item.icon.name,
-
-          }
-
-        }
-
-        return notification
+        return item
 
       })
 
@@ -542,7 +476,7 @@ export class NotificationServer {
       //this.notify
       console.error(error)
 
-      return [] as Array<NotificationHistoryItem>
+      return [] as Array<NotificationType>
 
     })
 

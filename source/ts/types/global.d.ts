@@ -66,22 +66,21 @@ declare global {
       /**
        * Creates a new notification based on information.
        * @param data NotificationType Data of the notification to save.
-       * @param save boolean Save to history. Initial value is `true`.
        * @returns A promise of HTMLElement (the notification).
        * @example
        *  WhiteDove.notifcationServer.create({ title: 'Board', level: 'low', text: 'Did not found the name.'})
        */
-      async function create ( data : NotificationType, save : boolean = true ) : Promise<HTMLElement>
+      async function create ( data : NotificationType ) : Promise<HTMLElement>
 
       /**
        * Removes a notification.
-       * @param delay In milliseconds.
-       * @param notification The HTMLElement of the notification.
+       * @param notification The element container of that notifcation data.
+       * @param position The position of the element. You can get from the notification itself with the tag `data-id`.
        * @returns A promise of void.
        * @example
        *  WhiteDove.notifcationServer.remove(0, notification)
        */
-      async function remove ( data : NotificationType, snapshot : number, notification : HTMLElement, save : boolean ) : Promise<void>
+      async function remove ( notification : HTMLElement, position : number ) : Promise<void>
 
       /**
       * Save the notification to the history file.

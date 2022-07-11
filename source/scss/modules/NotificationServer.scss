@@ -63,7 +63,7 @@ body {
 
       &.remove {
 
-        right: -($width + 2rem);
+        right: -($width + 2rem)!important;
 
       }
 
@@ -194,9 +194,13 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
-
-        display: flex;
         flex-direction: row-reverse;
+
+        width: 0;
+
+        transition: width 100ms linear;
+
+        overflow: hidden;
 
         >.button {
 
@@ -502,8 +506,6 @@ body {
       // #. In history.
       >.notification {
 
-        transition-duration: 75ms;
-
         margin: 0;
 
         box-shadow: none;
@@ -521,9 +523,9 @@ body {
         }
 
 
-       >.header >.button {
+       &:hover >.header {
 
-         display: none;
+         width: 1.5rem;
 
        }
 
