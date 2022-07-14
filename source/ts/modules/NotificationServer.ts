@@ -19,10 +19,12 @@ interface NotificationIcon {
 
 }
 
+type NotificationLevels = 'urgent' | 'normal' | 'low'
+
 // #. For modules who has their own notification system
 export interface NotificationInit {
 
-  readonly level : 'urgent' | 'normal' | 'low'
+  readonly level : NotificationLevels
   readonly text  : string
 
   readonly icon? : NotificationIcon
@@ -34,6 +36,9 @@ export interface NotificationInit {
 export interface NotificationType extends NotificationInit {
 
   readonly title : string
+
+  // #. Note: we're actually re-defining it.
+  buttons? : Array<Button>
 
   // #. This is the unique ID!
   snapshot? : number
@@ -48,7 +53,6 @@ export class NotificationServer {
   private history      : Array<NotificationType>
   private history_file : string
   private directory    : string
-  private next_id : number
 
   public constructor ( parent : HTMLElement, directory : string = WhiteDove.system.data_path, file : string = '/history.json' ) {
 
@@ -63,7 +67,6 @@ export class NotificationServer {
     this.history_file = directory + file
     this.directory    = directory
     this.history      = []
-    this.next_id      = 0
 
   }
 
@@ -350,18 +353,21 @@ export class NotificationServer {
     // Remove from body.
     notification.remove()
 
-    // Get the position from the element itself.
-    let position = parseInt( notification.getAttribute('data-id')! )
-    let index : number
+    // Remove from history by finding the element with the same ID (data).
+    {
+      // Get the position from the element itself.
+      let position = parseInt( notification.getAttribute('data-id')! )
+      let index : number
 
-    // Remove from history.
-    for (let i = 0; i < this.history.length; i++) {
+      for (let i = 0; i < this.history.length; i++) {
 
-      if (this.history[i].snapshot === position) {
+        if (this.history[i].snapshot === position) {
 
-        index = i
-        this.history.splice(index, 1)
-        break
+          index = i
+          this.history.splice(index, 1)
+          break
+
+        }
 
       }
 
@@ -369,13 +375,18 @@ export class NotificationServer {
 
   }
 
-  // TODO: Make the ID not save.
   public async backup () : Promise<boolean> {
 
-    // #. To change the `icon.element` of the notification to a string that can be saved in the file.
+    // 1. Remove certain things about the notification.
     const history_string = this.history.map( item => {
 
+      // 1.1. To change the `icon.element` of the notification to a string that can be saved in the file.
       if (item.icon && item.icon.element) item.icon.element = item.icon.element.outerHTML as any
+
+      // 1.2. To remove the buttons property.
+      //      Not usre even if this is "fixable", so a note on here.
+      //      NOTE: perhaps we can save the action to the file.
+      if (item.buttons) item.buttons = undefined
 
       return item
 
@@ -410,26 +421,30 @@ export class NotificationServer {
 
   }
 
-  // TODO: Make a new id for the notification.
   public async parse () : Promise<void> {
 
-    // #. Parse each notification.
+    // 1. Parse each notification.
     this.history = await Neutralino.filesystem.readFile(this.history_file).then( data => {
 
       const unparsed_history = JSON.parse(data) as Array<NotificationType>
 
       const parsed_history = unparsed_history.map( (item, index) => {
 
-        const msg = `The notification [${index}]`
+        const msg = `The notification <b>${index}<b>`
 
+        // 1. Testing the item.
         {
-          if (!('level' in item)) throw `${msg} does not have the property 'level'.`
+          // #. Make sure the title exists.
+          if (!('title' in item)) throw `${msg} does not have the property 'title'.`
 
           // #. Make sure the level can exist.
-          {
+          if (!('level' in item)) throw `${msg} does not have the property 'level'.`
+          else {
             let strange_level = false
 
-            Array.from(['urgent', 'normal', 'low']).forEach( level => {
+            Array.from(
+              ['urgent', 'normal', 'low'] as Array<NotificationLevels>
+            ).forEach( level => {
 
                 strange_level = (level === item.level)
 
@@ -438,17 +453,25 @@ export class NotificationServer {
             if (strange_level) throw `${msg} has a unrecognised level.`
           }
 
+          // #. Make sure the body text exists.
           if (!('text' in item && typeof item.text === 'string')) throw `${msg} text property does not exist or it's not a string.`
 
+          // #. Make sure the icon exists.
           if ('icon' in item && item.icon) {
 
             if (typeof item.icon.name !== 'string') throw `${msg} the name property of icon is not a string!`
 
             if (typeof item.icon.element !== 'string') throw `${msg} the element property of icon is not an string!`
 
-          }
+          } else throw `${msg} the icon property does not exist.`
+
+          // #. Make sure snapshot, the time being taken, exists.
+          if (!('snapshot' in item)) throw `${msg} the snapshot property does not exist.`
 
         }
+
+        // 2. Parse the icon element.
+        if (item.icon && item.icon.element) item.icon.element = WhiteDove.createIcon(item.icon.element)
 
         return item
 
@@ -456,7 +479,9 @@ export class NotificationServer {
 
       return parsed_history
 
-    }).catch( error => {
+    })
+    // 2. In case of error.
+    .catch( error => {
 
       // #. Create the folder and file if not found.
       if (error.code === 'NE_FS_FILRDER') {
@@ -473,14 +498,16 @@ export class NotificationServer {
         })
       }
 
-      //this.notify
+      // TODO: this.notify : Implementation for this module.
       console.error(error)
 
       return [] as Array<NotificationType>
 
     })
 
-    // #. Add to the sidebar.
+    console.log(this.history)
+
+    // 3. Add to the sidebar.
     await this.create_side_bar()
 
   }
