@@ -14,13 +14,19 @@ Neutralino.os.getPath('data').then( path => {
 // #. Our 'ready' event of Neutralino.
 .finally( async () => {
 
-  // 1. Define NotificationServer for global.
+  // 1.
+  globalThis.WhiteDove.pageSetter = new PageSetter()
+
+  // 1.1.
+  WhiteDove.pageSetter.parse_all()
+
+  // 2. Define NotificationServer for global.
   globalThis.WhiteDove.notificationServer = new NotificationServer(document.body)
 
-  // 1.1. Wait parsing of all Notifications from system.
+  // 2.1. Wait parsing of all Notifications from system.
   await WhiteDove.notificationServer.parse()
 
-  // #. white_board
+  // 3. White_board
   //{
   //  const main = document.body.querySelector('.main')
 
@@ -39,33 +45,31 @@ Neutralino.os.getPath('data').then( path => {
 
   //WhiteDove.whiteBoard.create('/home/iris/story/#. Theater.json')
 
-  WhiteDove.notificationServer.create({
+  //WhiteDove.notificationServer.create({
 
-    title : 'Eminem',
-    level : 'urgent',
-    text  : 'Nothing to <b>important</b>! I promise, こんにちは.',
-    icon  : { element: WhiteDove.createIcon(icon_settings), name: 'neutralino' },
+  //  title : 'Eminem',
+  //  level : 'urgent',
+  //  text  : 'Nothing to <b>important</b>! I promise, こんにちは.',
+  //  icon  : { element: WhiteDove.createIcon(icon_settings), name: 'neutralino' },
 
-    buttons: [
+  //  buttons: [
 
-      {
-        name   : 'remove',
-        level  : 'accept',
-        action : () => {},
-        icon   : WhiteDove.createIcon(icon_settings)
-      }
+  //    {
+  //      name   : 'remove',
+  //      level  : 'accept',
+  //      action : () => {},
+  //      icon   : WhiteDove.createIcon(icon_settings)
+  //    }
 
-    ]
+  //  ]
 
-  })
+  //})
 
   //WhiteDove.notificationServer.backup()
 
 })
 
 {
-  const pageSetter = new PageSetter()
 
-  pageSetter.parse_all()
 
 }

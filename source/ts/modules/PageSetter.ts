@@ -4,11 +4,15 @@ import { WhiteBoard } from './WhiteBoard'
 
 export class PageSetter {
 
-  private main          : HTMLElement
-  private sidebar_left  : HTMLElement
-  private sidebar_right : HTMLElement
-  private bar_bottom    : HTMLElement
-  private bar_top       : HTMLElement
+  // 1. General elements.
+  public main          : HTMLElement
+  public sidebar_left  : HTMLElement
+  public sidebar_right : HTMLElement
+  public bar_bottom    : HTMLElement
+  public bar_top       : HTMLElement
+
+  // 2. Particular elements for other components to work with.
+  public bar_top_notification_icon : HTMLElement
 
   public constructor () {
 
@@ -18,10 +22,12 @@ export class PageSetter {
     this.bar_bottom     = this.get_part('bottom-bar')
     this.bar_top        = this.get_part('top-bar')
 
+    this.bar_top_notification_icon = document.createElement('span')
+
   }
 
   /**
-   * Get the element and return it, if there isn't, just notify.
+   * Get the element and return it, if there isn't, just notify and create a replaceable.
    */
   private get_part ( name : string ) : HTMLElement {
 
@@ -58,11 +64,7 @@ export class PageSetter {
 
   }
 
-  /**
-   * Run all the functions to properly parse all parts of the page.
-   * Add icons, other modules, etc.
-   */
-  public async parse_all () : Promise<void> {
+  public parse_all () : void {
 
     const promise_main   = this.parse_main(this.main)
     const promise_top    = this.parse_bar_top(this.bar_top)
@@ -70,12 +72,13 @@ export class PageSetter {
     const promise_left   = this.parse_sidebar_left(this.sidebar_left)
     const promise_right  = this.parse_sidebar_right(this.sidebar_right)
 
-    await promise_main.finally( () =>
+    // #. Wait then all.
+    promise_main.finally( () =>
       promise_top.finally( () =>
-        promise_bottom.finally( () => 
+        promise_bottom.finally( () =>
           promise_left.finally( () =>
             promise_right.finally( () =>
-              true
+              {}
             )
           )
         )
@@ -113,7 +116,7 @@ export class PageSetter {
   }
 
   /**
-   *
+   * Parse the top bar, the header where icons and search can be made.
    */
   public async parse_bar_top ( parent : HTMLElement ) : Promise<void> {
 
@@ -121,7 +124,7 @@ export class PageSetter {
     {
       icon_container.classList.add('icon-container')
 
-      const icon_box = document.createElement('span')
+      const icon_box = this.bar_top_notification_icon
       {
         icon_box.classList.add('notification', 'icon-box')
         icon_box.addEventListener( 'click', () => WhiteDove.notificationServer.show_sidebar(icon_box) )

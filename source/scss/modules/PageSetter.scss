@@ -79,6 +79,8 @@ body {
 
         $transition: 100ms ease-in-out;
 
+        position: relative;
+
         transition: background-color $transition;
 
         >.icon {
@@ -90,6 +92,7 @@ body {
         &.notification {
 
           $color: #1978AA;
+          $unread: $color;
 
           >.icon {
 
@@ -97,6 +100,42 @@ body {
 
             width: $icon-size;
             height: $icon-size;
+
+          }
+
+          >.counter {
+
+            position: absolute;
+            top: 0.1rem;
+            right: 0.1rem;
+
+            font-size: 0.5rem;
+            font-weight: 700;
+
+            color: $unread;
+
+            opacity: 0;
+
+            transition: opacity $transition;
+
+          }
+
+          // When there are unread notifications.
+          &.unread {
+
+            //background-color: rgba($unread, 0.05);
+
+            >.counter {
+
+              opacity: 1;
+
+            }
+
+            >.icon {
+
+              fill: $unread;
+
+            }
 
           }
 

@@ -115,6 +115,31 @@ declare global {
     }
 
     /*
+     * To set up the page.
+     */
+    namespace pageSetter {
+
+      // 1. General elements.
+      const main          : HTMLElement
+      const sidebar_left  : HTMLElement
+      const sidebar_right : HTMLElement
+      const bar_bottom    : HTMLElement
+      const bar_top       : HTMLElement
+
+      // 2. Particular elements for other components to work with.
+      const bar_top_notification_icon : HTMLElement
+
+      /**
+       * Run all the functions to properly parse all parts of the page.
+       * Add icons, other modules, etc.
+       * @example
+       *   WhiteDove.pageSetter.parse_all()
+       */
+      function parse_all () : void
+
+    }
+
+    /*
      * To create white boards.
      */
     namespace whiteBoard {

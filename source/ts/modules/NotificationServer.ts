@@ -48,25 +48,40 @@ export interface NotificationType extends NotificationInit {
 
 export class NotificationServer {
 
-  private sidebar      : HTMLElement
-  private sidebar_body : HTMLElement
-  private history      : Array<NotificationType>
-  private history_file : string
-  private directory    : string
+  private counter      : HTMLElement // #. The parent of the counter. On the icon of notifications on the top bar.
+  private counter_body : HTMLElement // #. 
+  private sidebar      : HTMLElement // #.
+  private sidebar_body : HTMLElement // #.
+
+  private history      : Array<NotificationType> // #. 
+
+  private history_file : string // #. 
+  private directory    : string // #. 
 
   public constructor ( parent : HTMLElement, directory : string = WhiteDove.system.data_path, file : string = '/history.json' ) {
 
     const page = document.createElement('main')
     {
       page.classList.add('notification-page')
+      parent.append(page)
     }
-    parent.append(page)
 
-    this.sidebar_body = document.createElement('section')
+    const counter = document.createElement( 'span' )
+    {
+      counter.classList.add('counter')
+      WhiteDove.pageSetter.bar_top_notification_icon.appendChild(counter)
+    }
+
+    // #. Initial definitions.
     this.sidebar      = page
+    this.sidebar_body = document.createElement( 'section' )
+    this.counter      = WhiteDove.pageSetter.bar_top_notification_icon
+    this.counter_body = counter
+
+    this.history      = []
+
     this.history_file = directory + file
     this.directory    = directory
-    this.history      = []
 
   }
 
@@ -321,6 +336,25 @@ export class NotificationServer {
 
   }
 
+  /**
+    * Update the counter of notifications on the icon.
+    * @example
+    *   this.count()
+    */
+    private count () : void {
+
+      // TODO: Just count the unread notifications.
+      const total = this.history.length
+
+      // 1. Set the number of notifications.
+      this.counter_body.textContent = String(this.history.length)
+
+      // 2. To apply a new style for the icon element.
+      if (total > 0) this.counter.classList.add( 'unread' )
+      else           this.counter.classList.remove( 'unread' )
+
+    }
+
   public async create ( data : NotificationType ) : Promise<HTMLElement> {
 
     data.snapshot = +new Date()
@@ -330,6 +364,8 @@ export class NotificationServer {
     this.history.push(data)
 
     this.sidebar_body.appendChild(notification)
+
+    this.count()
 
     return notification
 
@@ -372,6 +408,8 @@ export class NotificationServer {
       }
 
     }
+
+    this.count()
 
   }
 
@@ -498,14 +536,13 @@ export class NotificationServer {
         })
       }
 
-      // TODO: this.notify : Implementation for this module.
       console.error(error)
 
       return [] as Array<NotificationType>
 
     })
 
-    console.log(this.history)
+    this.count()
 
     // 3. Add to the sidebar.
     await this.create_side_bar()
