@@ -3,6 +3,8 @@ import svg_clear_all from '../../icons/clear_all.svg'
 import svg_notification from '../../icons/notifications.svg'
 import svg_settings from '../../icons/settings.svg'
 
+type NotificationLevels = 'urgent' | 'normal' | 'low'
+
 interface Button {
 
   readonly name   : string
@@ -18,8 +20,6 @@ interface NotificationIcon {
   readonly name    : string
 
 }
-
-type NotificationLevels = 'urgent' | 'normal' | 'low'
 
 // #. For modules who has their own notification system
 export interface NotificationInit {
@@ -43,6 +43,9 @@ export interface NotificationType extends NotificationInit {
   // #. This is the unique ID!
   snapshot? : number
 
+// TODO: Add a 'read' boolean so we know whenever a notification was read or not.
+  // #.
+  //read? : boolean
 
 }
 
@@ -54,6 +57,8 @@ export class NotificationServer {
   private sidebar_body : HTMLElement // #.
 
   private history      : Array<NotificationType> // #. 
+
+  private history_unread : number // #. Quantityf of notifications not read.
 
   private history_file : string // #. 
   private directory    : string // #. 
@@ -73,15 +78,17 @@ export class NotificationServer {
     }
 
     // #. Initial definitions.
-    this.sidebar      = page
-    this.sidebar_body = document.createElement( 'section' )
-    this.counter      = WhiteDove.pageSetter.bar_top_notification_icon
-    this.counter_body = counter
+    this.sidebar        = page
+    this.sidebar_body   = document.createElement( 'section' )
+    this.counter        = WhiteDove.pageSetter.bar_top_notification_icon
+    this.counter_body   = counter
 
-    this.history      = []
+    this.history        = []
 
-    this.history_file = directory + file
-    this.directory    = directory
+    this.history_unread = 0
+
+    this.history_file   = directory + file
+    this.directory      = directory
 
   }
 
@@ -130,7 +137,7 @@ export class NotificationServer {
     */
   private async create_side_bar () : Promise<void> {
 
-    //this.sidebar.classList.add('hidden')
+    this.sidebar.classList.add('hidden')
 
     const header = document.createElement('section')
     {
@@ -344,10 +351,10 @@ export class NotificationServer {
     private count () : void {
 
       // TODO: Just count the unread notifications.
-      const total = this.history.length
+      const total = this.history_unread
 
       // 1. Set the number of notifications.
-      this.counter_body.textContent = String(this.history.length)
+      this.counter_body.textContent = String(total)
 
       // 2. To apply a new style for the icon element.
       if (total > 0) this.counter.classList.add( 'unread' )
@@ -364,6 +371,8 @@ export class NotificationServer {
     this.history.push(data)
 
     this.sidebar_body.appendChild(notification)
+
+    this.history_unread++
 
     this.count()
 
@@ -567,6 +576,12 @@ export class NotificationServer {
       this.sidebar.classList.add('hidden')
       button.classList.remove('active')
 
+    }
+
+    // 1. Make all items read.
+    {
+      this.history_unread = 0
+      this.count()
     }
 
   }

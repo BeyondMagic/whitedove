@@ -5,6 +5,7 @@ import { PageSetter } from './modules/PageSetter'
 import icon_neutralino from'../icons/atom.svg'
 import icon_settings from'../icons/settings.svg'
 
+// #. Set initial defiinition of the system paths.
 Neutralino.os.getPath('data').then( path => {
 
   globalThis.WhiteDove.system.data_path = path.concat('/whitedove/')
@@ -45,25 +46,25 @@ Neutralino.os.getPath('data').then( path => {
 
   //WhiteDove.whiteBoard.create('/home/iris/story/#. Theater.json')
 
-  //WhiteDove.notificationServer.create({
+  WhiteDove.notificationServer.create({
 
-  //  title : 'Eminem',
-  //  level : 'urgent',
-  //  text  : 'Nothing to <b>important</b>! I promise, こんにちは.',
-  //  icon  : { element: WhiteDove.createIcon(icon_settings), name: 'neutralino' },
+    title : 'Eminem',
+    level : 'urgent',
+    text  : 'Nothing to <b>important</b>! I promise, こんにちは.',
+    icon  : { element: WhiteDove.createIcon(icon_settings), name: 'neutralino' },
 
-  //  buttons: [
+    buttons: [
 
-  //    {
-  //      name   : 'remove',
-  //      level  : 'accept',
-  //      action : () => {},
-  //      icon   : WhiteDove.createIcon(icon_settings)
-  //    }
+      {
+        name   : 'remove',
+        level  : 'accept',
+        action : () => {},
+        icon   : WhiteDove.createIcon(icon_settings)
+      }
 
-  //  ]
+    ]
 
-  //})
+  })
 
   //WhiteDove.notificationServer.backup()
 
