@@ -21,7 +21,7 @@ interface NotificationIcon {
 
 }
 
-// #. For modules who has their own notification system
+// #. For modules who has their own notification system, read: a class with a `notify` method for example like this one.
 export interface NotificationInit {
 
   readonly level : NotificationLevels
@@ -37,31 +37,30 @@ export interface NotificationType extends NotificationInit {
 
   readonly title : string
 
-  // #. Note: we're actually re-defining it.
+  // 1. Set by the `NotificationServer`.
+
+  // 1.1. Note: we're actually re-defining it.
   buttons? : Array<Button>
 
-  // #. This is the unique ID!
+  // 1.2. This is the unique ID!
   snapshot? : number
 
-// TODO: Add a 'read' boolean so we know whenever a notification was read or not.
-  // #.
-  //read? : boolean
+  // 1.3. Whenever a notification is read or not.
+  read? : boolean
 
 }
 
 export class NotificationServer {
 
   private counter      : HTMLElement // #. The parent of the counter. On the icon of notifications on the top bar.
-  private counter_body : HTMLElement // #. 
-  private sidebar      : HTMLElement // #.
-  private sidebar_body : HTMLElement // #.
+  private counter_body : HTMLElement // #. The counter itself, the `textContent` property will have the amount.
+  private sidebar      : HTMLElement // #. The whole sidebar, including header titles and search options.
+  private sidebar_body : HTMLElement // #. The sidebar list, where notifications are.
 
-  private history      : Array<NotificationType> // #. 
+  private history      : Array<NotificationType> // #. Where the data of all notifications will be contained.
 
-  private history_unread : number // #. Quantityf of notifications not read.
-
-  private history_file : string // #. 
-  private directory    : string // #. 
+  private history_file : string // #. Name of the file for history in disk.
+  private directory    : string // #. Name of the folder to be used with `history_file` in disk.
 
   public constructor ( parent : HTMLElement, directory : string = WhiteDove.system.data_path, file : string = '/history.json' ) {
 
@@ -85,8 +84,6 @@ export class NotificationServer {
 
     this.history        = []
 
-    this.history_unread = 0
-
     this.history_file   = directory + file
     this.directory      = directory
 
@@ -98,7 +95,7 @@ export class NotificationServer {
     * @example
     *   this.save(notification_data)
     */
-  private async save ( data : NotificationType ) : Promise<void> {
+  private save ( data : NotificationType ) : void {
 
     this.history.push(data)
 
@@ -114,10 +111,13 @@ export class NotificationServer {
 
     this.create({
 
-      title   : 'NotificationServer',
+      // 1. Set by data.
       text    : data.text,
       level   : data.level,
       buttons : data.buttons,
+
+      // 2. Defaults.
+      title   : 'NotificationServer',
       icon    : {
 
         element: WhiteDove.createIcon(svg_notification),
@@ -351,7 +351,7 @@ export class NotificationServer {
     private count () : void {
 
       // TODO: Just count the unread notifications.
-      const total = this.history_unread
+      const total = this.history.filter( item => !item.read ).length
 
       // 1. Set the number of notifications.
       this.counter_body.textContent = String(total)
@@ -364,16 +364,25 @@ export class NotificationServer {
 
   public async create ( data : NotificationType ) : Promise<HTMLElement> {
 
-    data.snapshot = +new Date()
+    // 1. Set defaults for the notification data.
+    {
+      // 1.1. The time being taken.
+      data.snapshot = +new Date()
 
+      // 1.2. Make it unread by default.
+      data.read = false
+    }
+
+    // #. Create the element with the data.
     const notification = this.create_notification(data)
 
-    this.history.push(data)
+    // #. Add to the history.
+    this.save(data)
 
+    // #. Add in the body list the element so that we can see.
     this.sidebar_body.appendChild(notification)
 
-    this.history_unread++
-
+    // #. Count the unread notifications now.
     this.count()
 
     return notification
@@ -515,6 +524,9 @@ export class NotificationServer {
           // #. Make sure snapshot, the time being taken, exists.
           if (!('snapshot' in item)) throw `${msg} the snapshot property does not exist.`
 
+          // #. Make sure read, if was seen by the user, exists.
+          if (!('read' in item)) throw `${msg} the read property does not exist.`
+
         }
 
         // 2. Parse the icon element.
@@ -580,7 +592,13 @@ export class NotificationServer {
 
     // 1. Make all items read.
     {
-      this.history_unread = 0
+      this.history = this.history.map( item => {
+
+        item.read = true
+        return item
+
+      })
+
       this.count()
     }
 
