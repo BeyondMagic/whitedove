@@ -3,7 +3,7 @@ import svg_clear_all from '../../icons/clear_all.svg'
 import svg_notification from '../../icons/notifications.svg'
 import svg_settings from '../../icons/settings.svg'
 
-type NotificationServerErrorCode = Neutralino.ErrorCode | 'WS_FS_PARSE'
+type NotificationServerErrorCode = Neutralino.ErrorCode | 'WD_FS_PARSE'
 
 type NotificationLevels = 'urgent' | 'normal' | 'low'
 
@@ -32,7 +32,8 @@ export interface NotificationInit {
 
   readonly buttons? : Array<Button>
 
-  readonly text  : string // #. Note: will be rendered as HTMLCode.
+  readonly text  : string // #. Note: will be rendered as HTMLCode. Principal text, should be concise and objective.
+  readonly more? : string // #. Note: will be rendered as HTMLCode. Additional text that can be viewed through a click.
 
 }
 
@@ -504,10 +505,14 @@ export class NotificationServer {
 
       // I. Restriction: has to be an array.
       if (!Array.isArray(unparsed_history)) throw { 
-        error   : 'WD_FS_PARSE' as NotificationServerErrorCode,
-        message : `The data given for <b>${this.history_file}</b> is not standardad.`
+        code    : 'WD_FS_PARSE' as NotificationServerErrorCode,
+        message : `The data given for <b>${this.history_file}</b> is not standardad.`,
+        more    : `If you want to verify the file later on, give a look at <b>${this.directory}</b> for the file <b>${this.history_file}</b>.`
       }
 
+      // II. Note: if a notification cannot be parsed correctly, this module simply does not parse the rest.
+      //           It assumes that the file being read is not correct at all.
+      //           Maybe if we change to filter, we can change this behaviour, however right now I don't see any need for that.
       const parsed_history = unparsed_history.map( (item, index) => {
 
         const msg = `The notification <b>${index}</b> of your history file`
@@ -561,6 +566,7 @@ export class NotificationServer {
       return parsed_history
 
     })
+
     // 2. In case of error.
     .catch( error => {
 
@@ -572,23 +578,55 @@ export class NotificationServer {
 
       })
 
+      /**
+       * To write to history path file an empty array.
+       * @example
+       *   overwriteHistory()
+       */
+      const overwriteHistory = () => Neutralino.filesystem.writeFile(this.history_file, JSON.stringify([], null, 2)).then( () => {
+
+        this.notify({
+          text  : `Created the history file on <b>${this.history_file}</b>`,
+          level : 'normal',
+        })
+
+      })
+
       // #. Create the folder and file if not found.
       switch (error.code as NotificationServerErrorCode) {
 
-        case 'WS_FS_PARSE':   // #. Parsing of file went wrong.
+        case 'WD_FS_PARSE': // #. Parsing of file went wrong because type of it is not expected.
+
+          // #. Let the user decide if he/she wants to overwrite with a new empty history or let them fix themselves.
+          this.notify({
+            text  : 'Do you want to create a new empty history file?',
+            level : 'urgent',
+            buttons : [
+
+              {
+                name: 'Ok!',
+                level: 'accept',
+                action: () => overwriteHistory()
+                //icon
+              },
+
+              {
+                name: "I'll fix manually",
+                level: 'alternate',
+                action: () => {},
+                //icon
+              }
+
+            ]
+          })
+
+        break
         case 'NE_FS_FILRDER': // #. File/directory not found.
 
           Neutralino.filesystem.createDirectory(this.directory)
 
           // #. Note: overwrite always.
-          Neutralino.filesystem.writeFile(this.history_file, JSON.stringify([], null, 2)).then( () => {
-
-            this.notify({
-              text  : `Created the history file on <b>${this.history_file}</b>`,
-              level : 'urgent'
-            })
-
-          })
+          overwriteHistory()
 
         break
       } 
