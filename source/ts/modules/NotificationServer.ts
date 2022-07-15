@@ -229,6 +229,21 @@ export class NotificationServer {
     const notification = document.createElement('section')
     {
 
+      // 1. Add an event so that when we hover through it, we make it `read` true.
+      notification.addEventListener( 'mouseover', () => {
+
+        // 1.1. Note: Perhaps we can actually just get the last since this function will run after the push.
+        //            Making this part a little bit too redudant.
+        const id = this.history.indexOf(data)
+
+        this.history[id].read = true
+
+        // 1.2. Run the count to already make them read-in.
+        this.count()
+
+      // 1.3. Only run this event once. Just learned this!
+      }, { once: true } )
+
       notification.setAttribute('data-id', String(data.snapshot))
       notification.classList.add('notification', data.level)
 
@@ -373,11 +388,11 @@ export class NotificationServer {
       data.read = false
     }
 
-    // #. Create the element with the data.
-    const notification = this.create_notification(data)
-
     // #. Add to the history.
     this.save(data)
+
+    // #. Create the element with the data.
+    const notification = this.create_notification(data)
 
     // #. Add in the body list the element so that we can see.
     this.sidebar_body.appendChild(notification)
@@ -588,18 +603,6 @@ export class NotificationServer {
       this.sidebar.classList.add('hidden')
       button.classList.remove('active')
 
-    }
-
-    // 1. Make all items read.
-    {
-      this.history = this.history.map( item => {
-
-        item.read = true
-        return item
-
-      })
-
-      this.count()
     }
 
   }
