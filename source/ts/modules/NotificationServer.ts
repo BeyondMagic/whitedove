@@ -1,4 +1,5 @@
 import svg_arrow_right from '../../icons/keyboard_arrow_right.svg'
+import svg_arrow_down from '../../icons/arrow_down_open.svg'
 import svg_clear_all from '../../icons/clear_all.svg'
 import svg_notification from '../../icons/notifications.svg'
 import svg_settings from '../../icons/settings.svg'
@@ -118,6 +119,7 @@ export class NotificationServer {
       // 1. Set by data.
       text    : data.text,
       level   : data.level,
+      more    : data.more,
       buttons : data.buttons,
 
       // 2. Defaults.
@@ -311,7 +313,53 @@ export class NotificationServer {
       const body = document.createElement('section')
       {
         body.classList.add('body')
-        body.insertAdjacentHTML('beforeend', data.text)
+
+        // I. Text to be parsed as HTMLCode.
+        const text = document.createElement('span')
+        {
+          text.classList.add('text')
+          text.insertAdjacentHTML( 'beforeend', data.text )
+          body.appendChild(text)
+        }
+
+        // II. Add the more text, so that SCSS can stylise it hidden by default,
+        //     And only clicking on it, it'll show the rest.
+        //     It will reset after the sidebar is closed.
+        if (data.more) {
+
+          // II.I. The body of thext hidden.,
+          const more = document.createElement('span')
+          {
+            more.insertAdjacentHTML( 'beforeend', data.more )
+            more.classList.add('more', 'hidden')
+          }
+
+          // II.II. The button to discover the rest.
+          const button_container = document.createElement('span')
+          {
+            button_container.classList.add('more-container')
+
+            const button = WhiteDove.createIcon(svg_arrow_down)
+
+            if (button)
+            {
+              button.addEventListener( 'click', () => {
+
+                // #. Clicking will make this disapepear
+                button.classList.add('clicked')
+                more.classList.toggle('hidden')
+
+              })
+
+              button.classList.add('expand-more')
+              button_container.appendChild(button)
+            }
+
+          }
+
+          body.append(button_container, more)
+
+        }
       }
 
       if ('buttons' in data && data.buttons) {
@@ -507,7 +555,7 @@ export class NotificationServer {
       if (!Array.isArray(unparsed_history)) throw { 
         code    : 'WD_FS_PARSE' as NotificationServerErrorCode,
         message : `The data given for <b>${this.history_file}</b> is not standardad.`,
-        more    : `If you want to verify the file later on, give a look at <b>${this.directory}</b> for the file <b>${this.history_file}</b>.`
+        more    : `You can try to identify the problem at the file <b>${this.history_file}</b>.`
       }
 
       // II. Note: if a notification cannot be parsed correctly, this module simply does not parse the rest.
@@ -601,19 +649,22 @@ export class NotificationServer {
           this.notify({
             text  : 'Do you want to create a new empty history file?',
             level : 'urgent',
+            more  : error.more, // 1. We assume this exist because it is thrown at us.
             buttons : [
 
+              // #. To overwrite.
               {
-                name: 'Ok!',
-                level: 'accept',
-                action: () => overwriteHistory()
+                name   : 'Yes',
+                level  : 'accept',
+                action : () => overwriteHistory()
                 //icon
               },
 
+              // #. To remain the same way.
               {
-                name: "I'll fix manually",
-                level: 'alternate',
-                action: () => {},
+                name   : "I'll fix manually",
+                level  : 'alternate',
+                action : () => {},
                 //icon
               }
 
@@ -650,15 +701,28 @@ export class NotificationServer {
 
   public show_sidebar ( button : HTMLElement ) : void {
 
+    // 1. Open the sidebar.
     if (this.sidebar.classList.contains('hidden')) {
 
       this.sidebar.classList.remove('hidden')
       button.classList.add('active')
 
+    // 2. Close the sidebar.
     } else {
 
       this.sidebar.classList.add('hidden')
       button.classList.remove('active')
+
+      // A. Shrink all expanded notifications.
+      this.sidebar_body.querySelectorAll('.clicked').forEach( item => {
+
+        // I. Remove the class of this button.
+        item.classList.remove('clicked')
+
+        // II. Remove the hidden class of more elements.
+        item.parentElement?.parentElement?.querySelector('.more:not(.hidden)')?.classList.add('hidden')
+
+      })
 
     }
 
