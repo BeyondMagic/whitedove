@@ -3,6 +3,8 @@ import svg_clear_all from '../../icons/clear_all.svg'
 import svg_notification from '../../icons/notifications.svg'
 import svg_settings from '../../icons/settings.svg'
 
+type NotificationServerErrorCode = Neutralino.ErrorCode | 'WS_FS_PARSE'
+
 type NotificationLevels = 'urgent' | 'normal' | 'low'
 
 interface Button {
@@ -25,11 +27,12 @@ interface NotificationIcon {
 export interface NotificationInit {
 
   readonly level : NotificationLevels
-  readonly text  : string
 
   readonly icon? : NotificationIcon
 
   readonly buttons? : Array<Button>
+
+  readonly text  : string // #. Note: will be rendered as HTMLCode.
 
 }
 
@@ -137,7 +140,7 @@ export class NotificationServer {
     */
   private async create_side_bar () : Promise<void> {
 
-    this.sidebar.classList.add('hidden')
+    //this.sidebar.classList.add('hidden')
 
     const header = document.createElement('section')
     {
@@ -499,9 +502,15 @@ export class NotificationServer {
 
       const unparsed_history = JSON.parse(data) as Array<NotificationType>
 
+      // I. Restriction: has to be an array.
+      if (!Array.isArray(unparsed_history)) throw { 
+        error   : 'WD_FS_PARSE' as NotificationServerErrorCode,
+        message : `The data given for <b>${this.history_file}</b> is not standardad.`
+      }
+
       const parsed_history = unparsed_history.map( (item, index) => {
 
-        const msg = `The notification <b>${index}<b>`
+        const msg = `The notification <b>${index}</b> of your history file`
 
         // 1. Testing the item.
         {
@@ -511,17 +520,15 @@ export class NotificationServer {
           // #. Make sure the level can exist.
           if (!('level' in item)) throw `${msg} does not have the property 'level'.`
           else {
-            let strange_level = false
 
-            Array.from(
-              ['urgent', 'normal', 'low'] as Array<NotificationLevels>
-            ).forEach( level => {
+            switch (item.level) {
 
-                strange_level = (level === item.level)
+              case 'urgent': case 'normal': case 'low': break
 
-            })
+              default: throw `${msg} has a unrecognised level.`
 
-            if (strange_level) throw `${msg} has a unrecognised level.`
+            }
+
           }
 
           // #. Make sure the body text exists.
@@ -557,22 +564,34 @@ export class NotificationServer {
     // 2. In case of error.
     .catch( error => {
 
+      // #. For string errors, the `throws` we launch on the code before.
+      if (typeof error === 'string') this.notify( {
+
+        text: error,
+        level: 'urgent',
+
+      })
+
       // #. Create the folder and file if not found.
-      if (error.code === 'NE_FS_FILRDER') {
+      switch (error.code as NotificationServerErrorCode) {
 
-        Neutralino.filesystem.createDirectory(this.directory)
+        case 'WS_FS_PARSE':   // #. Parsing of file went wrong.
+        case 'NE_FS_FILRDER': // #. File/directory not found.
 
-        Neutralino.filesystem.writeFile(this.history_file, JSON.stringify([], null, 2)).then( () => {
+          Neutralino.filesystem.createDirectory(this.directory)
 
-          this.notify({
-            text  : `Created the history file on <b>${this.history_file}</b>`,
-            level : 'urgent'
+          // #. Note: overwrite always.
+          Neutralino.filesystem.writeFile(this.history_file, JSON.stringify([], null, 2)).then( () => {
+
+            this.notify({
+              text  : `Created the history file on <b>${this.history_file}</b>`,
+              level : 'urgent'
+            })
+
           })
 
-        })
-      }
-
-      console.error(error)
+        break
+      } 
 
       return [] as Array<NotificationType>
 

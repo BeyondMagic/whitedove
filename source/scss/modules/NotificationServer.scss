@@ -155,7 +155,8 @@ body {
       align-items: end;
       gap: 1rem;
 
-      padding: 1rem;
+      padding-right: 1rem;
+      padding-top: 1rem;
 
       overflow-y: scroll;
       overflow-x: hidden;
@@ -169,10 +170,15 @@ body {
         $icon-container-size: 1.5rem;
         $icon-size: 1.25rem;
 
+        // #. Special colours for the types, like `urgent`, `low`, `normal`.
         @mixin pseudo_bg( $color ) {
-          &::before {
+
+          >.icon-container >.icon-box::before {
+
             background-color: $color;
+
           }
+
         }
 
         position: relative;
@@ -246,25 +252,6 @@ body {
 
         }
 
-        &::before {
-
-          content: '';
-
-          height: 100%;
-          width: 0.1rem;
-
-          position: absolute;
-          left: -0.8rem;
-          top: 0;
-
-          display: none;
-
-          transition-property: width, left;
-          transition-duration: 100ms;
-          transition-timing-function: linear;
-
-        }
-
         >.date {
 
           grid-area: date;
@@ -298,6 +285,26 @@ body {
             width: 3.5rem;
             height: 3.5rem;
             border-radius: 50%;
+
+            position: relative;
+
+            // #. A little ball on the right bottom to show which type notification it is.
+            &::before {
+
+              content: '';
+
+              height: 0.5rem;
+              width: 0.5rem;
+
+              position: absolute;
+              right: 0.25rem;
+              bottom: 0.25rem;
+
+              border-radius: 50%;
+
+              border: 0.125rem solid $bg;
+
+            }
 
             >.icon {
 
