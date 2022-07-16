@@ -1,4 +1,4 @@
-import svg_arrow_right from '../../icons/keyboard_arrow_right.svg'
+import svg_close from '../../icons/close.svg'
 import svg_arrow_down from '../../icons/arrow_down_open.svg'
 import svg_clear_all from '../../icons/clear_all.svg'
 import svg_notification from '../../icons/notifications.svg'
@@ -147,7 +147,7 @@ export class NotificationServer {
     */
   private async create_side_bar () : Promise<void> {
 
-    //this.sidebar.classList.add('hidden')
+    this.sidebar.classList.add('hidden')
 
     const header = document.createElement('section')
     {
@@ -267,12 +267,11 @@ export class NotificationServer {
           button.classList.add('button')
           button.addEventListener( 'click', () => this.remove( notification ) )
 
-          const icon = WhiteDove.createIcon(svg_arrow_right)
-          if (icon) {
-
+          const icon = WhiteDove.createIcon(svg_close)
+          if (icon)
+          {
             icon.classList.add('close')
             button.append(icon)
-
           }
 
           header.append(button)
@@ -285,7 +284,8 @@ export class NotificationServer {
         date.textContent = WhiteDove.timeParser.parse(data.snapshot)
       }
 
-      if (data.icon && data.icon.element) {
+      if (data.icon && data.icon.element)
+      {
 
         const icon = document.createElement('section')
         {
@@ -366,7 +366,8 @@ export class NotificationServer {
         }
       }
 
-      if ('buttons' in data && data.buttons) {
+      if ('buttons' in data && data.buttons)
+      {
 
         const buttons = document.createElement('section')
 
@@ -559,7 +560,6 @@ export class NotificationServer {
       if (!Array.isArray(unparsed_history)) throw { 
         code    : 'WD_FS_PARSE' as NotificationServerErrorCode,
         message : `The data given for <b>${this.history_file}</b> is not standardad.`,
-        more    : `You can try to fix manually the problem at the file <b>${this.history_file}</b>.`
       }
 
       // II. Note: if a notification cannot be parsed correctly, this module simply does not parse the rest.
@@ -622,68 +622,76 @@ export class NotificationServer {
     // 2. In case of error.
     .catch( error => {
 
+      // #. Let the user see if he/she can fix it.
+      const more_error = `You can try to fix manually the problem at the file <b>${this.history_file}</b>.`
+
       // #. For string errors, the `throws` we launch on the code before.
       if (typeof error === 'string') this.notify({
 
-        text: error,
-        level: 'urgent',
+        text  : error,
+        level : 'urgent',
+        more  : more_error
 
       }, 'save')
 
-      /**
-       * To write to history path file an empty array.
-       * @example
-       *   overwriteHistory()
-       */
-      const overwriteHistory = () => Neutralino.filesystem.writeFile(this.history_file, JSON.stringify([], null, 2)).then( () => {
+      // #. For object ones, more complex.
+      else {
 
-        this.notify({
-          text  : `Created the history file on <b>${this.history_file}</b>`,
-          level : 'normal',
-        }, 'save')
+        /**
+         * To write to history path file an empty array.
+         * @example
+         *   overwriteHistory()
+         */
+        const overwriteHistory = () => Neutralino.filesystem.writeFile(this.history_file, JSON.stringify([], null, 2)).then( () => {
 
-      })
-
-      // #. Create the folder and file if not found.
-      switch (error.code as NotificationServerErrorCode) {
-
-        case 'WD_FS_PARSE': // #. Parsing of file went wrong because type of it is not expected.
-
-          // #. Let the user decide if he/she wants to overwrite with a new empty history or let them fix themselves.
           this.notify({
-            text  : 'Do you want to create a new empty history file?',
-            level : 'urgent',
-            more  : error.more, // 1. We assume this exist because it is thrown at us.
-            buttons : [
-
-              // #. To overwrite.
-              {
-                name   : 'Yes',
-                level  : 'accept',
-                action : () => overwriteHistory()
-                //icon
-              },
-
-              // #. To remain the same way.
-              {
-                name   : "I'll fix manually",
-                level  : 'alternate',
-                action : () => {},
-                //icon
-              }
-
-            ]
+            text  : `Created the history file on <b>${this.history_file}</b>`,
+            level : 'normal',
           }, 'save')
 
-        break
-        case 'NE_FS_FILRDER': // #. File/directory not found.
+        })
 
-          Neutralino.filesystem.createDirectory(this.directory)
+        // #. Create the folder and file if not found.
+        switch (error.code as NotificationServerErrorCode) {
+          case 'WD_FS_PARSE': // #. Parsing of file went wrong because type of it is not expected.
 
-          // #. Note: overwrite always.
-          overwriteHistory()
+            // #. Let the user decide if he/she wants to overwrite with a new empty history or let them fix themselves.
+            this.notify({
+              text  : 'Do you want to create a new empty history file?',
+              level : 'urgent',
+              more  : more_error,
+              buttons : [
 
-        break
+                // #. To overwrite.
+                {
+                  name   : 'Yes',
+                  level  : 'accept',
+                  action : () => overwriteHistory()
+                  //icon
+                },
+
+                // #. To remain the same way.
+                {
+                  name   : "I'll fix manually",
+                  level  : 'alternate',
+                  action : () => {},
+                  //icon
+                }
+
+              ]
+            }, 'save')
+
+          break
+          case 'NE_FS_FILRDER': // #. File/directory not found.
+
+            Neutralino.filesystem.createDirectory(this.directory)
+
+            // #. Note: overwrite always.
+            overwriteHistory()
+
+          break
+        }
+
       }
 
       return [] as Array<NotificationType>

@@ -204,7 +204,7 @@ body {
 
         display: grid;
         grid-template-columns: 6rem 1fr 7rem $icon-container-size;
-        grid-template-rows: 2rem 1fr 2.5rem;
+        grid-template-rows: 2rem 1fr auto;
         gap: 0px 0px;
         grid-template-areas:
           "icon title date header"
@@ -368,7 +368,7 @@ body {
           grid-area: header;
 
           display: flex;
-          align-items: center;
+          align-items: top;
           justify-content: center;
           flex-direction: row-reverse;
 
@@ -411,7 +411,7 @@ body {
 
               width: $icon-size;
               height: $icon-size;
-              fill: $fg;
+              fill: rgba($fg, 0.4);
 
             }
 
@@ -441,6 +441,8 @@ body {
             display: flex;
             justify-content: center;
             align-items: center;
+
+            padding-top: 0.2rem;
 
             >.expand-more {
 
@@ -473,12 +475,12 @@ body {
 
             font-size: 0.9rem;
 
-            overflow: hidden;
-
             padding-top: 0.5rem;
 
             &.hidden {
 
+              overflow: hidden;
+              padding-top: 0;
               height: 0;
 
             }
