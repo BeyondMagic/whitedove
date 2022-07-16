@@ -126,8 +126,8 @@ export class NotificationServer {
       title   : 'NotificationServer',
       icon    : {
 
-        element: WhiteDove.createIcon(svg_notification),
-        name: 'notification_server'
+        element : WhiteDove.createIcon(svg_notification),
+        name    : 'notification_server'
 
       }
 
@@ -555,7 +555,7 @@ export class NotificationServer {
       if (!Array.isArray(unparsed_history)) throw { 
         code    : 'WD_FS_PARSE' as NotificationServerErrorCode,
         message : `The data given for <b>${this.history_file}</b> is not standardad.`,
-        more    : `You can try to identify the problem at the file <b>${this.history_file}</b>.`
+        more    : `You can try to fix manually the problem at the file <b>${this.history_file}</b>.`
       }
 
       // II. Note: if a notification cannot be parsed correctly, this module simply does not parse the rest.
@@ -707,8 +707,10 @@ export class NotificationServer {
       this.sidebar.classList.remove('hidden')
       button.classList.add('active')
 
+    }
+
     // 2. Close the sidebar.
-    } else {
+    else {
 
       this.sidebar.classList.add('hidden')
       button.classList.remove('active')
