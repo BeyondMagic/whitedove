@@ -108,13 +108,14 @@ export class NotificationServer {
 
   /**
     * Notify from this module with the default settings and without saving to history.
-    * @param NotificationInit The initial notification to load.
+    * @param data NotificationInit The initial notification to load.
+    * @param type 'save' | 'add' If saves directly to history or add to sidebar.
     * @example
-    *   this.notify({ text: 'lol', '' })
+    *   this.notify( { text: 'lol', '' }, 'add' )
     */
-  private notify ( data : NotificationInit ) : void {
+  private notify ( data : NotificationInit, type : 'save' | 'add' = 'add' ) : void {
 
-    this.create({
+    const notification = {
 
       // 1. Set by data.
       text    : data.text,
@@ -131,7 +132,10 @@ export class NotificationServer {
 
       }
 
-    })
+    }
+
+    if (type === 'add' ) this.create(notification)
+    else                 this.history.push(notification)
 
   }
 
@@ -547,7 +551,7 @@ export class NotificationServer {
   public async parse () : Promise<void> {
 
     // 1. Parse each notification.
-    this.history = await Neutralino.filesystem.readFile(this.history_file).then( data => {
+    const result = await Neutralino.filesystem.readFile(this.history_file).then( data => {
 
       const unparsed_history = JSON.parse(data) as Array<NotificationType>
 
@@ -619,12 +623,12 @@ export class NotificationServer {
     .catch( error => {
 
       // #. For string errors, the `throws` we launch on the code before.
-      if (typeof error === 'string') this.notify( {
+      if (typeof error === 'string') this.notify({
 
         text: error,
         level: 'urgent',
 
-      })
+      }, 'save')
 
       /**
        * To write to history path file an empty array.
@@ -636,7 +640,7 @@ export class NotificationServer {
         this.notify({
           text  : `Created the history file on <b>${this.history_file}</b>`,
           level : 'normal',
-        })
+        }, 'save')
 
       })
 
@@ -669,7 +673,7 @@ export class NotificationServer {
               }
 
             ]
-          })
+          }, 'save')
 
         break
         case 'NE_FS_FILRDER': // #. File/directory not found.
@@ -680,15 +684,19 @@ export class NotificationServer {
           overwriteHistory()
 
         break
-      } 
+      }
 
       return [] as Array<NotificationType>
 
     })
 
-    this.count()
+    // 3. Overwrite history only if there is something on the result (i.e. not failed).
+    if (result.length) this.history = result
 
-    // 3. Add to the sidebar.
+    // 4. Count all notifications.
+    else this.count()
+
+    // 5. Add to the sidebar.
     await this.create_side_bar()
 
   }
