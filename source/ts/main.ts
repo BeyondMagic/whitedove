@@ -1,8 +1,9 @@
 import { NotificationServer } from './modules/NotificationServer'
 import { PageSetter } from './modules/PageSetter'
+import { ToolTip } from './modules/ToolTip'
 //import { WhiteBoard } from './modules/WhiteBoard'
 
-import icon_neutralino from'../icons/atom.svg'
+//import icon_neutralino from'../icons/atom.svg'
 import icon_settings from'../icons/settings.svg'
 
 // #. Set initial defiinition of the system paths.
@@ -15,36 +16,21 @@ Neutralino.os.getPath('data').then( path => {
 // #. Our 'ready' event of Neutralino.
 .finally( async () => {
 
-  // 1.
-  globalThis.WhiteDove.pageSetter = new PageSetter()
+  // 1. Set initial components.
+  {
+    // 1.3. ToolTip - Little information.
+    globalThis.WhiteDove.toolTip = new ToolTip()
 
-  // 1.1.
-  WhiteDove.pageSetter.parse_all()
+    // 1.1. PageSetter - Page loading, elements, and design.
+    globalThis.WhiteDove.pageSetter = new PageSetter()
+    WhiteDove.pageSetter.parse_all()
 
-  // 2. Define NotificationServer for global.
-  globalThis.WhiteDove.notificationServer = new NotificationServer(document.body)
+    // 1.2. NotificationServer - Main notifications.
+    globalThis.WhiteDove.notificationServer = new NotificationServer(document.body)
+    // 1.2.1. Wait parsing of all Notifications from system.
+    await WhiteDove.notificationServer.parse()
 
-  // 2.1. Wait parsing of all Notifications from system.
-  await WhiteDove.notificationServer.parse()
-
-  // 3. White_board
-  //{
-  //  const main = document.body.querySelector('.main')
-
-  //  if (main instanceof HTMLElement) {
-
-  //    globalThis.WhiteDove.whiteBoard = new WhiteBoard(main)
-
-  //  } else {
-
-  //    const error = "Failed to find the '.main' HTMLElement in the body HTMLElement."
-  //    WhiteDove.notificationServer.create({ title: 'DOM', text: error, level: 'urgent'})
-  //    console.error(error)
-
-  //  }
-  //}
-
-  //WhiteDove.whiteBoard.create('/home/iris/story/#. Theater.json')
+  }
 
   WhiteDove.notificationServer.create({
 

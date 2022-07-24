@@ -13,6 +13,7 @@
 @import './modules/PageSetter';
 
 // #. For NotificationServer.
+// I. z-index: 99-90.
 @import './modules/NotificationServer';
 
 // #. For WhiteBoard.
@@ -22,11 +23,15 @@
 @import './modules/alilas_selection';
 
 // 3. ConfigPage.
+// I. z-index: 100-110.
 @import './modules/configuration_page';
+
+// 3. ToolTip
+// I. z-index: 120-130.
+@import './modules/ToolTip';
 
 // #. Main for writing and reading.
 @import './modules/main';
-
 
 * {
 

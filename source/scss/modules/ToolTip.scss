@@ -1,0 +1,103 @@
+body .tooltip {
+
+  position: absolute;
+
+  z-index: 120;
+
+  //max-width: 30rem;
+  //max-height: 6rem;
+
+  background-color: red;
+
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  grid-template-rows: 1fr;
+  grid-template-areas: 'icon-column' 'text';
+
+  overflow: hidden;
+
+  // 1. Positions.
+  //    'top-left' | 'top' | 'top-right' | 'left' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right'
+  &.bottom-right {
+
+    top: 100%;
+    left: 100%;
+
+  }
+
+  &.active {
+
+    display: grid;
+
+  }
+
+  >.icon-container {
+
+    grid-area: 'icon-column';
+
+    background-color: pink;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    >.svg-container {
+
+      width: 1.5rem;
+      height: 1.5rem;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      >.svg {
+
+        width: 1rem;
+        height: 1rem;
+
+        &.description {
+
+          color: #682334;
+
+        }
+
+        &.action {
+
+          color: #484C50;
+
+        }
+
+        &.information {
+
+          color: #D14C4B;
+
+        }
+
+      }
+
+    }
+
+  }
+
+  >.text {
+
+    background-color: $fg;
+    color: $bg;
+
+    grid-area: 'text';
+
+    //overflow-wrap: break-all;
+    //hyphens: auto;
+    //word-break: break-word;
+    //white-space: pre-wrap;
+
+    font-weight: 300;
+    font-size: 0.8;
+
+    min-width: 10rem;
+
+    padding: 0.25rem 1rem;
+
+  }
+
+}

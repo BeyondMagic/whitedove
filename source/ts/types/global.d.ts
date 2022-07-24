@@ -1,6 +1,7 @@
 import { NotificationType, NotificationHistoryItem } from "../modules/NotificationServer"
 import { WhiteBoardData } from "../modules/WhiteBoard"
 import { Time } from "../modules/TimeParser"
+import { ToolTipPosition, ToolTipType, ToolTipEffect, ToolTipActivated } from "../modules/ToolTip"
 
 export {}
 
@@ -30,6 +31,15 @@ declare global {
     async function sleep (ms : number) : Promise<void>
 
     /**
+     * Assumes there's a transition ocurring and waits it to finish.
+     * @param element HTMLElement The element with the transition.
+     * @example
+     *   await Whitedove.waitTransition(notification)
+     */
+    // TODO: Take from NotificationServer where it removes the transition.
+    //async function waitTransition (element : HTMLElement ) : Promise<void>
+
+    /**
      * This is the place to guard any additional paths that will be repeated through the program.
      * Normally it is set at the start of the program.
      */
@@ -43,8 +53,30 @@ declare global {
     }
 
     /**
-      *
-      */
+     * A small information that can appear from anywhere!
+     */
+    namespace toolTip {
+
+      /**
+       * Add's a tooltip hover effect.
+       * @param HTMLElement Where the tooltip will appear from. It's recommended that the element has a 'relative' position in CSS.
+       * @param string Content to be parsed as the information.
+       * @param ToolTipType What type of icon to be displayed.
+       * @param ToolTipPosition The position of the tooltip relative to the element.
+       * @param ToolTipEffect? How we'll view the tooltip. Do not use 'click' when the element has already an event for that.
+       * @param number? An natural number to represent milliseconds to hover. 2 seconds default as.
+       * @param number? An natural number to represent milliseconds for the tooltip disappear. 500 milliseconds as default.
+       * @example
+       *   WhiteDove.toolTip.add( icon_find_page, 'To find the <b>x<b> page.', 'bottom-left', 'action', 'mouseover' )
+       */
+       function add ( element : HTMLElement, text : string, type : ToolTipType, position : ToolTipPosition,
+                      effect : ToolTipEffect = 'mouseover', time : number = 2000, left : number = 500) : void
+
+    }
+
+    /**
+     *
+     */
     namespace timeParser {
 
       /**
