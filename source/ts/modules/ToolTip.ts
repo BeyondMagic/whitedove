@@ -1,8 +1,9 @@
-import svg_info from '../../icons/description.svg'
+import svg_description from '../../icons/description.svg'
+import svg_action from '../../icons/double_arrow.svg'
+import svg_info from '../../icons/info.svg'
 
 export type ToolTipPosition    = 'top-left' | 'top' | 'top-right' | 'left' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right'
-export type ToolTipEffect      = 'mouseover' | 'click'
-export type ToolTipActivated   = 'on' | 'off'
+export type ToolTipEffect      = 'mouseover' | 'click' // TODO: Remove.
 export type ToolTipType        = 'information' | 'description' | 'action'
 
 export class ToolTip {
@@ -13,8 +14,8 @@ export class ToolTip {
 
   public constructor () {
 
-    this.svg_description = this.create_icon_container( WhiteDove.createIcon(svg_info)! )
-    this.svg_action      = this.create_icon_container( WhiteDove.createIcon(svg_info)! )
+    this.svg_description = this.create_icon_container( WhiteDove.createIcon(svg_description)! )
+    this.svg_action      = this.create_icon_container( WhiteDove.createIcon(svg_action)! )
     this.svg_information = this.create_icon_container( WhiteDove.createIcon(svg_info)! )
 
   }
@@ -94,54 +95,24 @@ export class ToolTip {
 
   }
 
-  public add ( element : HTMLElement, text : string, type : ToolTipType, position : ToolTipPosition,
-               effect : ToolTipEffect = 'mouseover', time : number = 2000, left : number = 500) : void {
+  public add ( element : HTMLElement, text : string, type : ToolTipType, position : ToolTipPosition ) : void {
 
     // 1.. This element is the tooltip that will hide and show.
     const tooltip = this.create_tooltip( text, type, position )
 
-    // 2. When we click the element for the tooltip to appear.
-    if (effect === 'click') {
+    // 2. When we have to hover for some time for the tooltip to show itself.
+    element.addEventListener( 'mouseover' , () => tooltip.classList.add('active') )
 
-      // #. Show the tooltip after a few time hovering or clicking.
-      element.addEventListener( effect , () => {
+    // 3. Disappear the tooltip after hover out long enough.
+    element.addEventListener( 'mouseout' , () => tooltip.classList.remove('active') )
 
-        // 1. When we have to hide the tooltip.
-        if (element.classList.contains('tooltip-active')) {
+    // 4. Disappear the tooltip after clicking on it, needs to hover again to activate.
+    element.addEventListener( 'click' , () => tooltip.classList.remove('active') )
 
-          // #. Disable its styling.
-          element.classList.remove( 'tooltip-active' )
+    // 4. Add finally the tooltip to the element.
+    element.appendChild( tooltip )
 
-          tooltip.classList.remove( 'active' )
-
-        }
-
-        // 2. When we have to show the tooltip.
-        else {
-
-          // #. Active  its styling.
-          element.classList.add( 'tooltip-active' )
-
-          tooltip.classList.add( 'active' )
-
-        }
-
-      })
-
-    }
-
-    // 3. When we have to hover for some time for the tooltip to show itself.
-    else {
-
-      // #. Disappear the tooltip after hover out long enough.
-      element.addEventListener( effect , () => {
-
-      })
-
-    }
-
-    // 1.1. Add finally the tooltip to the element.
-    element.appendChild(tooltip)
+    console.log(tooltip)
 
   }
 

@@ -63,14 +63,10 @@ declare global {
        * @param string Content to be parsed as the information.
        * @param ToolTipType What type of icon to be displayed.
        * @param ToolTipPosition The position of the tooltip relative to the element.
-       * @param ToolTipEffect? How we'll view the tooltip. Do not use 'click' when the element has already an event for that.
-       * @param number? An natural number to represent milliseconds to hover. 2 seconds default as.
-       * @param number? An natural number to represent milliseconds for the tooltip disappear. 500 milliseconds as default.
        * @example
-       *   WhiteDove.toolTip.add( icon_find_page, 'To find the <b>x<b> page.', 'bottom-left', 'action', 'mouseover' )
+       *   WhiteDove.toolTip.add( icon_find_page, 'To find the <b>x<b> page.', 'bottom-left', 'action' )
        */
-       function add ( element : HTMLElement, text : string, type : ToolTipType, position : ToolTipPosition,
-                      effect : ToolTipEffect = 'mouseover', time : number = 2000, left : number = 500) : void
+       function add ( element : HTMLElement, text : string, type : ToolTipType, position : ToolTipPosition ) : void
 
     }
 

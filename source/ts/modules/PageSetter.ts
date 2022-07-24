@@ -130,7 +130,7 @@ export class PageSetter {
         icon_box.addEventListener( 'click', () => WhiteDove.notificationServer.show_sidebar(icon_box) )
 
         // #. Add a tooltip.
-        WhiteDove.toolTip.add( icon_box, 'Show the <b>notifications!</b>', 'action', 'bottom-right', 'click' )
+        WhiteDove.toolTip.add( icon_box, 'Show the <b>notifications!</b>', 'action', 'bottom-right' )
 
         const icon = WhiteDove.createIcon(icon_notification)
         if (icon) {

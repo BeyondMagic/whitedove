@@ -86,6 +86,10 @@ body {
         >.icon {
 
           transition: fill $transition;
+          fill: rgba($fg, 0.6);
+
+          width: $icon-size;
+          height: $icon-size;
 
         }
 
@@ -93,15 +97,6 @@ body {
 
           $color: #1978AA;
           $unread: $color;
-
-          >.icon {
-
-            fill: rgba($fg, 0.75);
-
-            width: $icon-size;
-            height: $icon-size;
-
-          }
 
           >.counter {
 
