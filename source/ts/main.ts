@@ -34,9 +34,9 @@ Neutralino.os.getPath('data').then( path => {
 
   WhiteDove.notificationServer.create({
 
-    title : 'Eminem',
+    title : '<b>You</b> have been writing for <b>too long!</b>',
     level : 'urgent',
-    text  : 'Nothing to <b>important</b>! I promise, こんにちは.',
+    text  : 'Take a break!',
     icon  : { element: WhiteDove.createIcon(icon_settings), name: 'neutralino' },
 
     buttons: [

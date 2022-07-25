@@ -5,16 +5,16 @@ body {
     $width: 28rem;
 
     position: absolute;
-    right: 0;
-    bottom: 0;
+    right: 0.5rem;
+    bottom: 0.5rem;
     z-index: 9;
 
     height: calc(100% - $page-header-height);
     width: 28rem;
 
-    background-color: $bg;
+    border-radius: 0.75rem;
 
-    box-shadow: 2px 0.5rem 1rem rgba($fg, 0.25);
+    box-shadow: 2px 2px 0.75rem rgba($fg, 0.25);
 
     display: grid;
     grid-template-columns: 1fr;
@@ -26,9 +26,13 @@ body {
 
     transition: right 150ms linear;
 
+    background-color: $bg;
+
+    padding: 1rem 1.5rem;
+
     &.hidden {
 
-      right: -$width;
+      //right: -$width;
 
     }
 
@@ -40,6 +44,8 @@ body {
       grid-template-columns: 1fr 1fr;
       grid-template-areas: 'left right';
 
+      font-family: $default-font;
+
       >.left {
 
         grid-area: left;
@@ -47,8 +53,6 @@ body {
         display: flex;
         justify-content: left;
         align-items: center;
-
-        padding: 0 1.5rem;
 
         >.label {
 
@@ -66,8 +70,6 @@ body {
 
         grid-area: right;
 
-        padding: 0 0.5rem;
-
         display: flex;
         justify-content: right;
         align-items: center;
@@ -80,62 +82,13 @@ body {
 
           cursor: pointer;
 
-          $extra: 0.5rem;
-          $size: 1.5rem;
+          text-decoration: underline;
 
-          width: $size + $extra;
-          height: $size + $extra;
+          font-size: 0.85rem;
 
-          border-radius: 50%;
-
-          $transition-effect: 100ms ease-in-out;
-
-          transition: background-color $transition-effect;
-
-          >.icon {
-
-            width: $size;
-            height: $size;
-
-            fill: rgba($fg, 0.75);
-
-            transition: fill $transition-effect;
-
-          }
+          font-weight: 500;
 
           &.clear {
-
-            &:hover {
-
-              $color: #424A89;
-
-              background-color: rgba($color, 0.1);
-
-              >.icon {
-
-                fill: $color;
-
-              }
-
-            }
-
-          }
-
-          &.config {
-
-            &:hover {
-
-              $color: #721FC8;
-
-              background-color: rgba($color, 0.1);
-
-              >.icon {
-
-                fill: $color;
-
-              }
-
-            }
 
           }
 
@@ -151,12 +104,9 @@ body {
 
       display: flex;
       flex-direction: column;
-      justify-content: baseline;
+      justify-content: flex-start;
       align-items: end;
       gap: 1rem;
-
-      padding-right: 1rem;
-      padding-top: 1rem;
 
       overflow-y: scroll;
       overflow-x: hidden;
@@ -189,8 +139,6 @@ body {
 
         background-color: rgba($bg, 0.05);
 
-        border-radius: 0.25rem;
-
         min-width: $width;
         max-width: $width;
 
@@ -203,21 +151,19 @@ body {
         font-family: $default-font;
 
         display: grid;
-        grid-template-columns: 6rem 1fr 7rem $icon-container-size;
-        grid-template-rows: 2rem 1fr auto;
-        gap: 0px 0px;
+        grid-template-columns: auto 1fr 7rem $icon-container-size;
+        grid-template-rows: 1rem auto 1fr;
+        gap: 0.1rem 0.75rem;
         grid-template-areas:
-          "icon title date header"
-          "icon body body header"
-          "icon buttons buttons header";
+          "icon title title header"
+          "icon date date tags"
+          "empty body body body";
 
         //-webkit-user-select: none;
 
         //box-shadow: 4px 4px 1rem rgba($fg, 0.3);
 
         padding: 0.5rem 1rem;
-
-        background-color: $bg;
 
         transition-property: right;
         transition-duration: 100ms;
@@ -256,10 +202,6 @@ body {
 
           grid-area: date;
 
-          display: flex;
-          justify-content: center;
-          align-items: center;
-
           color: rgba($fg, 0.5);
           font-weight: 300;
           font-size: 0.9rem;
@@ -272,7 +214,7 @@ body {
 
           display: flex;
           justify-content: center;
-          align-items: center;
+          align-items: top;
 
           >.icon-box {
 
@@ -282,9 +224,9 @@ body {
 
             background-color: rgba($fg, 0.25);
 
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
 
             position: relative;
 
@@ -293,12 +235,12 @@ body {
 
               content: '';
 
-              height: 0.5rem;
-              width: 0.5rem;
+              height: 0.6rem;
+              width: 0.6rem;
 
               position: absolute;
-              right: 0.25rem;
-              bottom: 0.25rem;
+              right: -0.1rem;
+              bottom: -0.1rem;
 
               border-radius: 50%;
 
@@ -308,8 +250,8 @@ body {
 
             >.icon {
 
-              width: 2rem;
-              height: 2rem;
+              width: 1.75rem;
+              height: 1.75rem;
 
               fill: $fg;
 
@@ -318,7 +260,7 @@ body {
             // #. List here the names for icons given the notification <data.icon.name>.
             &.neutralino {
 
-              background-color: rgba($neutralino-color, 0.35);
+              background-color: rgba($neutralino-color, 0.2);
 
               >.icon {
 
@@ -330,7 +272,7 @@ body {
 
             &.notification_server {
 
-              background-color: rgba($notification-color, 0.35);
+              background-color: rgba($notification-color, 0.2);
 
               >.icon {
 
@@ -347,7 +289,6 @@ body {
         >.title {
 
           display: flex;
-          align-items: center;
           gap: 0.5rem;
 
           grid-area: title;
@@ -356,8 +297,15 @@ body {
 
           >.name {
 
-            font-weight: bold;
-            color: rgba($fg, 0.8);
+            color: $fg;
+
+            font-weight: 400;
+
+            >b {
+
+              font-weight: 600;
+
+            }
 
           }
 
@@ -423,8 +371,6 @@ body {
 
           grid-area: body;
 
-          user-select: none;
-
           display: flex;
           flex-direction: column;
 
@@ -487,73 +433,73 @@ body {
 
           }
 
-        }
+          >.buttons {
 
-        >.buttons {
-
-          grid-area: buttons;
-
-          display: flex;
-          align-items: end;
-          justify-content: center;
-          gap: 0.5rem;
-
-          >.button {
-
-            padding: 0.2rem 1.1rem;
-            cursor: pointer;
-
-            border-radius: 3px;
+            grid-area: buttons;
 
             display: flex;
+            align-items: end;
             justify-content: center;
             gap: 0.5rem;
-            align-items: center;
 
-            $animation: 150ms ease-in-out;
+            >.button {
 
-            transition: background-color $animation;
+              padding: 0.2rem 1.1rem;
+              cursor: pointer;
 
-            >.icon {
+              border-radius: 3px;
 
-              width: 1rem;
-              height: 1rem;
+              display: flex;
+              justify-content: center;
+              gap: 0.5rem;
+              align-items: center;
 
-              transition: fill $animation;
+              $animation: 150ms ease-in-out;
 
-            }
+              transition: background-color $animation;
 
-            >.name {
+              >.icon {
 
-              transition: color $animation;
-              text-transform: uppercase;
+                width: 1rem;
+                height: 1rem;
 
-              font-size: 0.9rem;
-              font-weight: 500;
-
-            }
-
-            &.accept {
-
-              $color: mix(black, $normal, 15%);
-
-              >.name { color: $color; }
-              >.icon { fill: $color; }
-
-              &:hover {
-
-                $color: mix(black, $normal, 15%);
-
-                >.name { color: $bg; }
-                >.icon { fill: $bg; }
+                transition: fill $animation;
 
               }
 
-            }
+              >.name {
 
-            &.alternate {
+                transition: color $animation;
+                text-transform: uppercase;
 
-              >.name { color: mix(black, rgba($fg, 0.6), 15%); }
+                font-size: 0.9rem;
+                font-weight: 500;
+
+              }
+
+              &.accept {
+
+                $color: mix(black, $normal, 15%);
+
+                >.name { color: $color; }
+                >.icon { fill: $color; }
+
+                &:hover {
+
+                  $color: mix(black, $normal, 15%);
+
+                  >.name { color: $bg; }
+                  >.icon { fill: $bg; }
+
+                }
+
+              }
+
+              &.alternate {
+
+                >.name { color: mix(black, rgba($fg, 0.6), 15%); }
+
+              }
 
             }
 

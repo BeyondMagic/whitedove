@@ -176,33 +176,35 @@ export class NotificationServer {
         {
           clear.classList.add('clear', 'button')
 
-          clear.addEventListener('click', () => console.log('aaaaaaaaa') )
+          clear.addEventListener('click', () => console.log('[NotificationServer] Mark read all notifications') )
 
-          const icon = WhiteDove.createIcon(svg_clear_all)
-          if (icon) {
+          clear.textContent = 'Mark all as read'
 
-            icon.classList.add('icon')
-            clear.appendChild(icon)
+          //const icon = WhiteDove.createIcon(svg_clear_all)
+          //if (icon) {
 
-          }
+          //  icon.classList.add('icon')
+          //  clear.appendChild(icon)
+
+          //}
         }
 
         // 2.2. This symbol is used to open the configuration page of the NotificationServer.
-        const config = document.createElement('span')
-        {
-          config.classList.add('config', 'button')
+        //const config = document.createElement('span')
+        //{
+        //  config.classList.add('config', 'button')
 
-          config.addEventListener('click', () => this.show_config_page() )
+        //  config.addEventListener('click', () => this.show_config_page() )
 
-          const icon = WhiteDove.createIcon(svg_settings)
-          if (icon) {
+        //  const icon = WhiteDove.createIcon(svg_settings)
+        //  if (icon) {
 
-            icon.classList.add('icon')
-            config.appendChild(icon)
+        //    icon.classList.add('icon')
+        //    config.appendChild(icon)
 
-          }
-        }
-        right.append(clear, config)
+        //  }
+        //}
+        right.append(clear)
 
       }
       header.appendChild(right)
@@ -265,7 +267,7 @@ export class NotificationServer {
         {
 
           button.classList.add('button')
-          button.addEventListener( 'click', () => this.remove( notification ) )
+          button.addEventListener( 'click', () => this.remove(notification) )
 
           const icon = WhiteDove.createIcon(svg_close)
           if (icon)
@@ -309,7 +311,7 @@ export class NotificationServer {
         {
           const name = document.createElement('span')
           name.classList.add('name')
-          name.textContent = data.title
+          name.insertAdjacentHTML( 'beforeend', data.title )
           title.append(name)
         }
       }
@@ -364,48 +366,49 @@ export class NotificationServer {
           body.append(button_container, more)
 
         }
-      }
 
-      if ('buttons' in data && data.buttons)
-      {
+        // III. Only will be added when there are buttons on the notification.
+        if ('buttons' in data && data.buttons) {
 
-        const buttons = document.createElement('section')
+          const buttons = document.createElement('section')
 
-        buttons.classList.add('buttons')
+          buttons.classList.add('buttons')
 
-        data.buttons.forEach( item => {
+          data.buttons.forEach( item => {
 
-          const button = document.createElement('span')
+            const button = document.createElement('span')
 
-          {
-            button.classList.add('button', item.level)
-            button.addEventListener( 'click', () => {
+            {
+              button.classList.add('button', item.level)
+              button.addEventListener( 'click', () => {
 
-              this.remove(notification)
-              item.action()
+                this.remove(notification)
+                item.action()
 
-            })
-          }
+              })
+            }
 
-          if (item.icon) {
+            if (item.icon) {
 
-            item.icon.classList.add('icon')
-            button.append(item.icon)
+              item.icon.classList.add('icon')
+              button.append(item.icon)
 
-          }
+            }
 
-          {
-            const text   = document.createElement('span')
-            text.textContent = item.name
-            text.classList.add('name')
-            button.append(text)
-          }
+            {
+              const text   = document.createElement('span')
+              text.textContent = item.name
+              text.classList.add('name')
+              button.append(text)
+            }
 
-          buttons.append(button)
+            buttons.append(button)
 
-        })
+          })
 
-        notification.append(buttons)
+          body.append(buttons)
+        }
+
       }
 
       notification.append(header, title, body, date)

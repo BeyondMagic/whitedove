@@ -3,7 +3,6 @@ import svg_action from '../../icons/double_arrow.svg'
 import svg_info from '../../icons/info.svg'
 
 export type ToolTipPosition    = 'top-left' | 'top' | 'top-right' | 'left' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right'
-export type ToolTipEffect      = 'mouseover' | 'click' // TODO: Remove.
 export type ToolTipType        = 'information' | 'description' | 'action'
 
 export class ToolTip {
@@ -109,10 +108,8 @@ export class ToolTip {
     // 4. Disappear the tooltip after clicking on it, needs to hover again to activate.
     element.addEventListener( 'click' , () => tooltip.classList.remove('active') )
 
-    // 4. Add finally the tooltip to the element.
+    // 5. Add finally the tooltip to the element.
     element.appendChild( tooltip )
-
-    console.log(tooltip)
 
   }
 
