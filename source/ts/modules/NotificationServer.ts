@@ -176,17 +176,24 @@ export class NotificationServer {
         {
           clear.classList.add('clear', 'button')
 
-          clear.addEventListener('click', () => console.log('[NotificationServer] Mark read all notifications') )
-
           clear.textContent = 'Mark all as read'
 
-          //const icon = WhiteDove.createIcon(svg_clear_all)
-          //if (icon) {
+          // 1. When we click, all notifications should be read.
+          clear.addEventListener('click', () => {
 
-          //  icon.classList.add('icon')
-          //  clear.appendChild(icon)
+            // 1. Loop through each notification to make it read and save the new history.
+            this.history = this.history.map( item => {
 
-          //}
+              item.read = true
+              return item
+
+            })
+
+            // 2. Count again.
+            this.count()
+
+          })
+
         }
 
         // 2.2. This symbol is used to open the configuration page of the NotificationServer.
