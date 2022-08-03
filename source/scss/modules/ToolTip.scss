@@ -39,6 +39,37 @@ body .tooltip {
 
   // 1. Positions.
   //    'top-left' | 'top' | 'top-right' | 'left' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right'
+
+  &.top-left {
+
+    bottom: 75%;
+    right: 12.5%;
+
+    &.active {
+
+      bottom: 125%;
+      right: 25%;
+
+    }
+
+  }
+
+  &.top {
+
+    bottom: 75%;
+
+    // 1. Make the element goes to the horizontal center.
+    left: 50%;
+    transform: translateX(-50%);
+
+    &.active {
+
+      bottom: 125%;
+
+    }
+
+  }
+
   &.bottom-right {
 
     top: 75%;

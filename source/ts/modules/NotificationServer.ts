@@ -1,12 +1,20 @@
 import svg_close from '../../icons/close.svg'
 import svg_arrow_down from '../../icons/arrow_down_open.svg'
-import svg_clear_all from '../../icons/clear_all.svg'
+import svg_done_all from '../../icons/done_all.svg'
 import svg_notification from '../../icons/notifications.svg'
 import svg_settings from '../../icons/settings.svg'
+import svg_tune from '../../icons/tune.svg'
 
 type NotificationServerErrorCode = Neutralino.ErrorCode | 'WD_FS_PARSE'
 
 type NotificationLevels = 'urgent' | 'normal' | 'low'
+
+interface TabsCounter {
+
+  all        : HTMLElement // #. The counter of notifications in the 'all' tab.
+  restricted : HTMLElement // #. The counter of notifications in the 'counter' tab.
+
+}
 
 interface Button {
 
@@ -57,10 +65,12 @@ export interface NotificationType extends NotificationInit {
 
 export class NotificationServer {
 
-  private counter      : HTMLElement // #. The parent of the counter. On the icon of notifications on the top bar.
-  private counter_body : HTMLElement // #. The counter itself, the `textContent` property will have the amount.
-  private sidebar      : HTMLElement // #. The whole sidebar, including header titles and search options.
-  private sidebar_body : HTMLElement // #. The sidebar list, where notifications are.
+  private counter                 : HTMLElement // #. The parent of the counter. On the icon of notifications on the top bar.
+  private counter_body            : HTMLElement // #. The counter itself, the `textContent` property will have the amount.
+  private sidebar                 : HTMLElement // #. The whole sidebar, including header titles and search options.
+  private sidebar_body            : HTMLElement // #. The sidebar list, where notifications are.
+
+  private tabs : TabsCounter // #. The counters of each tab.
 
   private history      : Array<NotificationType> // #. Where the data of all notifications will be contained.
 
@@ -82,10 +92,17 @@ export class NotificationServer {
     }
 
     // #. Initial definitions.
-    this.sidebar        = page
-    this.sidebar_body   = document.createElement( 'section' )
-    this.counter        = WhiteDove.pageSetter.bar_top_notification_icon
-    this.counter_body   = counter
+    this.sidebar                 = page
+    this.sidebar_body            = document.createElement( 'section' )
+    this.counter                 = WhiteDove.pageSetter.bar_top_notification_icon
+    this.counter_body            = counter
+
+    this.tabs = {
+
+      all        : document.createElement( 'span' ),
+      restricted : document.createElement( 'span' )
+
+    }
 
     this.history        = []
 
@@ -103,6 +120,39 @@ export class NotificationServer {
   private save ( data : NotificationType ) : void {
 
     this.history.push(data)
+
+  }
+
+  /**
+    * Add a certain quantity to a tab counter in the subheader.
+    * @param tab_type The counter of the tab.
+    * @param number Quantity to add or remove.
+    */
+  private tab_add ( tab_type : 'all' | 'restricted', quantity : number ) : void {
+
+    let tab : HTMLElement
+
+    switch (tab_type) {
+
+      case 'all': tab = this.tabs.all; break
+      case 'restricted': tab = this.tabs.restricted; break
+
+    }
+
+    // #. Calculate the quantity plus the new value.
+    let tab_quantity = parseInt(tab.textContent!) + quantity
+
+    // 1. If lower than zero (shouldn't be, or just zero), just hide the counter.
+    if (tab_quantity < 1) {
+
+      tab_quantity = 0
+      tab.classList.add('hidden')
+
+    // 1.1. In case the counter went from 0 to something bigger, remove the 'hidden' class.
+    } else if ( tab.classList.contains('hidden') ) tab.classList.remove('hidden')
+
+    // #. Add to the 'all' tab counter.
+    tab.textContent = String(tab_quantity);
 
   }
 
@@ -149,11 +199,12 @@ export class NotificationServer {
 
     this.sidebar.classList.add('hidden')
 
+    // A. Just the visual confirmation of what this sidebar is, including a button to read all notifications.
     const header = document.createElement('section')
     {
       header.classList.add('header')
 
-      // 1. Left part of the header.
+      // I. Left part of the header.
       const left = document.createElement('section')
       {
         left.classList.add('left')
@@ -166,20 +217,128 @@ export class NotificationServer {
           left.appendChild(label)
         }
       }
+
+      // II. Add all divisors.
       header.appendChild(left)
 
-      // 2.1. Right part of the header.
-      const right = document.createElement('section')
+    }
+
+    // B. Where the notifications themselves are.
+    const list = this.sidebar_body
+    {
+      list.classList.add('notification-list')
+
+      // II. Add each notification from history.
+      this.history.forEach( item => {
+
+        const notification = this.create_notification(item)
+
+        list.insertAdjacentElement( 'afterbegin', notification)
+
+      })
+
+    }
+
+    // C. The 'subheader' is a part where we can set a few things about the notifications list.
+    //    Such as which notifications we want to see, and which ones we want to restrict,
+    //    and obviosly open the configuration.
+    const subheader = document.createElement('section')
+    {
+      subheader.classList.add('subheader')
+
+      // 1.1. To only see some type of notifications.
+      const tabs = document.createElement('section')
       {
-        right.classList.add('right')
-        const clear = document.createElement('span')
+        tabs.classList.add('tabs')
+
+        // I. All notifications tab.
+        //    Note: active by definition.
+        const all = document.createElement('section')
         {
-          clear.classList.add('clear', 'button')
+          all.classList.add('all', 'tab', 'active')
+          all.textContent = 'All'
 
-          clear.textContent = 'Mark all as read'
+          // I.I. The counter of visible notifications in this tab.
+          const counter = this.tabs.all
+          {
+            counter.classList.add('counter')
+            counter.textContent = String(list.children.length)
+          }
 
-          // 1. When we click, all notifications should be read.
-          clear.addEventListener('click', () => {
+          all.appendChild(counter)
+        }
+
+        // II. Restricted notifications tab.
+        const restricted = document.createElement('section')
+        {
+          restricted.classList.add('restricted', 'tab')
+          restricted.textContent = 'Custom'
+
+          // I.I. The counter of visible notifications in this tab.
+          const counter = this.tabs.restricted
+          {
+            counter.classList.add('counter', 'hidden')
+            counter.textContent = '0'
+          }
+
+          restricted.appendChild(counter)
+
+        }
+
+        // III. Add all the types of tabs above.
+        tabs.append(all, restricted)
+      }
+
+      // 1.2. Here we can configure a few things about the sidebar.
+      const buttons = document.createElement('section')
+      {
+        buttons.classList.add('buttons')
+
+        // I. This symbol is used to configurate which notifications are listed.
+        const restricted = document.createElement('span')
+        {
+          restricted.classList.add('restricted', 'button')
+
+          // I.I. When we click, it opens a context menu a list of options (tags) to mark visible ones.
+          //      After making a change, if the tab is not open on the 'restricted' one, then change to it.
+          restricted.addEventListener( 'click', () => console.log('NotificationServer: open the context menu of custom.') )
+
+          // I.II. Add a 'custom' type icon to represent it (user-friendly).
+          const icon = WhiteDove.createIcon(svg_tune)
+          if (icon) {
+
+            icon.classList.add('icon')
+            restricted.appendChild(icon)
+
+          }
+        }
+
+        // II. This symbol is used to open directly the configuration page of the NotificationServer.
+        const config = document.createElement('span')
+        {
+          config.classList.add('config', 'button')
+
+          // I.II. Show the configuration page when click.
+          config.addEventListener( 'click', () => this.show_config_page() )
+
+          // I.III. Add a 'settings' type icon to represent it (user-friendly).
+          const icon = WhiteDove.createIcon(svg_settings)
+          if (icon) {
+
+            icon.classList.add('icon')
+            config.appendChild(icon)
+
+          }
+        }
+
+        // III. This button is used to read all visible notifications.
+        const read_all = document.createElement('span')
+        {
+
+          read_all.classList.add('read_all', 'button')
+
+          // III.I. When we click, all notifications should be read.
+          read_all.addEventListener('click', () => {
 
             // 1. Loop through each notification to make it read and save the new history.
             this.history = this.history.map( item => {
@@ -189,49 +348,32 @@ export class NotificationServer {
 
             })
 
-            // 2. Count again.
+            // 2. Update the counter of the notification icon on the header of the page.
             this.count()
 
           })
 
+          // III.II Add a 'read' type icon to represent it (user-friendly).
+          const icon = WhiteDove.createIcon(svg_done_all)
+          if (icon) {
+
+            icon.classList.add('icon')
+            read_all.appendChild(icon)
+
+          }
+
+          // III.III. Add a tooltip to tell what this does.
+          WhiteDove.toolTip.add( read_all, 'Mark read all <b>visible</b> notifications', 'action', 'top' )
+
         }
 
-        // 2.2. This symbol is used to open the configuration page of the NotificationServer.
-        //const config = document.createElement('span')
-        //{
-        //  config.classList.add('config', 'button')
-
-        //  config.addEventListener('click', () => this.show_config_page() )
-
-        //  const icon = WhiteDove.createIcon(svg_settings)
-        //  if (icon) {
-
-        //    icon.classList.add('icon')
-        //    config.appendChild(icon)
-
-        //  }
-        //}
-        right.append(clear)
-
+        buttons.append(read_all, restricted, config)
       }
-      header.appendChild(right)
 
+      subheader.append(tabs, buttons)
     }
 
-    const list = this.sidebar_body
-    {
-      list.classList.add('notification-list')
-
-      this.history.forEach( item => {
-
-        const notification = this.create_notification(item)
-
-        list.insertAdjacentElement( 'afterbegin', notification)
-
-      })
-    }
-
-    this.sidebar.append(header, list)
+    this.sidebar.append(header, subheader, list)
 
   }
 
@@ -464,6 +606,9 @@ export class NotificationServer {
     // #. Add in the body list the element so that we can see.
     this.sidebar_body.appendChild(notification)
 
+    // #. Add to the 'all' tab counter.
+    this.tab_add('all', +1)
+
     // #. Count the unread notifications now.
     this.count()
 
@@ -508,6 +653,9 @@ export class NotificationServer {
       }
 
     }
+
+    // #. Remove one of the 'all' tab counter.
+    this.tab_add('all', -1)
 
     this.count()
 

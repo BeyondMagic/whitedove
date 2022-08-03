@@ -18,13 +18,13 @@ body {
 
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 3rem 1fr 3rem;
+    grid-template-rows: 3rem 3rem 1fr;
     grid-template-areas:
       'header'
-      'notification-list'
-      'bottom-bar';
+      'subheader'
+      'notification-list';
 
-    transition: right 150ms linear;
+    font-family: $default-font;
 
     background-color: $bg;
 
@@ -43,8 +43,6 @@ body {
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-areas: 'left right';
-
-      font-family: $default-font;
 
       >.left {
 
@@ -66,29 +64,111 @@ body {
 
       }
 
-      >.right {
+    }
 
-        grid-area: right;
+    >.subheader {
+
+      grid-area: subheader;
+
+
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: 'tabs buttons';
+
+      >.tabs {
+
+        grid-area: tabs;
+
 
         display: flex;
-        justify-content: right;
-        align-items: center;
+        align-items: end;
+        flex-direction: row;
 
-        >.button {
+        >.tab {
 
-          display: flex;
-          justify-content: center;
-          align-items: center;
+          padding: 0.25rem 0.75rem;
 
           cursor: pointer;
 
-          text-decoration: underline;
+          color: rgba($fg, 0.3);
+          border-bottom: 2px solid rgba($fg, 0.3);
 
-          font-size: 0.85rem;
+          &.active {
 
-          font-weight: 500;
+            color: $fg;
+            border-color: $fg;
 
-          &.clear {
+          }
+
+          &:hover:not(.active) {
+
+            color: rgba($fg, 0.5);
+            border-color: rgba($fg, 0.5);
+
+          }
+
+          >.counter {
+
+            color: rgba($bg, 0.9);
+            background-color: rgba($fg, 0.75);
+
+            margin-left: 0.25rem;
+            padding: 0 0.3rem;
+
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 0.25rem;
+
+            transition: opacity 100ms linear;
+
+            &.hidden {
+
+              opacity: 0;
+              color: transparent;
+
+            }
+
+          }
+
+        }
+
+      }
+
+      >.buttons {
+
+        grid-area: buttons;
+
+        //background-color: pink;
+
+        display: flex;
+        align-items: end;
+        justify-content: end;
+
+        >.button {
+
+          width: 2rem;
+          height: 2rem;
+
+          cursor: pointer;
+
+          position: relative;
+
+          &:hover {
+
+            >svg {
+
+              fill: rgba($fg, 0.5);
+
+            }
+
+          }
+
+          >svg {
+
+            width: 1.5rem;
+            height: 1.5rem;
+
+            fill: rgba($fg, 0.3);
 
           }
 
@@ -106,7 +186,9 @@ body {
       flex-direction: column;
       justify-content: flex-start;
       align-items: end;
-      gap: 1rem;
+      gap: 0.5rem;
+
+      padding-top: 0.75rem;
 
       overflow-y: scroll;
       overflow-x: hidden;
@@ -117,8 +199,8 @@ body {
         $normal: #5CDA93;
         $low: #4F91FF;
         $width: 25rem;
-        $icon-container-size: 1.5rem;
-        $icon-size: 1.25rem;
+        $icon-container-size: 1rem;
+        $icon-size: 0.85rem;
 
         // #. Special colours for the types, like `urgent`, `low`, `normal`.
         @mixin pseudo_bg( $color ) {
@@ -163,15 +245,23 @@ body {
 
         //box-shadow: 4px 4px 1rem rgba($fg, 0.3);
 
-        padding: 0.5rem 1rem;
+        padding: 0 1rem;
 
         transition-property: right;
         transition-duration: 100ms;
         transition-timing-function: linear;
 
+        border-bottom: 1px solid rgba($fg, 0.05);
+
         &.urgent { @include pseudo_bg($urgent) }
         &.normal { @include pseudo_bg($normal) }
         &.low { @include pseudo_bg($low) }
+
+        &.hidden {
+
+          display: none;
+
+        }
 
         &.remove {
 
@@ -382,6 +472,7 @@ body {
 
           }
 
+
           >.more-container {
 
             display: flex;
@@ -508,12 +599,6 @@ body {
         }
 
       }
-
-    }
-
-    >.bottom-bar {
-
-      grid-area: bottom-bar;
 
     }
 
