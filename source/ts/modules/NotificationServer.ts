@@ -157,8 +157,10 @@ export class NotificationServer {
       // I. Hide the restricted tab.
       if (tab_type === 'restricted') this.tabs.restricted_container.classList.add('hidden')
 
+    }
+
     // 1.1. In case the counter went from 0 to something bigger, remove the 'hidden' class.
-    } else if ( tab.classList.contains('hidden') ) {
+    else if ( tab.classList.contains('hidden') ) {
 
       tab.classList.remove('hidden')
 
@@ -270,7 +272,7 @@ export class NotificationServer {
           const counter = this.tabs.restricted
           {
             counter.classList.add('counter', 'hidden')
-            counter.textContent = '0'
+            counter.textContent = '1'
           }
 
           restricted.appendChild(counter)
