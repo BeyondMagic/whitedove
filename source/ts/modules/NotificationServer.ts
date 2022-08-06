@@ -5,6 +5,8 @@ import svg_notification from '../../icons/notifications.svg'
 import svg_settings from '../../icons/settings.svg'
 import svg_tune from '../../icons/tune.svg'
 
+import { ContextMenu } from '../modules/ContextMenu'
+
 type NotificationServerErrorCode = Neutralino.ErrorCode | 'WD_FS_PARSE'
 
 type NotificationLevels = 'urgent' | 'normal' | 'low'
@@ -308,16 +310,30 @@ export class NotificationServer {
         {
           restricted.classList.add('restricted', 'button')
 
-          // I.I. When we click, it opens a context menu a list of options (tags) to mark visible ones.
-          //      After making a change, if the tab is not open on the 'restricted' one, then change to it.
-          restricted.addEventListener( 'click', () => console.log('NotificationServer: open the context menu of custom.') )
-
-          // I.II. Add a 'custom' type icon to represent it (user-friendly).
-          const icon = WhiteDove.createIcon(svg_tune)
+          // I.I. Add a 'custom' type icon to represent it (user-friendly).
+          const icon = WhiteDove.createIcon(svg_tune)!
           if (icon) {
 
             icon.classList.add('icon')
             restricted.appendChild(icon)
+
+          }
+
+
+          // I.II. Create a context menu to be used by this button.
+          {
+            // A. Create the content.
+            const content = document.createElement( 'span' )
+            {
+              content.textContent = 'lol'
+            }
+
+            const context_menu_creator = new ContextMenu()
+            const context_menu = context_menu_creator.create( restricted, content, 'bottom', false )
+
+            // I.I. When we click, it opens a context menu a list of options (tags) to mark visible ones.
+            //      After making a change, if the tab is not open on the 'restricted' one, then change to it.
+            icon?.addEventListener( 'click', () => context_menu_creator.toggle( context_menu ) )
 
           }
         }

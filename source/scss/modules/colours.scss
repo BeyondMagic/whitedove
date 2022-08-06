@@ -17,4 +17,5 @@ $notification-color: #2AADFF;
 $page-header-height: 2.5rem;
 
 
-$border-layout: 0 0 0.75rem rgba($fg, 0.175);
+$border-layout-colour: rgba($fg, 0.175);
+$border-layout: 0 0 0.75rem $border-layout-colour;

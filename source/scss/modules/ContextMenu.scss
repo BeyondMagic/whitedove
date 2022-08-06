@@ -1,0 +1,90 @@
+// #. The context menu is an element that can be anywhere in the DOMTree and is managed by the module "ContextMenu"
+.context-menu {
+
+  position: absolute;
+  background-color: $bg;
+
+  padding: 0.5rem 1rem;
+
+  z-index: 91;
+
+  border-radius: 0.25rem;
+
+  box-shadow: $border-layout;
+
+  cursor: default;
+
+  // 1. When the context menu is completely hidden.
+  &.hidden {
+
+    display: none;
+
+  }
+
+  // 2. The position of the context menu.
+  //    Note: auto is not included because it is set by ContextMenu itself with hardened positions.
+  &.bottom {
+
+    top: 105%;
+
+    // #. Centralise horizontaly.
+    left: 50%;
+    transform: translateX(-50%);
+
+    // #. An arrow pointing to above.
+    &::after {
+
+      content: '';
+
+      // #. To center it proportionally
+      position: absolute;
+      z-index: 90;
+
+      bottom: 100%;
+
+      // #. Centralise horizontaly.
+      left: 50%;
+      transform: translateX(-50%);
+
+      // #. The triangle itself.
+      $width-border: 0.5rem;
+      $border-color: rgba($border-layout-colour, 0.05);
+      border-left: $width-border solid $border-color;
+      border-right: $width-border solid $border-color;
+      border-bottom: $width-border solid $bg;
+      box-shadow: 0 -5px 0.25rem rgba($border-layout-colour, 0.05);
+
+    }
+
+  }
+
+  // 3. The close button.
+  >.close {
+
+    position: absolute;
+
+    top: 0.125rem;
+    right: 0.25rem;
+
+    cursor: pointer;
+
+    >.icon {
+
+      width: 0.75rem;
+      height: 0.75rem;
+
+      fill: red;
+
+    }
+
+  }
+
+  // 3. The content of the page, will always have this class.
+  >.content {
+
+    color: red;
+
+  }
+
+}
+
