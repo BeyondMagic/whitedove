@@ -78,6 +78,9 @@ export class ContextMenu {
     // 2. Remove the class 'hidden'.
     container.classList.remove( 'hidden' )
 
+    // 3. Try to focus on the form if there's something to focus.
+    container.focus()
+
   }
 
   /**
@@ -88,6 +91,9 @@ export class ContextMenu {
 
     // 1. Add the class 'hidden'.
     container.classList.add( 'hidden' )
+
+    // 2. Leave the focus.
+    container.blur()
 
   }
 

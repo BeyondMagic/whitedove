@@ -12,6 +12,10 @@
 // 1. Main template of the page.
 @import './modules/PageSetter';
 
+// #. For "Form" component.
+// I. z-index: inherit;
+@import './modules/Form';
+
 // #. For NotificationServer.
 // I. z-index: 89-90.
 @import './modules/NotificationServer';

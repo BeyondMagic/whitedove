@@ -1,5 +1,5 @@
 // #. The context menu is an element that can be anywhere in the DOMTree and is managed by the module "ContextMenu"
-.context-menu {
+body .context-menu {
 
   position: absolute;
   background-color: $bg;
@@ -82,7 +82,45 @@
   // 3. The content of the page, will always have this class.
   >.content {
 
-    color: red;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    >.header {
+
+      color: rgba($fg, 0.65);
+
+    }
+
+    >.box {
+
+      padding: 0.25rem 0.75rem;
+
+      box-shadow: 0 0 0.25rem rgba($border-layout-colour, 0.25);
+
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      >.button-container {
+
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+
+        >.label {
+
+          color: rgba($fg, 0.6);
+          font-size: 0.9rem;
+          text-transform: capitalize;
+
+        }
+
+      }
+
+    }
 
   }
 

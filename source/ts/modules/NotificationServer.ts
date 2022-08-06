@@ -6,6 +6,7 @@ import svg_settings from '../../icons/settings.svg'
 import svg_tune from '../../icons/tune.svg'
 
 import { ContextMenu } from '../modules/ContextMenu'
+import { Form } from './Form'
 
 type NotificationServerErrorCode = Neutralino.ErrorCode | 'WD_FS_PARSE'
 
@@ -177,6 +178,43 @@ export class NotificationServer {
   }
 
   /**
+    * Re-order the notifications list of the restriction tab given 'check' inputs.
+    * @param HTMLElement Where the 'check' buttons are.
+    */
+    private reorder ( form : HTMLElement ) {
+
+      // 1. Get all notifications.
+      const notifications = Array.from( this.sidebar_body.children )
+
+      // 2. Must have at least a notification.
+      if (notifications.length === 0) return
+
+      // 3. For all elements of input type check.
+      Array.from( form.querySelectorAll( 'input[type="checkbox"]' ) as NodeListOf<HTMLInputElement> ).forEach( button => {
+
+        // A. If the button is selected, then show its notifications.
+        if (button.checked) notifications.forEach( item => {
+
+          // I. Remove the class 'hidden'.
+          if (item.classList.contains(button.name)) item.classList.remove('hidden')
+
+        })
+
+        // B. If the button is not selected, hide all with its class.
+        else notifications.forEach( item => {
+
+          // I. Add the class 'hidden'.
+          if (item.classList.contains(button.name)) item.classList.add('hidden')
+
+        })
+
+      })
+
+      // TODO: 4. Show the restricted tab if it's on the "All" tab.
+
+    }
+
+  /**
     * Notify from this module with the default settings and without saving to history.
     * @param data NotificationInit The initial notification to load.
     * @param type 'save' | 'add' If saves directly to history or add to sidebar.
@@ -319,14 +357,62 @@ export class NotificationServer {
 
           }
 
-
           // I.II. Create a context menu to be used by this button.
           {
             // A. Create the content.
             const content = document.createElement( 'span' )
+
+            // B. Create the form for creation of content.
+            const form = new Form()
+
+            // 1. First header for the level of notifications.
+            const level_header = document.createElement( 'section' )
             {
-              content.textContent = 'lol'
+              level_header.classList.add( 'header')
+              level_header.textContent = 'Show only a level of notification.'
             }
+
+            // 2. Box of the first header.
+            const level_box = document.createElement( 'section' )
+            {
+              level_box.classList.add( 'box' )
+
+              // A. For each level, create a button.
+              const levels : Array<NotificationLevels> = [ 'low', 'normal', 'urgent' ]
+              levels.forEach( level => {
+
+                const container = document.createElement('section')
+                {
+                  // #. Default classes for container.
+                  container.classList.add('button-container')
+
+                  // 1. Add the label.
+                  const label = document.createElement('span')
+                  label.classList.add('label')
+
+                  // 2. Make the label the same as the level.
+                  label.textContent = level
+
+                  // 3. Create the button.
+                  const button = form.button( 'checkbox', 'unselected' )
+
+                  // 4. Make the name as the level.
+                  button.name = level
+
+                  // 5. Reorder when we click on it.
+                  button.addEventListener( 'click', () => this.reorder(content) )
+
+                  container.append(label, button)
+                }
+
+                // 4. Add the button to the DOMTree.
+                level_box.appendChild(container)
+
+              })
+            }
+
+            // Add everything above in here.
+            content.append( level_header, level_box )
 
             const context_menu_creator = new ContextMenu()
             const context_menu = context_menu_creator.create( restricted, content, 'bottom', false )
