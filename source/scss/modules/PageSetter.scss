@@ -52,6 +52,11 @@ body {
 
     grid-area: top-bar;
 
+    box-shadow: $border-layout;
+
+    user-select: none;
+    -webkit-user-select: none;
+
     >.icon-container {
 
       height: $bar-top-height;

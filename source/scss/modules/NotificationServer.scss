@@ -9,18 +9,17 @@ body {
     bottom: 0.5rem;
     z-index: 9;
 
-    height: calc(100% - $page-header-height);
+    height: calc(100% - $page-header-height * 1.25);
     width: 28rem;
 
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
 
-    box-shadow: 2px 2px 0.75rem rgba($fg, 0.25);
+    box-shadow: $border-layout;
 
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 3rem 3rem 1fr;
+    grid-template-rows: 2.5rem 1fr;
     grid-template-areas:
-      'header'
       'subheader'
       'notification-list';
 
@@ -32,25 +31,25 @@ body {
 
     &.hidden {
 
-      //right: -$width;
+      right: -$width;
 
     }
 
-    >.header {
+    >.subheader {
 
-      grid-area: header;
+      grid-area: subheader;
 
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-areas: 'left right';
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-areas: 'tabs header buttons';
 
-      >.left {
+      >.header {
 
-        grid-area: left;
+        grid-area: header;
 
         display: flex;
-        justify-content: left;
         align-items: center;
+        flex-direction: row;
 
         >.label {
 
@@ -59,21 +58,9 @@ body {
           font-weight: 600;
           color: rgba($fg, 0.8);
 
-
         }
 
       }
-
-    }
-
-    >.subheader {
-
-      grid-area: subheader;
-
-
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-areas: 'tabs buttons';
 
       >.tabs {
 
@@ -92,6 +79,12 @@ body {
 
           color: rgba($fg, 0.3);
           border-bottom: 2px solid rgba($fg, 0.3);
+
+          &.hidden {
+
+            display: none;
+
+          }
 
           &.active {
 
@@ -112,7 +105,7 @@ body {
             color: rgba($bg, 0.9);
             background-color: rgba($fg, 0.75);
 
-            margin-left: 0.25rem;
+            margin-left: 0.35rem;
             padding: 0 0.3rem;
 
             font-weight: 600;
@@ -269,6 +262,7 @@ body {
 
         }
 
+        &.new,
         &:hover {
 
           right: 15px;
@@ -280,7 +274,7 @@ body {
 
           }
 
-          >.header {
+          &:not(.new) >.header {
 
             width: 1.5rem;
 

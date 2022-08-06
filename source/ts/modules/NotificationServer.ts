@@ -14,6 +14,9 @@ interface TabsCounter {
   all        : HTMLElement // #. The counter of notifications in the 'all' tab.
   restricted : HTMLElement // #. The counter of notifications in the 'counter' tab.
 
+  all_container        : HTMLElement // #. The tab itself.
+  restricted_container : HTMLElement // #. The tab itself.
+
 }
 
 interface Button {
@@ -99,8 +102,11 @@ export class NotificationServer {
 
     this.tabs = {
 
-      all        : document.createElement( 'span' ),
-      restricted : document.createElement( 'span' )
+      all           : document.createElement( 'span' ),
+      all_container : document.createElement( 'section' ),
+
+      restricted           : document.createElement( 'span' ),
+      restricted_container : document.createElement( 'section' ),
 
     }
 
@@ -148,8 +154,18 @@ export class NotificationServer {
       tab_quantity = 0
       tab.classList.add('hidden')
 
+      // I. Hide the restricted tab.
+      if (tab_type === 'restricted') this.tabs.restricted_container.classList.add('hidden')
+
     // 1.1. In case the counter went from 0 to something bigger, remove the 'hidden' class.
-    } else if ( tab.classList.contains('hidden') ) tab.classList.remove('hidden')
+    } else if ( tab.classList.contains('hidden') ) {
+
+      tab.classList.remove('hidden')
+
+      // I. Hide the restricted tab.
+      if (tab_type === 'restricted') this.tabs.restricted_container.classList.remove('hidden')
+
+    }
 
     // #. Add to the 'all' tab counter.
     tab.textContent = String(tab_quantity);
@@ -199,31 +215,7 @@ export class NotificationServer {
 
     this.sidebar.classList.add('hidden')
 
-    // A. Just the visual confirmation of what this sidebar is, including a button to read all notifications.
-    const header = document.createElement('section')
-    {
-      header.classList.add('header')
-
-      // I. Left part of the header.
-      const left = document.createElement('section')
-      {
-        left.classList.add('left')
-
-        // 1.1. Add a text for `Notifications`.
-        const label = document.createElement('span')
-        {
-          label.textContent = 'Notifications'
-          label.classList.add('label')
-          left.appendChild(label)
-        }
-      }
-
-      // II. Add all divisors.
-      header.appendChild(left)
-
-    }
-
-    // B. Where the notifications themselves are.
+    // A. Where the notifications themselves are.
     const list = this.sidebar_body
     {
       list.classList.add('notification-list')
@@ -239,7 +231,7 @@ export class NotificationServer {
 
     }
 
-    // C. The 'subheader' is a part where we can set a few things about the notifications list.
+    // B. The 'subheader' is a part where we can set a few things about the notifications list.
     //    Such as which notifications we want to see, and which ones we want to restrict,
     //    and obviosly open the configuration.
     const subheader = document.createElement('section')
@@ -253,7 +245,7 @@ export class NotificationServer {
 
         // I. All notifications tab.
         //    Note: active by definition.
-        const all = document.createElement('section')
+        const all = this.tabs.all_container
         {
           all.classList.add('all', 'tab', 'active')
           all.textContent = 'All'
@@ -269,9 +261,9 @@ export class NotificationServer {
         }
 
         // II. Restricted notifications tab.
-        const restricted = document.createElement('section')
+        const restricted = this.tabs.restricted_container
         {
-          restricted.classList.add('restricted', 'tab')
+          restricted.classList.add('restricted', 'tab', 'hidden')
           restricted.textContent = 'Custom'
 
           // I.I. The counter of visible notifications in this tab.
@@ -289,7 +281,22 @@ export class NotificationServer {
         tabs.append(all, restricted)
       }
 
-      // 1.2. Here we can configure a few things about the sidebar.
+      // 1.2. Add a text for `Notifications`.
+      const header = document.createElement('section')
+      {
+        header.classList.add('header')
+
+        // A. Just a text informing this sidebar is for notifications.
+        const label = document.createElement('span')
+        {
+          label.classList.add('label')
+          label.textContent = 'Notifications'
+        }
+
+        header.appendChild(label)
+      }
+
+      // 1.3. Here we can configure a few things about the sidebar.
       const buttons = document.createElement('section')
       {
         buttons.classList.add('buttons')
@@ -370,10 +377,10 @@ export class NotificationServer {
         buttons.append(read_all, restricted, config)
       }
 
-      subheader.append(tabs, buttons)
+      subheader.append(tabs, header, buttons)
     }
 
-    this.sidebar.append(header, subheader, list)
+    this.sidebar.append(subheader, list)
 
   }
 
@@ -390,6 +397,8 @@ export class NotificationServer {
     const notification = document.createElement('section')
     {
 
+      notification.classList.add( 'notification', data.level, 'new' )
+
       // 1. Add an event so that when we hover through it, we make it `read` true.
       notification.addEventListener( 'mouseover', () => {
 
@@ -402,11 +411,13 @@ export class NotificationServer {
         // 1.2. Run the count to already make them read-in.
         this.count()
 
+        // 1.3. Remove the class of new.
+        notification.classList.remove( 'new' )
+
       // 1.3. Only run this event once. Just learned this!
       }, { once: true } )
 
       notification.setAttribute('data-id', String(data.snapshot))
-      notification.classList.add('notification', data.level)
 
       const header = document.createElement('section')
       {
