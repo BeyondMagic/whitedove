@@ -1,0 +1,109 @@
+@font-face {
+  font-family: "Nylas-Pro";
+  font-style: normal;
+  font-weight: 200;
+  src: url("../../fonts/Nylas-Pro-Thin.otf");
+}
+@font-face {
+  font-family: "Nylas-Pro";
+  font-style: normal;
+  font-weight: 300;
+  src: url("../../fonts/Nylas-Pro-Blond.otf");
+}
+@font-face {
+  font-family: "Nylas-Pro";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../../fonts/Nylas-Pro-Normal.otf");
+}
+@font-face {
+  font-family: "Nylas-Pro";
+  font-style: normal;
+  font-weight: 500;
+  src: url("../../fonts/Nylas-Pro-Medium.otf");
+}
+@font-face {
+  font-family: "Nylas-Pro";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../../fonts/Nylas-Pro-SemiBold.otf");
+}
+@font-face {
+  font-family: "Nylas-Pro";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../../fonts/Nylas-Pro-Normal.otf"), Helvetica, sans-serif;
+  unicode-range: U+1F300-1F5FF, U+1F600-1F64F, U+1F680-1F6FF, U+2600-26FF;
+}
+body > .main {
+  background-color: pink;
+  padding: 2rem 1rem;
+}
+body > .main .page {
+  border-radius: 0.5rem;
+  background-color: #040405;
+  box-shadow: 0 0 0.75rem rgba(12, 13, 16, 0.25);
+  padding: 4rem 2rem;
+}
+body > .main .page > .plugin {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  grid-template-areas: "toolbox content";
+}
+body > .main .page > .plugin > .toolbox {
+  grid-area: toolbox;
+}
+body > .main .page > .plugin > .toolbox > .buttons {
+  display: flex;
+  justify-content: right;
+  column-gap: 0.5rem;
+  margin-right: 0.5rem;
+  opacity: 1;
+  transition: opacity 200ms ease-in-out;
+}
+body > .main .page > .plugin > .toolbox > .buttons > .icon {
+  color: #0c0d10;
+  font-weight: bolder;
+  cursor: pointer;
+}
+body > .main .page > .plugin > .toolbox > .buttons > .icon:hover {
+  background-color: red;
+}
+body > .main .page > .plugin .content {
+  grid-area: content;
+  color: rgba(12, 13, 16, 0.75);
+}
+body > .main .page > .plugin .content:focus {
+  outline: none;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html > body {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 2rem 1fr 2rem;
+  grid-template-rows: 2rem 1fr 2rem;
+  grid-template-areas: "top-bar top-bar top-bar" "left-side-bar main right-side-bar" "bottom-bar bottom-bar bottom-bar";
+  background-color: #00ffff;
+}
+html > body > .top-bar {
+  grid-area: top-bar;
+  height: 100%;
+}
+html > body > .left-side-bar {
+  grid-area: left-side-bar;
+  height: 100%;
+}
+html > body > .main {
+  grid-area: main;
+  height: 100%;
+}
+html > body > .bottom-bar {
+  grid-area: bottom-bar;
+  height: 100%;
+}
