@@ -1,0 +1,68 @@
+.page {
+
+  border-radius: 0.5rem;
+  background-color: $bg;
+  box-shadow: 0 0 0.75rem rgba($shadow, 0.25);
+
+  padding: 4rem 2rem;
+
+  >.plugin {
+
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    grid-template-areas: 'toolbox content';
+
+    >.toolbox {
+
+      grid-area: toolbox;
+
+      >.buttons {
+
+        display: flex;
+        justify-content: right;
+        column-gap: 0.5rem;
+        margin-right: 0.5rem;
+
+        opacity: 1;
+
+        transition: opacity 200ms ease-in-out;
+
+        >.icon {
+
+          color: $fg;
+          font-weight: bolder;
+
+          cursor: pointer;
+
+          &:hover {
+
+            background-color: red;
+
+          }
+
+        }
+
+      }
+
+
+    }
+
+    .content {
+
+      grid-area: content;
+
+      color: rgba($fg, 0.75);
+
+      &:focus {
+
+        outline: none;
+
+      }
+
+    }
+
+
+  }
+
+
+}

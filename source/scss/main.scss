@@ -1,45 +1,16 @@
 // João F. © BeyondMagic 2022 <koetemagie@gmail.com>
 
 // #. Wonderful fonts for interface.
-@import './modules/fonts';
+@import './configuration/fonts';
 
 // #. Colours for everyone.
-@import './modules/colours';
+@import './configuration/colours';
 
 // #. Animations (keyframes).
-@import './modules/keyframes';
-
-// 1. Main template of the page.
-@import './modules/PageSetter';
-
-// #. For "Form" component.
-// I. z-index: inherit;
-@import './modules/Form';
-
-// #. For NotificationServer.
-// I. z-index: 89-90.
-@import './modules/NotificationServer';
-
-// #. For ContextMenu.
-// I. z-index: 91-99.
-@import './modules/ContextMenu';
-
-// #. For WhiteBoard.
-@import './modules/WhiteBoard';
-
-// 3. The cursor effects and selection.
-@import './modules/alilas_selection';
-
-// 3. ConfigPage.
-// I. z-index: 100-110.
-@import './modules/configuration_page';
-
-// 3. ToolTip
-// I. z-index: 120-130.
-@import './modules/ToolTip';
+@import './configuration/animations';
 
 // #. Main for writing and reading.
-@import './modules/main';
+@import './configuration/pages';
 
 * {
 
@@ -50,8 +21,28 @@
 
 }
 
-body {
+html > body {
 
-  //background-color: #E0E0E0;
+  min-height: 100vh;
+
+  display: grid;
+  grid-template-columns: 2rem 1fr 2rem;
+  grid-template-rows:    2rem 1fr 2rem;
+  grid-template-areas: 
+    'top-bar top-bar top-bar'
+    'left-side-bar main right-side-bar'
+    'bottom-bar bottom-bar bottom-bar';
+
+  // #. For everything, assume max height.
+  @each $part in top-bar, left-side-bar, main, bottom-bar {
+    >.#{$part} {
+
+      grid-area: $part;
+      height: 100%;
+
+    }
+  }
+
+  background-color: blue;
 
 }

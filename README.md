@@ -8,6 +8,9 @@ The default template for a Neutralinojs app. It's possible to use your favorite 
   <img src="https://contrib.rocks/image?repo=neutralinojs/neutralinojs-minimal" />
 </a>
 
+
+
+
 ## License
 
 [MIT](LICENSE)
@@ -15,3 +18,17 @@ The default template for a Neutralinojs app. It's possible to use your favorite 
 ## Icon credits
 
 - `trayIcon.png` - Made by [Freepik](https://www.freepik.com) and downloaded from [Flaticon](https://www.flaticon.com)
+
+## Note:
+
+For contributors of themes; I'd like to ask so that you complete the check-list below by taking a picture of the result in your theme. So that users of it couldn't have problems using it.
+
+
+
+### Themes:
+
+### Colorschemes:
+
+### Plugins:
+
+### 

@@ -1,5 +1,5 @@
 {
-  "applicationId": "js.neutralino.sample",
+  "applicationId": "js.neutralino.whitedove",
   "version": "1.0.0",
   "defaultMode": "window",
   "port": 0,
@@ -7,29 +7,30 @@
   "url": "/",
   "enableServer": true,
   "enableNativeAPI": true,
-  "tokenSecurity": "one-time",
+  "tokenSecurity": "none",
   "logging": {
     "enabled": false,
     "writeToLogFile": true
+  },
+  "cli": {
+    "binaryName": "WhiteDove",
+    "resourcesPath": "/distribution/",
+    "extensionsPath": "/extensions/",
+    "clientLibrary": "/distribution/js/neutralino.js",
+    "binaryVersion": "nightly",
+    "clientVersion": "nightly",
+    "frontendLibrary": {
+      "patchFile": "/distribution/index.html",
+      "devUrl": "http://localhost:54321"
+    }
   },
   "nativeAllowList": [
     "app.*",
     "os.*",
     "debug.log",
-    "filesystem.*"
+    "filesystem.*",
+    "computer.*"
   ],
-  "globalVariables": {
-    "TEST1": "Hello",
-    "TEST2": [
-      2,
-      4,
-      5
-    ],
-    "TEST3": {
-      "value1": 10,
-      "value2": {}
-    }
-  },
   "modes": {
     "window": {
       "title": "WhiteDove",
@@ -46,37 +47,6 @@
       "hidden": false,
       "resizable": true,
       "exitProcessOnClose": false
-    },
-    "browser": {
-      "globalVariables": {
-        "TEST": "Test value browser"
-      },
-      "nativeBlockList": [
-        "filesystem.*"
-      ]
-    },
-    "cloud": {
-      "url": "/distribution/#cloud",
-      "nativeAllowList": [
-        "app.*"
-      ]
-    },
-    "chrome": {
-      "width": 800,
-      "height": 500,
-      "args": "--user-agent=\"Neutralinojs chrome mode\"",
-      "nativeBlockList": [
-        "filesystem.*",
-        "os.*"
-      ]
     }
-  },
-  "cli": {
-    "binaryName": "WhiteDove",
-    "resourcesPath": "/distribution/",
-    "extensionsPath": "/extensions/",
-    "clientLibrary": "/distribution/js/neutralino.js",
-    "binaryVersion": "4.6.0",
-    "clientVersion": "3.5.0"
   }
 }
