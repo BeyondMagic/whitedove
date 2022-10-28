@@ -1,0 +1,159 @@
+&.body.apresentation
+{
+
+  &[data-background='1']
+  {
+
+    background-size: 1800% 1800%;
+    background-image: linear-gradient( 124deg,
+    #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+
+    animation: rainbow 18s ease infinite;
+
+  }
+
+  &[data-background='2']
+  {
+
+    background-size: 1800% 1800%;
+    background-image: linear-gradient( 135deg,
+    #2d91cf, #004877, #3576a0, #003e6b);
+
+    animation: rainbow 9s ease infinite;
+
+
+  }
+
+
+  &[data-background='3']
+  {
+
+    background-size: 1800% 1800%;
+    background-image: linear-gradient( 135deg,
+    #2d91cf, #004877, #3576a0, #003e6b);
+
+    animation: rainbow 9s ease infinite;
+
+
+  }
+
+  .button
+  {
+
+    &.close
+    {
+
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+
+      width: 2rem;
+      height: 2rem;
+
+      background-color: red;
+      border: none;
+
+      overflow: hidden;
+
+      >.svg {
+
+        width: 3rem;
+        height: 3rem;
+
+        transition-property: transform, fill;
+        transition-duration: 400ms;
+        transition-timing-function: ease-in-out;
+
+      }
+
+      &:hover
+      {
+
+        font-weight: bolder;
+        cursor: pointer;
+
+        >svg
+        {
+
+          transform: rotate(180deg);
+          fill: red;
+
+        }
+
+      }
+
+    }
+
+  }
+
+  &[data-step='1']
+  {
+
+    color: $bg;
+
+    display: grid;
+    grid-template-rows: 1fr 8rem;
+
+    .header
+    {
+
+      >.h1
+      {
+
+        >b
+        {
+
+          padding: 0 1rem;
+
+          background-color: $bg;
+          color: $fg;
+
+          font-weight: 300;
+
+        }
+
+      }
+
+
+
+    }
+
+    .footer
+    {
+
+      background-color: $bg;
+
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+
+      >.icon
+      {
+
+        padding-left: 2rem;
+
+        >.span
+        {
+
+          background-image: url("/img/WhiteDove.png");
+          background-size: cover;
+          background-position: center;
+          
+          width: 6rem;
+          height: 6rem;
+
+        }
+
+      }
+
+      >.description
+      {
+
+        color: rgba($fg, 0.8);
+
+      }
+
+    }
+
+  }
+
+}

@@ -68,6 +68,12 @@ case "$1" in
 
   ;;
 
+  'img' )
+
+    cp -rf "$src"/img/ -t "$dist"
+
+  ;;
+
   'app' )
 
     neu update
@@ -78,6 +84,7 @@ case "$1" in
   'all' | * )
 
     $0 fonts
+    $0 img
     $0 ts
     $0 scss
     $0 html

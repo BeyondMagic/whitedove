@@ -17,11 +17,7 @@ namespace Frontier
     button.onclick = () => Neutralino.app.exit()
     {
 
-      const icon = UI.component.create.svg(icon_close, 32, true)
-      {
-        
-
-      }
+      const icon = UI.component.create.svg(icon_close, 64, true)
       button.appendChild(icon)
 
     }

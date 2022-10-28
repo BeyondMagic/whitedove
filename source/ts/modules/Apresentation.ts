@@ -27,12 +27,46 @@ function* steps ( index : number ) : Generator<void>
       header.classList.add('center-flex')
       {
         const label = UI.generate('h1')
-        label.textContent = 'Welcome to WhiteDove'
+        label.innerHTML = 'Welcome to <b>WhiteDove</b>'
         header.appendChild(label)
       }
 
       const footer = UI.generate('footer')
       {
+
+        const section =
+        { 
+          icon        : UI.generate('section'),
+          description : UI.generate('section'),
+          buttons     : UI.generate('section')
+        }
+
+        section.icon.classList.add('icon', 'center-flex')
+        {
+          const icon = UI.generate('span')
+          section.icon.appendChild(icon)
+        }
+
+        section.description.classList.add('description', 'center-flex')
+        {
+
+          const p = UI.generate('p')
+          p.textContent = 'We have to set up a few things first for the application.'
+          section.description.appendChild(p)
+
+        }
+
+        section.buttons.classList.add('buttons', 'center-flex')
+        {
+
+          const button = UI.generate('button')
+          button.classList.add('neutral')
+          button.textContent = 'Continue'
+          section.buttons.appendChild(button)
+
+        }
+
+        footer.append(section.icon, section.description, section.buttons)
 
       }
 
@@ -48,6 +82,7 @@ export function start () : void
 {
 
   document.body.classList.add('apresentation')
+  document.body.dataset.background = String(Math.floor( Math.random() * 2 ) + 1)
 
   {
     const iterator = steps(1);
