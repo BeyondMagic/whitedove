@@ -1,60 +1,76 @@
 #!/usr/bin/env sh
+#
+# Will build the source code entirely.
+#
+# BeyondMagic © 2022
 
+# -- Variables.
+
+# Folder for distribution.
+dist="./distribution"
+
+# Folder for source-code.
+src="./source/"
+
+# -- Tests.
+
+# If the folder for distribution doesn't exist, build entirely.
+if [ ! -d "$dist/" ]; then
+
+  mkdir "$dist"
+
+  '1'='all'
+
+fi
+
+# -- Functions.
 build () {
 
-  esbuild "$1" --loader:.svg=text --tsconfig=./source/ts/tsconfig.json --bundle --platform=browser --outfile="$2"
+  esbuild "$1" \
+    --loader:.svg=text \
+    --tsconfig="$src"/ts/tsconfig.json \
+    --bundle \
+    --platform=browser \
+    --outfile="$2"
 
 }
 
+# -- Main operation.
 case "$1" in
+
+  'dev' )
+
+    neu run --frontend-lib-dev
+
+  ;;
 
   'ts' | 'typescript')
 
-    case "$2" in
-
-      'global' )
-
-        build ./source/ts/global.ts ./distribution/js/global.js
-
-      ;;
-
-      'main' )
-
-        build ./source/ts/main.ts ./distribution/js/main.js
-
-      ;;
-
-      'all' | * )
-
-        $0 ts global
-        $0 ts main
-
-      ;;
-
-    esac
+    build "$src"/ts/index.ts "$dist"/js/index.js
 
   ;;
 
   'sass' | 'scss' )
 
-    sass ./source/scss/main.scss ./distribution/styles.css --no-source-map
+    sass "$src"/scss/main.scss "$dist"/styles.css --no-source-map
 
   ;;
 
   'html' )
 
-    cp -r ./source/html/index.html -t ./distribution/
+    cp -r "$src"/html/index.html -t "$dist"
 
   ;;
 
   'fonts' )
 
-    cp -r ./source/fonts/ -t ./distribution/
+    cp -r "$src"/fonts/ -t "$dist"
 
   ;;
 
   'app' )
 
+    neu update
     neu build
 
   ;;
@@ -62,7 +78,7 @@ case "$1" in
   'all' | * )
 
     $0 fonts
-    $0 ts all
+    $0 ts
     $0 scss
     $0 html
     $0 app

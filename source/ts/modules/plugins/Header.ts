@@ -1,4 +1,3 @@
-
 // Completely inspired by https://editorjs.io/tools-api.
 
 // GLOBAL Types and namespaces

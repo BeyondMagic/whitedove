@@ -1,16 +1,9 @@
 // João F. © BeyondMagic 2022 <koetemagie@gmail.com>
 
-// #. Wonderful fonts for interface.
-@import './configuration/fonts';
-
-// #. Colours for everyone.
-@import './configuration/colours';
-
-// #. Animations (keyframes).
-@import './configuration/animations';
-
-// #. Main for writing and reading.
-@import './configuration/pages';
+@import './configuration/fonts.scss';
+@import './configuration/colours.scss';
+@import './configuration/animations.scss';
+@import './configuration/ui.scss';
 
 * {
 
@@ -25,24 +18,15 @@ html > body {
 
   min-height: 100vh;
 
-  display: grid;
-  grid-template-columns: 2rem 1fr 2rem;
-  grid-template-rows:    2rem 1fr 2rem;
-  grid-template-areas: 
-    'top-bar top-bar top-bar'
-    'left-side-bar main right-side-bar'
-    'bottom-bar bottom-bar bottom-bar';
+  font-family: $default-font;
 
-  // #. For everything, assume max height.
-  @each $part in top-bar, left-side-bar, main, bottom-bar {
-    >.#{$part} {
+  background-color: $bg;
 
-      grid-area: $part;
-      height: 100%;
+}
 
-    }
-  }
+::selection {
 
-  background-color: blue;
+  background-color: $bg;
+  color: $fg;
 
 }

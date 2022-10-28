@@ -1181,6 +1181,11 @@ declare var NL_APPVERSION: string;
 declare var NL_PORT: number;
 
 /**
+ * 	Server token.
+ */
+declare var NL_TOKEN: string;
+
+/**
  * Mode of the application: `window`, `browser, `cloud`, or `chrome`
  */
 declare var NL_MODE: 'window' | 'browser' | 'cloud' | 'chrome';
