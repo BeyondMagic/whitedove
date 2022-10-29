@@ -1,0 +1,26 @@
+&.body.home
+{
+
+  display: grid;
+  grid-template-columns: 1fr 2fr 6fr;
+
+  >.bg:last-child
+  {
+
+    position: relative;
+
+
+    background: rgba(blue, 0.25);
+
+    .span
+    {
+
+      background: rgba($fg, 0.25);
+      padding: 0.1rem 1.5rem;
+      border-radius: 1rem;
+
+    }
+
+  }
+
+}

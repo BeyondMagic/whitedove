@@ -84,10 +84,10 @@ export function initialisation () : void
   events()
 
   // Add a button to close the application.
-  {
-    const button = Frontier.close()
-    document.body.appendChild(button)
-  }
+  //{
+  //  const button = Frontier.close()
+  //  document.body.appendChild(button)
+  //}
 
 
 }
