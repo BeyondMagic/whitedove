@@ -8,6 +8,8 @@
   "enableServer": true,
   "enableNativeAPI": true,
   "tokenSecurity": "none",
+  "enableExtensions": true,
+  "exportAuthInfo": true,
   "logging": {
     "enabled": false,
     "writeToLogFile": true
@@ -29,7 +31,8 @@
     "os.*",
     "debug.log",
     "filesystem.*",
-    "computer.*"
+    "computer.*",
+    "extensions.*"
   ],
   "modes": {
     "window": {
@@ -48,5 +51,9 @@
       "resizable": true,
       "exitProcessOnClose": true
     }
-  }
+  },
+  "extensions":
+  [
+
+  ]
 }

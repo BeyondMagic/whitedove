@@ -28,6 +28,33 @@ namespace Frontier
 
 }
 
+declare namespace Base64
+{
+
+  type Type = 'image/jpg' | 'image/png' | 'image/jpeg' | 'audio/wav' | 'audio/mp4'
+
+}
+
+/**
+ * Will read a BINARY data and return its formatted Base64 data.
+ * @param path string The file to be read.
+ * @param type Base64.Type The type of the file.
+ * @returns Promise<string | void> Base64 data.
+ **/
+export async function transform ( path : string, type : Base64.Type ) : Promise<string | void>
+{
+
+  const data = await Neutralino.os.execCommand(`base64 ${path}`)
+
+  if (data.stdOut)
+  {
+
+    return `data:${type};base64,${data.stdOut.replace(/(\r\n|\n|\r)/gm, '')}`
+
+  }
+
+}
+
 /**
  * Initialise all global events of Neutralino.
  * @returns void

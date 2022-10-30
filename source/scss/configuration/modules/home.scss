@@ -4,18 +4,36 @@
   display: grid;
   grid-template-columns: 1fr 2fr 6fr;
 
-  >.bg:last-child
+  >.section:nth-child(2)
+  {
+
+  }
+
+  >.bg
   {
 
     position: relative;
 
-
-    background: rgba(blue, 0.25);
-
-    .span
+    &:not(.ready)
     {
 
-      background: rgba($fg, 0.25);
+      background-size: 300% 300%;
+      background-image: repeating-linear-gradient(45deg, transparent, transparent 1rem, gray 0.75rem, gray 2.75rem);
+      animation: rainbow 50s ease infinite;
+    }
+
+    &.ready
+    {
+
+      background-size: cover;
+      background-position: center;
+
+    }
+
+    >.span
+    {
+
+      background-color: gray;
       padding: 0.1rem 1.5rem;
       border-radius: 1rem;
 
