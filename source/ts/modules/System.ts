@@ -28,28 +28,23 @@ namespace Frontier
 
 }
 
-declare namespace Base64
-{
-
-  type Type = 'image/jpg' | 'image/png' | 'image/jpeg' | 'audio/wav' | 'audio/mp4'
-
-}
-
 /**
+ * TODO: Maybe we can make a temporary/permament data system (if deem necessary, which for now, I honestly don't know).
  * Will read a BINARY data and return its formatted Base64 data.
  * @param path string The file to be read.
- * @param type Base64.Type The type of the file.
  * @returns Promise<string | void> Base64 data.
  **/
-export async function transform ( path : string, type : Base64.Type ) : Promise<string | void>
+export async function transform ( path : string ) : Promise<string | void>
 {
 
-  const data = await Neutralino.os.execCommand(`base64 ${path}`)
+  const [type, data] = await Promise.all( [path.match(/\.([0-9a-z]+)(?:[\?#]|$)/i), Neutralino.os.execCommand(`base64 "${path}"`)] )
 
-  if (data.stdOut)
+  //Neutralino.filesystem.copyFile(NL_PATH + '/data/temporary/' + type + 
+
+  if (data.stdOut && type)
   {
 
-    return `data:${type};base64,${data.stdOut.replace(/(\r\n|\n|\r)/gm, '')}`
+    return `data:${type[1]};base64,${data.stdOut.replace(/(\r\n|\n|\r)/gm, '')}`
 
   }
 
