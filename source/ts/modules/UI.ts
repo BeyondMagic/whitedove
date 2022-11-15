@@ -1,11 +1,11 @@
 import * as Animations from './UI/Animations'
 
-export function generate<K extends keyof HTMLElementTagNameMap> (tagname: K) : HTMLElementTagNameMap[K]
+export function generate<K extends keyof HTMLElementTagNameMap> (tagname: K, ...tokens : string[]) : HTMLElementTagNameMap[K]
 {
 
   const element = document.createElement(tagname)
 
-  element.classList.add('ui', tagname)
+  element.classList.add('ui', tagname, ...tokens)
 
   return element
 
@@ -53,7 +53,7 @@ export namespace component {
     export namespace input
     {
 
-      export type Inputs =
+      type Inputs =
         'button' | 'checkbox' | 'color' | 'date' |
         'datetime-local' | 'email' | 'file' | 'hidden' |
         'image' | 'month' | 'number' | 'password' | 'radio' |
@@ -62,16 +62,16 @@ export namespace component {
 
       /**
        * Create an input element with <generate> and return it.
-       * @returns HTMLInputElement The input element.
+       * @returns HTMLDivElement The input element.
        **/
-      export function create ( nametype : Inputs ) : HTMLInputElement
+      function create ( nametype : Inputs ) : HTMLDivElement 
       {
 
-        const element = generate('input')
+        const element = generate('div')
 
         element.classList.add(nametype)
 
-        element.type = nametype
+        element.contentEditable = 'true'
 
         return element
 
@@ -81,12 +81,39 @@ export namespace component {
        * A radio with its own UI design.
        * @returns HTMLInputElement The input-radio element.
        **/
-      export function radio () : HTMLInputElement
+      export function search () : HTMLDivElement
+      {
+
+        const element = create('search')
+
+        element.onkeydown = e =>
+        {
+
+          switch (e.key)
+          {
+
+            case 'Enter': e.preventDefault()
+
+            break
+
+          }
+
+        }
+
+        return element
+
+      }
+
+      /**
+       * A radio with its own UI design.
+       * @returns HTMLInputElement The input-radio element.
+       **/
+      export function radio () : HTMLDivElement
       {
 
         const element = create('radio')
 
-        element.onclick = () => Animations.explosion.bubble(element)
+        //element.onclick = () => Animations.explosion.bubble(element)
 
         return element
 
