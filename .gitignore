@@ -1,17 +1,2 @@
-# Developer tools' files
-.lite_workspace.lua
-
-# Neutralinojs binaries and builds
-/bin
-/dist
-/distribution
-
-# Neutralinojs client (minified)
-#neutralino.js
-
-# Neutralinojs related files
-.storage
-*.log
-.tmp
-*.bak
-ideas
+# Old Whitedove files (using now just for of early design inspiration).
+/.inspiration/
