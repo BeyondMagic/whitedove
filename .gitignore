@@ -1,2 +1,8 @@
 # Old Whitedove files (using now just for of early design inspiration).
 /.inspiration/
+
+# Ignore JS folders.
+/node_modules/
+
+# Ignore lock database of bun.
+/bun.lockb
