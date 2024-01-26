@@ -1,10 +1,4 @@
-#!/usr/bin/env bun
-//
-// Dependencies:
-//	bun
-//	dart-sass
-//
-// João Farias © 2021-2024 BeyondMagic <beyondmagic@mail.ru>
+// João Farias © 2024 BeyondMagic <beyondmagic@mail.ru>
 
 import { withHtmlLiveReload as Serve } from "bun-html-live-reload";
 import root from "./source/html/root.html";
