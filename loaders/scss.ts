@@ -9,11 +9,13 @@ plugin({
 		build.onLoad(
 			{ filter: /\.(sass|scss)$/ },
 			({ path }) => {
+				const contents =
+					'const text = `' + sass.compile(path).css + '`;' +
+					'export default text;'
+
 				return {
-					exports: {
-						default: sass.compile(path).css,
-					},
-					loader: 'object'
+					contents,
+					loader: 'ts',
 				}
 			}
 		)

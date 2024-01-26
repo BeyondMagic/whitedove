@@ -8,11 +8,13 @@ plugin({
 		build.onLoad(
 			{ filter: /\.(html)$/ },
 			async ({ path }) => {
+				const contents =
+					'const text = `' + await file(path).text() + '`;' +
+					'export default text;'
+
 				return {
-					exports: {
-						default: await file(path).text(),
-					},
-					loader: 'object'
+					contents,
+					loader: 'ts',
 				}
 			}
 		)
