@@ -1,30 +1,24 @@
 // João Farias © 2024 BeyondMagic <beyondmagic@mail.ru>
 
-import { withHtmlLiveReload as Serve } from "bun-html-live-reload";
+import serve from "./server";
 import root from "./source/html/root.html";
-import css from "./distribution/main.css";
+import css from "./source/scss/main.scss";
 
-const SCSS = Bun.spawn([
-	"sass",
-	"--watch",
-	"--no-source-map",
-	"./source/scss/main.scss",
-	"./distribution/main.css",
-]);
+globalThis.web_socket_command = 'reload'
 
-
-export default Serve({
+export default serve({
+	web_socket_path: 'live_reload_websocket',
 	port: 1984,
 	hostname: "0.0.0.0",
-	fetch: (req) => {
+	async fetch(req) {
 		const url = new URL(req.url);
 
 		if (url.pathname === "/main.css")
-			return new Response(Bun.file(css), {
+			return new Response(css, {
 				headers: { "Content-Type": "text/css" },
 			});
 
-		return new Response(Bun.file(root), {
+		return new Response(root, {
 			headers: { "Content-Type": "text/html" },
 		});
 	},

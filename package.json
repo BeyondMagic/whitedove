@@ -2,10 +2,12 @@
   "dependencies": {},
   "devDependencies": {
     "@types/bun": "latest",
-    "bun-html-live-reload": "^0.1.2"
+    "@types/web": "^0.0.135",
+    "@types/ws": "^8.5.10",
+    "sass": "^1.70.0"
   },
   "scripts": {
-    "hot": "bun --hot index.ts"
+    "hot": "bun --preload ./loaders/html.ts --preload ./loaders/scss.ts --hot index.ts"
   },
   "name": "whitedove",
   "peerDependencies": {

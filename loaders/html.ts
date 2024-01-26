@@ -12,6 +12,8 @@ plugin({
 					'const text = `' + await file(path).text() + '`;' +
 					'export default text;'
 
+				global.web_socket?.send(global.web_socket_command);
+
 				return {
 					contents,
 					loader: 'ts',

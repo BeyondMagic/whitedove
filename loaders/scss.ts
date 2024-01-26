@@ -13,6 +13,8 @@ plugin({
 					'const text = `' + sass.compile(path).css + '`;' +
 					'export default text;'
 
+				global.web_socket?.send(global.web_socket_command);
+
 				return {
 					contents,
 					loader: 'ts',
