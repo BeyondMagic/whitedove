@@ -1,0 +1,14 @@
+{
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "latest",
+    "bun-html-live-reload": "^0.1.2"
+  },
+  "scripts": {
+    "hot": "bun --hot index.ts"
+  },
+  "name": "whitedove",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
