@@ -31,10 +31,17 @@ body {
 		border-radius: 0.5rem;
 
 		>.line {
-			background-color: #00000011;
 			line-break: strict;
 			word-break: break-all;
 			word-wrap: break-word;
+
+			&:nth-child(odd) {
+				background-color: #00000011;
+			}
+
+			&:nth-child(even) {
+				background-color: #00000022;
+			}
 
 			&:focus {
 				outline: none;
