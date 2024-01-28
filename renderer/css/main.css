@@ -1,3 +1,5 @@
+/* João Farias © 2024 BeyondMagic <beyondmagic@mail.ru> */
+
 html {
 	height: 100vh;
 }
@@ -25,5 +27,9 @@ body {
 		border-color: var(--shadow);
 		border-style: solid;
 		border-radius: 0.5rem;
+
+		>[contenteditable] {
+			background-color: blue;
+		}
 	}
 }

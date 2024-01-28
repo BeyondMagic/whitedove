@@ -87,7 +87,7 @@ function serve<
 				await serveOptions.websocket?.message?.(ws, message)
 			},
 			async open (ws) {
-				console.log(`[server] Opened ${ws}`)
+				console.log(`[server] ${ws.remoteAddress} opened web socket. `)
 				globalThis.web_socket = ws
 				await serveOptions.websocket?.open?.(ws)
 			},
