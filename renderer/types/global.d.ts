@@ -9,13 +9,3 @@ declare global {
 	// biome-ignore lint/style/noVar: ^
 	var web_socket_command: string;
 }
-
-declare module "*.scss" {
-	const content: string;
-	export default content;
-}
-
-declare module "*.html" {
-	const content: string;
-	export default content;
-}

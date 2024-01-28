@@ -1,10 +1,12 @@
 // João Farias © 2024 BeyondMagic <beyondmagic@mail.ru>
 
 import serve from "./server";
+import css from "./source/scss/main.css";
 import root from "./source/html/root.html";
-import css from "./source/scss/main.scss";
 
 globalThis.web_socket_command = 'reload'
+
+global.web_socket?.send(global.web_socket_command);
 
 export default serve({
 	web_socket_path: 'live_reload_websocket',
