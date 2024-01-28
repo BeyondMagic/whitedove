@@ -6,6 +6,3 @@
 
 # Ignore lock database of bun.
 /bun.lockb
-
-# Ignore distribution folder.
-/distribution/

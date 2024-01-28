@@ -3,11 +3,10 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/web": "^0.0.135",
-    "@types/ws": "^8.5.10",
-    "sass": "^1.70.0"
+    "@types/ws": "^8.5.10"
   },
   "scripts": {
-    "hot": "bun --loader=.html:text --loader=.css:text --hot index.ts"
+    "hot": "bun --loader=.html:text --loader=.css:text --hot renderer/index.ts"
   },
   "name": "whitedove",
   "peerDependencies": {
