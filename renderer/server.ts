@@ -1,13 +1,13 @@
 // aab (MIT License ) © 2023
 // João Farias © 2024 BeyondMagic <beyondmagic@mail.ru>
 
-import { WebSocket } from "ws";
+import { WebSocket } from "ws"
 
 import type {
   Server,
   WebSocketHandler,
   WebSocketServeOptions,
-} from "bun";
+} from "bun"
 
 function get_signature(socket : string) : string {
 	// Code will be added into the HTML.
@@ -16,17 +16,17 @@ function get_signature(socket : string) : string {
 
 		socket.onmessage = (msg) => {
 			if (msg.data === global.web_socket_command)
-				location.reload()
+				location.replace(location.href)
 		}
 
 		console.log('Live reload enabled.')
-	};
+	}
 
 	const signature = '<script type="application/javascript">(' +
 		code.toString()
 		.replace('*', socket)
 		.replace('global.web_socket_command', '"' + global.web_socket_command + '"')
-		+ ')()</script>';
+		+ ')()</script>'
 
 	return signature
 };
@@ -37,7 +37,7 @@ export type PureWebSocketServeOptions<WebSocketDataType> = Omit<
 > & {
   fetch(request: Request, server: Server): Promise<Response> | Response;
   websocket?: WebSocketHandler<WebSocketDataType>;
-};
+}
 
 export type LiveReloadOptions = {
   /**
@@ -45,7 +45,7 @@ export type LiveReloadOptions = {
    * @default "__bun_live_reload_websocket__"
    */
   web_socket_path?: string;
-};
+}
 
 function serve<
 	WebSocketDataType,
@@ -83,13 +83,13 @@ function serve<
 		websocket: {
 			...serveOptions.websocket,
 			async message(ws, message) {
-				console.log(`[server] Received ${message}`);
-				await serveOptions.websocket?.message?.(ws, message);
+				console.log(`[server] Received ${message}`)
+				await serveOptions.websocket?.message?.(ws, message)
 			},
 			async open (ws) {
-				console.log("opened ws?")
-				globalThis.web_socket = ws;
-				await serveOptions.websocket?.open?.(ws);
+				console.log(`[server] Opened ${ws}`)
+				globalThis.web_socket = ws
+				await serveOptions.websocket?.open?.(ws)
 			},
 		},
 	}
@@ -97,4 +97,4 @@ function serve<
 	return options
 }
 
-export default serve;
+export default serve
