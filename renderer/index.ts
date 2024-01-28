@@ -1,8 +1,8 @@
 // João Farias © 2024 BeyondMagic <beyondmagic@mail.ru>
 
-import serve from "./server";
-import css from "./source/scss/main.css";
-import root from "./source/html/root.html";
+import serve from "./server"
+import css from "../source/css/main.css"
+import root from "../source/html/root.html"
 
 globalThis.web_socket_command = 'reload'
 
