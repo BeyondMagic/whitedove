@@ -7,7 +7,7 @@
     "sass": "^1.70.0"
   },
   "scripts": {
-    "hot": "bun --loader=.html:text --loader=.scss:text --hot index.ts"
+    "hot": "bun --loader=.html:text --loader=.css:text --hot index.ts"
   },
   "name": "whitedove",
   "peerDependencies": {
