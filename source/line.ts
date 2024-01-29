@@ -1,4 +1,3 @@
-import * as Selection from "./selection"
 import * as Plugin from "./plugin"
 
 export type Parameters = {
@@ -14,11 +13,9 @@ export function create({
 	line.contentEditable = 'true'
 	line.classList.add('line')
 
-	const selection = Selection.get()
-
 	for (const plugin of plugins)
 		if (plugin.onkeydown)
-			line.addEventListener('keydown', event => plugin.onkeydown!({ plugins, source: line, selection, event }))
+			line.addEventListener('keydown', event => plugin.onkeydown!({ plugins, event }))
 
 	return line
 }

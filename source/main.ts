@@ -27,6 +27,7 @@ function create({
 			onkeydown: Core.keydown
 		})
 
+	// TODO: when clicking, calculate the closest line and focus on it. Prevent default/propagation to onfocus.
 	const editor = document.createElement('main')
 	editor.classList.add('editor')
 
