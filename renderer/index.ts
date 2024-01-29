@@ -51,7 +51,7 @@ async function fetch(req : Request) {
 		})
 
 	return new Response(root, {
-		headers: { "Content-Type": "text/html" }
+		headers: { "Content-Type": "text/html; charset=utf8" }
 	})
 }
 
