@@ -30,6 +30,10 @@ body {
 		border-style: solid;
 		border-radius: 0.5rem;
 
+		&:focus {
+			outline: none;
+		}
+
 		>.line {
 			line-break: strict;
 			word-break: break-all;
