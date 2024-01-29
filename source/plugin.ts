@@ -1,17 +1,17 @@
-type Key = {
+export type Parameter<Kind> = {
 	// The event itself.
-	event : KeyboardEvent
+	event : Kind
 
 	// The plugins to add when adding new content.
 	plugins : Plugin[]
 }
 
-export type Keyboard = (key : Key) => void
+export type Caller<Kind> = (key : Parameter<Kind>) => void
 
 export type Plugin = {
-	// Function to be called upon 'onkeydown' event.
-	onkeydown? : Keyboard
+	keydown? : Caller<KeyboardEvent>
 
-	// Function to be called upon 'onkeyup' event.
-	// onkeyup? : Keyboard
+	mouseup? : Caller<MouseEvent>
+	selectstart? : Caller<Event>
+	selectionchange? : Caller<Event>
 }

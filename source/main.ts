@@ -2,7 +2,8 @@
 
 import * as Line from "./line"
 import * as Plugin from "./plugin"
-import * as Core from "./core"
+import newline from "./core/newline"
+import selection from "./core/selection"
 
 type Parameters = {
 	// The plugins for 
@@ -23,9 +24,7 @@ function create({
 	plugins = plugins ?? []
 
 	if (core)
-		plugins.unshift({
-			onkeydown: Core.keydown
-		})
+		plugins.push(newline, selection)
 
 	// TODO: when clicking, calculate the closest line and focus on it. Prevent default/propagation to onfocus.
 	const editor = document.createElement('main')
