@@ -16,11 +16,9 @@ export function create({
 
 	const selection = Selection.get()
 
-	line.onkeydown = event => {
-		for (const plugin of plugins)
-			if (plugin.onkeydown)
-				plugin.onkeydown({ plugins, source: line, selection, event })
-	}
+	for (const plugin of plugins)
+		if (plugin.onkeydown)
+			line.addEventListener('keydown', event => plugin.onkeydown!({ plugins, source: line, selection, event }))
 
 	return line
 }
