@@ -15,14 +15,14 @@ export function create({
 
 	for (const plugin of plugins)
 	{
-		if (plugin.keydown)
-			line.addEventListener('keydown', event => plugin.keydown!({ plugins, event }))
-		if (plugin.mouseup)
-			line.addEventListener('mouseup', event => plugin.mouseup!({ plugins, event }))
-		if (plugin.selectstart)
-			line.addEventListener('selectstart', event => plugin.selectstart!({ plugins, event }))
-		if (plugin.selectionchange)
-			line.addEventListener('selectionchange', event => plugin.selectionchange!({ plugins, event }))
+		// if (plugin.keydown)
+		// 	line.addEventListener('keydown', event => plugin.keydown!({ plugins, event }))
+		// if (plugin.mouseup)
+		// 	line.addEventListener('mouseup', event => plugin.mouseup!({ plugins, event }))
+		// if (plugin.selectstart)
+		// 	line.addEventListener('selectstart', event => plugin.selectstart!({ plugins, event }))
+		// if (plugin.selectionchange)
+		// 	line.addEventListener('selectionchange', event => plugin.selectionchange!({ plugins, event }))
 	}
 
 	return line
